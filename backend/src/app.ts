@@ -35,7 +35,7 @@ app.get('/api/game-types', (req, res) => {
 app.get('/api/game-types/:id', (req, res) => {
   const game_type = game_types.find((game_type) => game_type.id===req.params.id)
   if(!game_type) {
-    res.status(404).send({message:'Game Type not found'})
+    return res.status(404).send({message:'Game Type not found'})
   }
   res.json({data: game_type})
 })
@@ -51,43 +51,47 @@ app.post('/api/game-types', sanitizeCharacterInput, (req, res) => {
 
   game_types.push(game_type)
 
-  res.status(201).send({message:'Game type created succesfully', data:game_type})
+  return res.status(201).send({message:'Game type created succesfully', data:game_type})
 })
 
 app.put('/api/game-types/:id', sanitizeCharacterInput, (req, res) => {
   const game_typeIdx = game_types.findIndex((game_type) => game_type.id===req.params.id)
 
   if(game_typeIdx === -1) {
-    res.status(404).send({message:'Game type not found'})
+    return res.status(404).send({message:'Game Type not found'})
   }
 
   game_types[game_typeIdx] = {...game_types[game_typeIdx], ...req.body.sanitizedInput}
 
-  res.status(200).send({message:'Game Type updated succesfully', data:game_types[game_typeIdx]})
+  return res.status(200).send({message:'Game Type updated succesfully', data:game_types[game_typeIdx]})
 })
 
 app.patch('/api/game-types/:id', sanitizeCharacterInput, (req, res) => {
   const game_typeIdx = game_types.findIndex((game_type) => game_type.id===req.params.id)
 
   if(game_typeIdx === -1) {
-    res.status(404).send({message:'Game type not found'})
+    return res.status(404).send({message:'Game Type not found'})
   }
 
-  game_types[game_typeIdx] = {...game_types[game_typeIdx], ...req.body.sanitizedInput}
+  Object.assign(game_types[game_typeIdx], req.body.sanitizedInput) // decidir si utilizar esto o los trailing commas
 
-  res.status(200).send({message:'Game Type updated succesfully', data:game_types[game_typeIdx]})
+  return res.status(200).send({message:'Game Type updated succesfully', data:game_types[game_typeIdx]})
 })
 
 app.delete('/api/game-types/:id', (req, res) => {
   const game_typeIdx = game_types.findIndex((game_type) => game_type.id===req.params.id)
 
   if(game_typeIdx === -1) {
-    res.status(404).send({message:'Game Type not found'})
+    return res.status(404).send({message:'Game Type not found'})
   } else {
     game_types.splice(game_typeIdx, 1)
 
-    res.status(200).send({message:'Game Type deleted succesfully'})
+    return res.status(200).send({message:'Game Type deleted succesfully'})
   }
+})
+
+app.use((_,res) => {
+return res.status(404).send({message:'Resource not found'})
 })
 
 app.listen(3000, () => {
