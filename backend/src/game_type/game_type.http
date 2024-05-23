@@ -1,0 +1,43 @@
+### Obtener todos los tipos de juego
+
+GET http://localhost:3000/api/game-types
+
+### Obtener un solo tipo de juego con un id
+
+GET http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
+
+### Crear un nuevo tipo de juego
+
+POST http://localhost:3000/api/game-types
+Content-Type: application/json
+
+{
+  "name": "Tag Fighter",
+  "description": "Subgenre of fighting games where players control a team of characters, typically in pairs, and can switch between them during gameplay.",
+  "tags": ["Skullgirls", "MVSC", "Z-Fighters", "DOA", "MK9"]
+}
+
+### Modificar un tipo de juego (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
+Content-Type: application/json
+
+{
+  "name": "Classic Fighter",
+  "description": "Che en esto esta RYU.",
+  "tags": ["SUPER STREET FIGHTER"]
+}
+
+### Modificar un tipo de juego (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
+Content-Type: application/json
+
+{
+  "name": "CLASSICU FAITA",
+  "tags": ["SUPER STREET FIGHTER", "KINU FAITA"]
+}
+
+### Borrar un character (DELETE)
+
+DELETE http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
