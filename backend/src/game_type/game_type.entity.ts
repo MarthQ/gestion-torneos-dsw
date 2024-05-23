@@ -4,7 +4,8 @@ export class Game_Type {
     constructor(
         public name: string,
         public description: string,
-        public tags: string[],
-        public _id?: number,
+        // TODO: tags should be a string array.
+        public tags: string,
+        public _id?: number
     ) {}
 }

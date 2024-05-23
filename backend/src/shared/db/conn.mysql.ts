@@ -4,7 +4,7 @@ export const pool = mysql2.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'dsw',
     password: process.env.DB_PASSWORD || 'dsw',
-    database: process.env.DB_NAME || 'ps8-gestion-torneos',
+    database: process.env.DB_NAME || 'okiDSW',
     waitForConnections: true,
     connectionLimit: 10,
     maxIdle: 10, //maximo de conecciones idles

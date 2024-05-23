@@ -4,20 +4,15 @@ import { Game_Type } from './game_type.entity.js'
 
 const repository = new Game_TypeRepository()
 
-async function sanitizeGameTypeInput(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+async function sanitizeGameTypeInput(req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
         name: req.body.name,
         description: req.body.description,
-        tags: req.body.tags,
+        tags: req.body.tags?.join(', '),
     }
     // Habría que hacer un chequeo de que los datos son correctos
     Object.keys(req.body.sanitizedInput).forEach((key) => {
-        if (req.body.sanitizedInput[key] === undefined)
-            delete req.body.sanitizedInput[key]
+        if (req.body.sanitizedInput[key] === undefined) delete req.body.sanitizedInput[key]
     })
 
     next()
@@ -38,22 +33,15 @@ async function findOne(req: Request, res: Response) {
 async function add(req: Request, res: Response) {
     const input = req.body.sanitizedInput
 
-    const game_typeInput = new Game_Type(
-        input.name,
-        input.description,
-        input.tags
-    )
+    const game_typeInput = new Game_Type(input.name, input.description, input.tags)
 
     const game_type = await repository.add(game_typeInput)
 
-    return res
-        .status(201)
-        .send({ message: 'Game type created succesfully', data: game_type })
+    return res.status(201).send({ message: 'Game type created succesfully', data: game_type })
 }
 
 async function update(req: Request, res: Response) {
-    req.body.sanitizedInput.id = req.params.id
-    const game_type = await repository.update(req.body.sanitizedInput)
+    const game_type = await repository.update(req.params.id, req.body.sanitizedInput)
 
     if (!game_type) {
         return res.status(404).send({ message: 'Game Type not found' })
@@ -71,9 +59,7 @@ async function remove(req: Request, res: Response) {
     if (!game_type) {
         return res.status(404).send({ message: 'Game Type not found' })
     } else {
-        return res
-            .status(200)
-            .send({ message: 'Game Type deleted succesfully' })
+        return res.status(200).send({ message: 'Game Type deleted succesfully' })
     }
 }
 

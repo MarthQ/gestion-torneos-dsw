@@ -1,16 +1,15 @@
-create database if not exists ps8-dsw-sc2b;
+CREATE database if not exists okiDSW;
 
-create user if not exists dsw@'%' identified by 'dsw';
-grant select, update, insert, delete on ps8-dsw-sc2b.* to dsw@'%';
+USE okiDSW;
 
-use ps8-dsw-sc2b;
+-- TODO: Check if we should do another table for the tags, and replace the string with a foreign key
 
-create table if not exists `ps8-dsw-sc2b`.`game-types` (
+CREATE table if not exists `okiDSW`.`gameTypes` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NULL,
   `description` VARCHAR(255) NULL,
   `tags` VARCHAR(255) NULL,
   PRIMARY KEY (`id`));
 
-insert into ps8-dsw-sc2b.characters values(1, 'Classic Fighter', 'type of action game with 1v1 fights', 'MK, SF, Killer Instict');
-insert into ps8-dsw-sc2b.characters values(2, 'Platform Fighter', 'type of action game that involves platforming', 'Smash Bros, Brawlhalla');
+INSERT INTO okiDSW.gameTypes VALUES(1, 'Classic Fighter', 'type of action game with 1v1 fights', 'MK, SF, Killer Instinct');
+INSERT INTO okiDSW.gameTypes VALUES(2, 'Platform Fighter', 'type of action game that involves platforming', 'Smash Bros, Brawlhalla');
