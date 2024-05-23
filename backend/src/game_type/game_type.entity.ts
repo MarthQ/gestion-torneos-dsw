@@ -5,6 +5,6 @@ export class Game_Type {
         public name: string,
         public description: string,
         public tags: string[],
-        public id = crypto.randomUUID()
+        public _id?: number,
     ) {}
 }

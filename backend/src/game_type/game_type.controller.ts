@@ -4,7 +4,7 @@ import { Game_Type } from './game_type.entity.js'
 
 const repository = new Game_TypeRepository()
 
-function sanitizeGameTypeInput(
+async function sanitizeGameTypeInput(
     req: Request,
     res: Response,
     next: NextFunction
@@ -23,19 +23,19 @@ function sanitizeGameTypeInput(
     next()
 }
 
-function findAll(req: Request, res: Response) {
-    res.json({ data: repository.findAll() })
+async function findAll(req: Request, res: Response) {
+    res.json({ data: await repository.findAll() })
 }
 
-function findOne(req: Request, res: Response) {
-    const game_type = repository.findOne({ id: req.params.id })
+async function findOne(req: Request, res: Response) {
+    const game_type = await repository.findOne({ id: req.params.id })
     if (!game_type) {
         return res.status(404).send({ message: 'Game Type not found' })
     }
     res.json({ data: game_type })
 }
 
-function add(req: Request, res: Response) {
+async function add(req: Request, res: Response) {
     const input = req.body.sanitizedInput
 
     const game_typeInput = new Game_Type(
@@ -44,16 +44,16 @@ function add(req: Request, res: Response) {
         input.tags
     )
 
-    const game_type = repository.add(game_typeInput)
+    const game_type = await repository.add(game_typeInput)
 
     return res
         .status(201)
         .send({ message: 'Game type created succesfully', data: game_type })
 }
 
-function update(req: Request, res: Response) {
+async function update(req: Request, res: Response) {
     req.body.sanitizedInput.id = req.params.id
-    const game_type = repository.update(req.body.sanitizedInput)
+    const game_type = await repository.update(req.body.sanitizedInput)
 
     if (!game_type) {
         return res.status(404).send({ message: 'Game Type not found' })
@@ -65,8 +65,8 @@ function update(req: Request, res: Response) {
     })
 }
 
-function remove(req: Request, res: Response) {
-    const game_type = repository.delete({ id: req.params.id })
+async function remove(req: Request, res: Response) {
+    const game_type = await repository.delete({ id: req.params.id })
 
     if (!game_type) {
         return res.status(404).send({ message: 'Game Type not found' })
