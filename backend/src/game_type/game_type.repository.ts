@@ -1,49 +1,50 @@
-import { Repository } from "../shared/repository.js";
-import { Game_Type } from "./game_type.entity.js";
-
-const game_types = [
-    new Game_Type(
-        "Classic Fighter",
-        "One-on-one battles between distinct characters, each with their own unique moves and abilities.",
-        ["SF", "Fighter", "KOF", "1v1"],
-        "8d47c07a-769f-433b-9830-5fb881156d81"
-    ),
-];
+import { Repository } from '../shared/repository.js'
+import { Game_Type } from './game_type.entity.js'
+import { pool } from '../shared/db/conn.mysql.js'
+import { ResultSetHeader, RowDataPacket } from 'mysql2'
 
 export class Game_TypeRepository implements Repository<Game_Type> {
-    public findAll(): Game_Type[] | undefined {
-        return game_types;
+    public async findAll(): Promise<Game_Type[] | undefined> {
+        const [game_types] = await pool.query('SELECT * FROM gameTypes')
+
+        return game_types as Game_Type[]
     }
 
-    public findOne(item: { id: string }): Game_Type | undefined {
-        return game_types.find((game_type) => game_type.id === item.id);
-    }
-
-    public add(item: Game_Type): Game_Type | undefined {
-        game_types.push(item);
-        return item;
-    }
-
-    public update(item: Game_Type): Game_Type | undefined {
-        const game_typeIdx = game_types.findIndex(
-            (game_type) => game_type.id === item.id
-        );
-
-        if (game_typeIdx !== -1) {
-            game_types[game_typeIdx] = { ...game_types[game_typeIdx], ...item };
+    public async findOne(item: { id: string }): Promise<Game_Type | undefined> {
+        const id = Number.parseInt(item.id)
+        const [game_types] = await pool.query<RowDataPacket[]>('SELECT * FROM gameTypes WHERE id = ?', [id])
+        if (game_types.length === 0) {
+            return undefined
         }
-        return game_types[game_typeIdx];
+        const game_type = game_types[0]
+
+        return game_type as Game_Type
     }
 
-    public delete(item: { id: string }): Game_Type | undefined {
-        const game_typeIdx = game_types.findIndex(
-            (game_type) => game_type.id === item.id
-        );
+    public async add(gametypeInput: Game_Type): Promise<Game_Type | undefined> {
+        const { _id, ...gametypesRow } = gametypeInput
+        const [result] = await pool.query<ResultSetHeader>('INSERT INTO gameTypes SET ?', [gametypesRow])
+        gametypeInput._id = result.insertId
 
-        if (game_typeIdx !== -1) {
-            const deletedGame_Types = game_types[game_typeIdx];
-            game_types.splice(game_typeIdx, 1);
-            return deletedGame_Types;
+        return result ? gametypeInput : undefined
+    }
+
+    public async update(id: string, gametypeInput: Game_Type): Promise<Game_Type | undefined> {
+        const { _id, ...gametypesRow } = gametypeInput
+        await pool.query('UPDATE gameTypes SET ? WHERE id = ?', [gametypeInput, Number.parseInt(id)])
+
+        return await this.findOne({ id })
+    }
+
+    public async delete(item: { id: string }): Promise<Game_Type | undefined> {
+        try {
+            const gametypeToDelete = await this.findOne(item)
+            const gametypeId = Number.parseInt(item.id)
+            await pool.query('DELETE FROM gameTypes WHERE id = ?', gametypeId)
+
+            return gametypeToDelete
+        } catch (error: any) {
+            throw new Error('Unable to delete game type.')
         }
     }
 }

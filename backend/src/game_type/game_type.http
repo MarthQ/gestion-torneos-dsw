@@ -4,7 +4,7 @@ GET http://localhost:3000/api/game-types
 
 ### Obtener un solo tipo de juego con un id
 
-GET http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
+GET http://localhost:3000/api/game-types/3
 
 ### Crear un nuevo tipo de juego
 
@@ -19,7 +19,7 @@ Content-Type: application/json
 
 ### Modificar un tipo de juego (PUT - Modificar recurso completo e idempotente)
 
-PUT http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
+PUT http://localhost:3000/api/game-types/3
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ### Modificar un tipo de juego (PATCH - Modificar recurso parcial)
 
-PATCH http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
+PATCH http://localhost:3000/api/game-types/3
 Content-Type: application/json
 
 {
@@ -38,6 +38,6 @@ Content-Type: application/json
   "tags": ["SUPER STREET FIGHTER", "KINU FAITA"]
 }
 
-### Borrar un character (DELETE)
+### Borrar un tipo de juego (DELETE)
 
-DELETE http://localhost:3000/api/game-types/8d47c07a-769f-433b-9830-5fb881156d81
+DELETE http://localhost:3000/api/game-types/3
