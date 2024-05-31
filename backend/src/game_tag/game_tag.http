@@ -1,0 +1,38 @@
+### Obtener todos los tags
+
+GET http://localhost:3000/api/game-tags
+
+### Obtener un solo tag con un ID
+
+GET http://localhost:3000/api/game-tags/1
+
+### Crear un nuevo tag
+
+POST http://localhost:3000/api/game-tags
+Content-Type: application/json
+
+{
+  "name": "DOA"
+}
+
+### Modificar un tag (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/game-tags/3
+Content-Type: application/json
+
+{
+  "name": "Tekken"
+}
+
+### Modificar un tag (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/game-tags/3
+Content-Type: application/json
+
+{
+  "name": "KINU FAITA"
+}
+
+### Borrar un tag (DELETE)
+
+DELETE http://localhost:3000/api/game-tags/3
