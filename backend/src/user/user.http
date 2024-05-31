@@ -1,0 +1,43 @@
+### Obtener todos los usuarios
+
+GET http://localhost:3000/api/users
+
+### Obtener un solo usuario con un ID
+
+GET http://localhost:3000/api/users/1
+
+### Añadir un nuevo user
+
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "name": "Joshua Abraham Socolsky",
+  "password": "DragonInstall123",
+  "mail": "ElMasBostero1984@gmail.com"
+}
+
+### Modificar un user (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/users/3
+Content-Type: application/json
+
+{
+  "name": "EmKyouma",
+  "password": "193385/11/v6-de-derecha-a-izquierda",
+  "mail": "
+}
+
+### Modificar un user(PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/users/3
+Content-Type: application/json
+
+{
+  "name": "Mateo-¡Aparato, Johnny Joestar!"
+  "password": "ElSoguero00"
+}
+
+### Borrar un user(DELETE)
+
+DELETE http://localhost:3000/api/users/3

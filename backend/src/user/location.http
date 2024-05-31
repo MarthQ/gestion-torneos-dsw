@@ -1,0 +1,38 @@
+### Obtener todas las localidades
+
+GET http://localhost:3000/api/locations
+
+### Obtener una sola localidad con un ID
+
+GET http://localhost:3000/api/locations/1
+
+### Añadir una nueva localidad
+
+POST http://localhost:3000/api/locations
+Content-Type: application/json
+
+{
+  "name": "Rosario"
+}
+
+### Modificar una localidad (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/locations/3
+Content-Type: application/json
+
+{
+  "name": "Coronel Bogado"
+}
+
+### Modificar una localidad (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/locations/3
+Content-Type: application/json
+
+{
+  "name": "Сахалин"
+}
+
+### Borrar una localidad (DELETE)
+
+DELETE http://localhost:3000/api/locations/3
