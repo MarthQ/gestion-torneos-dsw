@@ -1,0 +1,121 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logo-img {
+  width: 100px;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 80px;
+  background-color: rgb(41, 2, 110);
+  padding: 0.4rem 0.8rem;
+  transition: all 0.5s ease;
+}
+
+.sidebar.active {
+  width: 250px;
+}
+
+.sidebar #btn {
+  font-size: 2.5rem;
+  position: absolute;
+  color: white;
+  top: 0.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  transition: all 1s ease;
+}
+
+.sidebar.active #btn {
+  left: 90%;
+  transition: all 1s ease;
+}
+
+.sidebar .logo {
+  color: white;
+  display: flex;
+  height: 100px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 1s ease;
+}
+
+.sidebar.active .logo {
+  opacity: 1;
+  transition: all 1s ease;
+}
+
+.sidebar ul li {
+  position: relative;
+  list-style: none;
+  display: flex;
+  height: 50px;
+  width: 90%;
+  margin: 0.8rem auto;
+  line-height: 50px;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+}
+
+.sidebar ul li a:hover {
+  background-color: white;
+  color: rgb(41, 2, 110);
+}
+.sidebar ul li a i {
+  font-size: 1.5rem;
+  min-width: 50px;
+  text-align: center;
+  height: 50px;
+  border-radius: 12px;
+  line-height: 50px;
+}
+
+.sidebar .nav-item {
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+.sidebar.active .nav-item {
+  opacity: 1;
+  transition: all 0.5s ease;
+}
+
+.sidebar ul li .tooltip {
+  position: absolute;
+  left: 125px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.6rem;
+  padding: 0.4rem 1.2rem;
+  line-height: 1.8rem;
+  z-index: 20;
+  opacity: 0;
+}
+
+.sidebar ul li:hover .tooltip {
+  opacity: 1;
+  transition: all 0.5s ease;
+}
+
+.sidebar.active ul li .tooltip {
+  display: none;
+}
