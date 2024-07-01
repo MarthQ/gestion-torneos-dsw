@@ -107,13 +107,17 @@
   border-radius: 0.6rem;
   padding: 0.4rem 1.2rem;
   line-height: 1.8rem;
-  z-index: 20;
+  z-index: 0;
   opacity: 0;
+  background-color: white;
+  color: rgb(41, 2, 110);
+  font-weight: 600;
 }
 
 .sidebar ul li:hover .tooltip {
   opacity: 1;
   transition: all 0.5s ease;
+  z-index: 20;
 }
 
 .sidebar.active ul li .tooltip {

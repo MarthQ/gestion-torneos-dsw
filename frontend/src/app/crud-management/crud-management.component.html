@@ -1,0 +1,23 @@
+<!-- TODO: Button that switches between all the possibles CRUD -->
+
+<fieldset class="multiswitch">
+  <legend>¿What CRUD would you like to use?</legend>
+
+  <div class="slide-container">
+    <input type="radio" name="type_CRUD" id="type_CRUD1" checked />
+    <label for="type_CRUD1">Users</label>
+    <input type="radio" name="type_CRUD" id="type_CRUD2" />
+    <label for="type_CRUD2">Games</label>
+    <input type="radio" name="type_CRUD" id="type_CRUD3" />
+    <label for="type_CRUD3">Game_Types</label>
+  </div>
+  <div>
+    <button type="submit" id="LoadCRUD">Load</button>
+  </div>
+</fieldset>
+
+<app-crud-table
+  [headerArray]="headerArray"
+  [contentArray]="content"
+  [canEdit]="true"
+/>

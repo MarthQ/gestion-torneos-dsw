@@ -1,0 +1,28 @@
+<div class="table_component">
+  <table>
+    <thead>
+      <tr>
+        <th>Number</th>
+        <th *ngFor="let header of headerArray">
+          {{ header.header }}
+        </th>
+        <th *ngIf="canEdit">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of contentArray; let position = index">
+        <td>{{ position + 1 }}</td>
+        <td *ngFor="let column of headerArray">
+          {{ row[column.fieldName] }}
+        </td>
+        <td *ngIf="canEdit">
+          <button (click)="edit(row)">Edit</button>
+          <button (click)="delete(row)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="ExtraButtons">
+    <button (click)="add()" class="addButton">Add</button>
+  </div>
+</div>

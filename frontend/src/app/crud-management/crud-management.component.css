@@ -1,0 +1,53 @@
+html {
+  font-family: "Montserrat", serif;
+}
+
+div:first-of-type {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 5px;
+}
+
+label {
+  margin-right: 15px;
+  line-height: 32px;
+}
+
+input {
+  appearance: none;
+
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+
+  border: 2px solid #999;
+  transition: 0.2s all linear;
+  margin-right: 5px;
+
+  position: relative;
+  top: 4px;
+}
+
+input:checked {
+  border: 6px solid black;
+}
+
+button.loadCRUD,
+legend {
+  color: white;
+  background-color: black;
+  padding: 10px 25px;
+  border-radius: 0;
+  border: 0;
+  font-size: 14px;
+}
+
+button.loadCRUD:hover {
+  color: #999;
+}
+
+button.loadCRUD:active {
+  background-color: white;
+  color: black;
+  outline: 1px solid black;
+}
