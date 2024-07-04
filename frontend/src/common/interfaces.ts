@@ -4,3 +4,8 @@ export interface Content {
   surname: string;
   email: string;
 }
+
+export interface Header {
+  header: string;
+  fieldName: keyof Content;
+}

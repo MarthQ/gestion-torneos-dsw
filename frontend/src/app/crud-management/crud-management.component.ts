@@ -10,23 +10,23 @@ export class CRUDManagementComponent {
   headerArray = [
     {
       header: 'ID',
-      fieldName: 'id',
+      fieldName: 'id' as keyof Content,
     },
     {
       header: 'Name',
-      fieldName: 'name',
+      fieldName: 'name' as keyof Content,
     },
     {
       header: 'Surname',
-      fieldName: 'surname',
+      fieldName: 'surname' as keyof Content,
     },
     {
       header: 'Email',
-      fieldName: 'email',
+      fieldName: 'email' as keyof Content,
     },
   ];
 
-  content: Content[] = [
+  contentArray: Content[] = [
     {
       id: '1',
       name: 'John',
