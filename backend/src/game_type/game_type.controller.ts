@@ -19,48 +19,23 @@ async function sanitizeGameTypeInput(req: Request, res: Response, next: NextFunc
 }
 
 async function findAll(req: Request, res: Response) {
-    res.json({ data: await repository.findAll() })
+    res.status(500).json({ message: 'Not implemented' })
 }
 
 async function findOne(req: Request, res: Response) {
-    const game_type = await repository.findOne({ id: req.params.id })
-    if (!game_type) {
-        return res.status(404).send({ message: 'Game Type not found' })
-    }
-    res.json({ data: game_type })
+    res.status(500).json({ message: 'Not implemented' })
 }
 
 async function add(req: Request, res: Response) {
-    const input = req.body.sanitizedInput
-
-    const game_typeInput = new Game_Type(input.name, input.description, input.tags)
-
-    const game_type = await repository.add(game_typeInput)
-
-    return res.status(201).send({ message: 'Game type created succesfully', data: game_type })
+    res.status(500).json({ message: 'Not implemented' })
 }
 
 async function update(req: Request, res: Response) {
-    const game_type = await repository.update(req.params.id, req.body.sanitizedInput)
-
-    if (!game_type) {
-        return res.status(404).send({ message: 'Game Type not found' })
-    }
-
-    return res.status(200).send({
-        message: 'Game Type updated succesfully',
-        data: game_type,
-    })
+    res.status(500).json({ message: 'Not implemented' })
 }
 
 async function remove(req: Request, res: Response) {
-    const game_type = await repository.delete({ id: req.params.id })
-
-    if (!game_type) {
-        return res.status(404).send({ message: 'Game Type not found' })
-    } else {
-        return res.status(200).send({ message: 'Game Type deleted succesfully' })
-    }
+    res.status(500).json({ message: 'Not implemented' })
 }
 
 export { sanitizeGameTypeInput, findAll, findOne, add, update, remove }
