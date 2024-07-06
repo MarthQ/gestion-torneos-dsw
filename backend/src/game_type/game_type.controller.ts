@@ -1,41 +1,58 @@
 import { Request, Response, NextFunction } from 'express'
-import { Game_TypeRepository } from './game_type.repository.js'
 import { Game_Type } from './game_type.entity.js'
+import { ORM } from '../shared/db/orm.js'
 
-const repository = new Game_TypeRepository()
-
-async function sanitizeGameTypeInput(req: Request, res: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-        name: req.body.name,
-        description: req.body.description,
-        tags: req.body.tags?.join(', '),
-    }
-    // Habría que hacer un chequeo de que los datos son correctos
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-        if (req.body.sanitizedInput[key] === undefined) delete req.body.sanitizedInput[key]
-    })
-
-    next()
-}
+const em = ORM.em
 
 async function findAll(req: Request, res: Response) {
-    res.status(500).json({ message: 'Not implemented' })
+    try {
+        const gameTypes = await em.find(Game_Type, {})
+        res.status(200).json({ message: 'Found all game types', data: gameTypes })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
 async function findOne(req: Request, res: Response) {
-    res.status(500).json({ message: 'Not implemented' })
+    try {
+        const id = Number.parseInt(req.params.id)
+        const gameType = await em.findOneOrFail(Game_Type, { id })
+        res.status(200).json({ message: 'Found the game type', data: gameType })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
 async function add(req: Request, res: Response) {
-    res.status(500).json({ message: 'Not implemented' })
+    try {
+        const gameType = em.create(Game_Type, req.body)
+        await em.flush()
+        res.status(201).json({ message: 'Successfully created a new game type', data: gameType })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
 }
-
 async function update(req: Request, res: Response) {
-    res.status(500).json({ message: 'Not implemented' })
+    try {
+        const id = Number.parseInt(req.params.id)
+        const gameTypeReference = em.getReference(Game_Type, id)
+        em.assign(gameTypeReference, req.body)
+        await em.flush()
+        res.status(200).json({ message: 'Successfully updated the game type' })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
 async function remove(req: Request, res: Response) {
-    res.status(500).json({ message: 'Not implemented' })
+    try {
+        const id = Number.parseInt(req.params.id)
+        const gameTypeReference = em.getReference(Game_Type, id)
+        await em.removeAndFlush(gameTypeReference)
+        res.status(200).send({ message: 'Successfully deleted the game type' })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
-export { sanitizeGameTypeInput, findAll, findOne, add, update, remove }
+export { findAll, findOne, add, update, remove }
