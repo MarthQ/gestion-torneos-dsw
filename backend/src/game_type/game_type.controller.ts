@@ -1,66 +1,58 @@
 import { Request, Response, NextFunction } from 'express'
-import { Game_TypeRepository } from './game_type.repository.js'
 import { Game_Type } from './game_type.entity.js'
+import { ORM } from '../shared/db/orm.js'
 
-const repository = new Game_TypeRepository()
-
-async function sanitizeGameTypeInput(req: Request, res: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-        name: req.body.name,
-        description: req.body.description,
-        tags: req.body.tags?.join(', '),
-    }
-    // Habría que hacer un chequeo de que los datos son correctos
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-        if (req.body.sanitizedInput[key] === undefined) delete req.body.sanitizedInput[key]
-    })
-
-    next()
-}
+const em = ORM.em
 
 async function findAll(req: Request, res: Response) {
-    res.json({ data: await repository.findAll() })
+    try {
+        const gameTypes = await em.find(Game_Type, {})
+        res.status(200).json({ message: 'Found all game types', data: gameTypes })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
 async function findOne(req: Request, res: Response) {
-    const game_type = await repository.findOne({ id: req.params.id })
-    if (!game_type) {
-        return res.status(404).send({ message: 'Game Type not found' })
+    try {
+        const id = Number.parseInt(req.params.id)
+        const gameType = await em.findOneOrFail(Game_Type, { id })
+        res.status(200).json({ message: 'Found the game type', data: gameType })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
     }
-    res.json({ data: game_type })
 }
 
 async function add(req: Request, res: Response) {
-    const input = req.body.sanitizedInput
-
-    const game_typeInput = new Game_Type(input.name, input.description, input.tags)
-
-    const game_type = await repository.add(game_typeInput)
-
-    return res.status(201).send({ message: 'Game type created succesfully', data: game_type })
-}
-
-async function update(req: Request, res: Response) {
-    const game_type = await repository.update(req.params.id, req.body.sanitizedInput)
-
-    if (!game_type) {
-        return res.status(404).send({ message: 'Game Type not found' })
+    try {
+        const gameType = em.create(Game_Type, req.body)
+        await em.flush()
+        res.status(201).json({ message: 'Successfully created a new game type', data: gameType })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
     }
-
-    return res.status(200).send({
-        message: 'Game Type updated succesfully',
-        data: game_type,
-    })
+}
+async function update(req: Request, res: Response) {
+    try {
+        const id = Number.parseInt(req.params.id)
+        const gameTypeReference = em.getReference(Game_Type, id)
+        em.assign(gameTypeReference, req.body)
+        await em.flush()
+        res.status(200).json({ message: 'Successfully updated the game type' })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
 async function remove(req: Request, res: Response) {
-    const game_type = await repository.delete({ id: req.params.id })
-
-    if (!game_type) {
-        return res.status(404).send({ message: 'Game Type not found' })
-    } else {
-        return res.status(200).send({ message: 'Game Type deleted succesfully' })
+    try {
+        const id = Number.parseInt(req.params.id)
+        const gameTypeReference = em.getReference(Game_Type, id)
+        await em.removeAndFlush(gameTypeReference)
+        res.status(200).send({ message: 'Successfully deleted the game type' })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
     }
 }
 
-export { sanitizeGameTypeInput, findAll, findOne, add, update, remove }
+export { findAll, findOne, add, update, remove }
