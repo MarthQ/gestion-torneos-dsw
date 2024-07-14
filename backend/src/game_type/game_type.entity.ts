@@ -13,5 +13,5 @@ export class Game_Type extends BaseEntity {
 
     // TODO: Make the Tags CRUD with an ORM and do a @ManyToMany
     @Property()
-    public tags?: string
+    public tags?: string[]
 }

@@ -5,8 +5,8 @@ GET http://localhost:3000/api/game-types
 
 ### Crear un nuevo tipo de juego
 
-POST http://localhost:3000/api/game-types
 # @name createGameType
+POST http://localhost:3000/api/game-types
 Content-Type: application/json
 
 {
