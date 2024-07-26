@@ -17,9 +17,82 @@ La propuesta consiste en desarrollar una aplicación web que habilite a los usua
 Inicialmente, los torneos se limitan a juegos con un único ganador por partida, por lo tanto, no se admitirá la participación de grupos. En su lugar, los jugadores se inscribirán de manera individual.
 
 ## Modelo
-Modelo de Dominio: https://drive.google.com/file/d/1vmKh96SPnYbbzmiK3RvOFFA7i3dR8jJX/view?usp=sharing
-(En un futuro, haremos un Diagrama de Entidad-Relación)
+Modelo de Dominio y DER: https://drive.google.com/file/d/1vmKh96SPnYbbzmiK3RvOFFA7i3dR8jJX/view?usp=sharing
 
+### Visualización del DER en Mermaid
+```mermaid
+erDiagram
+    Usuario {
+        int id PK
+        string nombre
+        string password
+        string mail
+    }
+
+    Localidad {
+        string codPostal PK
+        string nombre
+    }
+
+    Juego {
+        int id PK
+        string nombre
+        id cant-torneos
+    }
+
+    Tipo_Juego {
+        int codigo PK
+        string nombre
+        string descripcion
+
+    }
+
+    Torneo {
+        int id PK
+        string titulo
+        string descripcion
+        datetime fechahora-inicio
+        int cant-personas
+        string estado
+    }
+
+    Tag {
+        int id PK
+        string descripcion
+    }
+    
+
+    Inscripcion {
+        int idUsuario PK,FK
+        int idTorneo PK,FK
+        int puntaje
+        string ranking
+        datetime fechahora-inscripcion
+    }
+
+    Estandar {
+        string estadotorneos
+    }
+
+    Moderador {}
+
+    Permisos {
+        int codperm PK
+        string descripcion
+    }
+
+    Usuario }o--o| Localidad: Pertenece
+    Usuario }o--|| Inscripcion: Realiza
+    Inscripcion ||--o{ Torneo: a
+    Torneo }|--|| Juego: Tiene
+    Juego }|--|| Tipo_Juego: Pertenece
+    Tag }o--o{ Tipo_Juego: Posee
+    Tag }o--o{ Juego: Posee
+    Tag }o--o{ Torneo: Posee
+    Moderador }|--|| Permisos: Tiene
+    Estandar ||--|| Usuario: "Herencia Disyunta"
+    Moderador ||--|| Usuario: "Herencia Disyunta"
+```
 ## Alcance funcional
 
 ### Alcance minimo
