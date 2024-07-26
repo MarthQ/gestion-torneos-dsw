@@ -1,5 +1,6 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
+import { Tag } from '../tag/tag.entity.js'
 
 @Entity()
 export class Game_Type extends BaseEntity {
@@ -11,7 +12,6 @@ export class Game_Type extends BaseEntity {
     @Property({ nullable: false })
     description!: string
 
-    // TODO: Make the Tags CRUD with an ORM and do a @ManyToMany
-    @Property()
-    public tags?: string[]
+    @ManyToMany(() => Tag, (tag) => tag.game_types, { owner: true })
+    tags!: Tag[]
 }
