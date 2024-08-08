@@ -3,8 +3,8 @@
     <thead>
       <tr>
         <th>Number</th>
-        <th *ngFor="let header of headerArray">
-          {{ header.header }}
+        <th *ngFor="let header of contentKeys">
+          {{ header }}
         </th>
         <th *ngIf="canEdit">Actions</th>
       </tr>
@@ -12,8 +12,8 @@
     <tbody>
       <tr *ngFor="let row of contentArray; let position = index">
         <td>{{ position + 1 }}</td>
-        <td *ngFor="let column of headerArray">
-          {{ row[column.fieldName] }}
+        <td *ngFor="let column of contentKeys">
+          {{ row[column] }}
         </td>
         <td *ngIf="canEdit">
           <button (click)="edit(row)">Edit</button>

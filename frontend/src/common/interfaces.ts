@@ -1,11 +1,6 @@
-export interface Content {
-  id: string;
+export interface GameType {
+  id: number;
   name: string;
-  surname: string;
-  email: string;
-}
-
-export interface Header {
-  header: string;
-  fieldName: keyof Content;
+  description: string;
+  [key: string]: string | number;
 }
