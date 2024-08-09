@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { GameType } from '../../../common/interfaces.js';
 @Component({
   selector: 'app-crud-table',
@@ -6,14 +6,15 @@ import { GameType } from '../../../common/interfaces.js';
   styleUrls: ['./crud-table.component.css'],
 })
 export class CRUDTableComponent {
-  @Input() contentArray: GameType[] = [];
+  @Input() contentArray: any[] = [];
   @Input() canEdit: boolean = false;
 
   contentKeys: string[] = [];
 
-  ngOnInit() {
+  ngOnChanges() {
     if (this.contentArray.length > 0) {
       this.contentKeys = Object.keys(this.contentArray[0]);
+      console.log('Executed this');
     }
   }
 

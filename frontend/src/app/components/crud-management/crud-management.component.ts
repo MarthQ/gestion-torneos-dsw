@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { CRUDService } from 'src/app/services/CRUD/crud.service';
 import { GameType } from 'src/common/interfaces.js';
@@ -18,6 +18,9 @@ export class CRUDManagementComponent {
   }
 
   getGameTypes(): void {
-    this.gameTypes = this.crudService.getGameTypes();
+    // TODO: Add error handling using subscribe's second parameter
+    this.crudService.getGameTypes().subscribe((response: any) => {
+      this.gameTypes = response.data;
+    });
   }
 }

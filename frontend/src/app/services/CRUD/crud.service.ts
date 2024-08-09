@@ -1,4 +1,6 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 
 import { GameType } from 'src/common/interfaces.js';
 
@@ -6,17 +8,14 @@ import { GameType } from 'src/common/interfaces.js';
   providedIn: 'root',
 })
 export class CRUDService {
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
-  gameTypes: GameType[] = [
-    {
-      id: 1,
-      name: 'Classic Fighter',
-      description: 'The most famous Classic Fighter is Street Fighter.',
-    },
-  ];
+  readonly baseUrl = 'http://localhost:3000/api';
+  gameTypes: GameType[] = [];
 
-  getGameTypes(): GameType[] {
-    return this.gameTypes;
+  getGameTypes() {
+    let gameTypesUrl = this.baseUrl + '/game-types';
+    console.log('Data Requested');
+    return this.http.get(gameTypesUrl);
   }
 }

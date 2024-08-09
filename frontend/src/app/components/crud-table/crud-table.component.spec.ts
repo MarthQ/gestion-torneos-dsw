@@ -8,7 +8,7 @@ describe('CRUDTableComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CRUDTableComponent]
+      declarations: [CRUDTableComponent],
     });
     fixture = TestBed.createComponent(CRUDTableComponent);
     component = fixture.componentInstance;
