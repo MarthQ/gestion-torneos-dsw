@@ -1,6 +1,7 @@
-import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity, ManyToMany, PrimaryKey, Property, Cascade, OneToMany, Collection} from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Tag } from '../tag/tag.entity.js'
+import { Game } from '../game/game.entity.js'
 
 @Entity()
 export class Game_Type extends BaseEntity {
@@ -14,4 +15,7 @@ export class Game_Type extends BaseEntity {
 
     @ManyToMany(() => Tag, (tag) => tag.game_types, { owner: true })
     tags!: Tag[]
+
+    @OneToMany(() => Game, (game) => game.gametype, {cascade: [Cascade.ALL]})
+    game = new Collection<Game>(this)
 }

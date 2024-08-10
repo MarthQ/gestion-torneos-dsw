@@ -1,0 +1,49 @@
+### Obtener todas las locaciones
+
+GET http://localhost:3000/api/locations
+
+
+### Crear una nueva locacion
+
+# @name createLocation
+POST http://localhost:3000/api/locations
+Content-Type: application/json
+
+{
+  "name": "Rokkenjima"
+}
+
+
+### ID
+@id = {{createLocation.response.body.data.id}}
+
+
+### Obtener una sola locacion con el id
+
+GET http://localhost:3000/api/locations/{{id}}
+
+# TODO: Decide if we want to use PUT or PATCH
+
+### Modificar una locacion (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/locations/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Liberty City",
+}
+
+
+### Modificar una localidad (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/locations/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Hinamizawa",
+}
+
+
+### Borrar una localidad (DELETE)
+
+DELETE http://localhost:3000/api/locations/{{id}}

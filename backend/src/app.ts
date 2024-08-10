@@ -4,6 +4,10 @@ import { gameTypeRouter } from './game_type/game_type.routes.js'
 import { ORM, syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
 import { tagRouter } from './tag/tag.routes.js'
+import { gameRouter } from './game/game.routes.js'
+import { tournamentRouter } from './tournament/tournament.routes.js'
+import { userRouter } from './user/user.routes.js'
+import { locationRouter } from './user/location.routes.js'
 
 const app = express()
 app.use(express.json())
@@ -16,6 +20,11 @@ app.use((req, res, next) => {
 
 app.use('/api/game-types', gameTypeRouter)
 app.use('/api/tags', tagRouter)
+app.use('/api/games', gameRouter)
+app.use('/api/tournaments', tournamentRouter)
+app.use('/api/users', userRouter)
+app.use('/api/locations',locationRouter)
+
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
