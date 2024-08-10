@@ -11,8 +11,8 @@ Content-Type: application/json
 
 {
   "name": "Joshua Abel Socolsky",
-  "password": "BocaJuniors2002"
-  "mail": "solbadguy1314@gmail.com"
+  "password": "BocaJuniors2002",
+  "mail": "solbadguy1314@gmail.com",
   "location":[1]
 }
 
