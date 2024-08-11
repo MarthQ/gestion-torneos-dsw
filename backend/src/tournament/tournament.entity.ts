@@ -5,10 +5,12 @@ import {
     ManyToOne,
     ManyToMany,
     Rel,
+    Collection
 } from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Game } from '../game/game.entity.js'
 import { Tag } from '../tag/tag.entity.js'
+import { Inscription } from '../inscription/inscription.entity.js'
 
 @Entity()
 export class Tournament extends BaseEntity {
@@ -28,7 +30,8 @@ export class Tournament extends BaseEntity {
     game!: Rel<Game>
     @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
     tags!: Tag[]
-
+    @ManyToMany(() => Inscription, (inscription) => inscription.tournament)
+    inscriptions = new Collection<Inscription>(this)
     //Falta la relacion con usuario (Inscripcion)
     //Hay que hacer otra entidad para poder ponerle atributos?
 }

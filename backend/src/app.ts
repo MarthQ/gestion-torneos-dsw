@@ -8,6 +8,7 @@ import { gameRouter } from './game/game.routes.js'
 import { tournamentRouter } from './tournament/tournament.routes.js'
 import { userRouter } from './user/user.routes.js'
 import { locationRouter } from './user/location.routes.js'
+import { inscriptionRouter } from './inscription/inscription.routes.js'
 
 const app = express()
 app.use(express.json())
@@ -24,7 +25,7 @@ app.use('/api/games', gameRouter)
 app.use('/api/tournaments', tournamentRouter)
 app.use('/api/users', userRouter)
 app.use('/api/locations',locationRouter)
-
+app.use('/api/inscription', inscriptionRouter)
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
