@@ -23,4 +23,10 @@ export class CRUDManagementComponent {
       this.gameTypes = response.data;
     });
   }
+
+  DeleteElement(event: number) {
+    this.crudService.deleteGameType(event).subscribe((response: any) => {
+      this.getGameTypes();
+    });
+  }
 }

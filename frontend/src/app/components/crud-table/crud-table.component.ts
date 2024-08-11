@@ -1,4 +1,10 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { GameType } from '../../../common/interfaces.js';
 @Component({
   selector: 'app-crud-table',
@@ -8,6 +14,8 @@ import { GameType } from '../../../common/interfaces.js';
 export class CRUDTableComponent {
   @Input() contentArray: any[] = [];
   @Input() canEdit: boolean = false;
+
+  @Output() rowDeleted = new EventEmitter<number>();
 
   contentKeys: string[] = [];
 
@@ -20,7 +28,9 @@ export class CRUDTableComponent {
 
   add() {}
 
-  delete(row: any) {}
+  delete(row: any) {
+    this.rowDeleted.emit(row.id);
+  }
 
   edit(row: any) {}
 }

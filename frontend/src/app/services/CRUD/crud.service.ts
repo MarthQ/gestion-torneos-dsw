@@ -18,4 +18,12 @@ export class CRUDService {
     console.log('Data Requested');
     return this.http.get(gameTypesUrl);
   }
+
+  deleteGameType(id: number) {
+    let deletionUrl = this.baseUrl + '/game-types/' + id.toString();
+    console.log('Data about to be deleted');
+    console.log(id.toString());
+    console.log(deletionUrl);
+    return this.http.delete(deletionUrl);
+  }
 }

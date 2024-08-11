@@ -16,4 +16,8 @@
   </div>
 </fieldset>
 
-<app-crud-table [contentArray]="gameTypes" [canEdit]="true" />
+<app-crud-table
+  (rowDeleted)="DeleteElement($event)"
+  [contentArray]="gameTypes"
+  [canEdit]="true"
+/>
