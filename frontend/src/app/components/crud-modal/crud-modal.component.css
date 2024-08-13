@@ -1,0 +1,83 @@
+.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% 35%;
+  padding: 20px 20px;
+  border: 2px solid #888;
+  width: auto;
+  height: auto;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+}
+
+.modal-input > textarea {
+  width: 100%;
+  padding: 0px 0px;
+  margin: 0px 0px;
+  border: 0px 0px;
+  resize: none;
+}
+
+/* Close button styles */
+.close-modal {
+  font-size: 2rem;
+  cursor: pointer;
+  transition: 0.5s ease;
+  position: sticky;
+}
+
+.close-modal:hover {
+  background-color: black;
+  color: white;
+  transition: 0.5s ease;
+}
+
+/* Save button styles  */
+
+.save-button {
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.5s ease;
+  position: sticky;
+  color: black;
+  padding: 15px 15px;
+  position: relative;
+  /* These two attributes*/
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.save-button:hover {
+  background-color: lightgreen;
+  transition: 0.5s ease;
+}

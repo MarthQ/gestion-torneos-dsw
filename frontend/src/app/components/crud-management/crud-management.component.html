@@ -18,6 +18,16 @@
 
 <app-crud-table
   (rowDeleted)="DeleteElement($event)"
+  (rowEdited)="EditElement($event)"
+  (rowAdded)="AddElement()"
   [contentArray]="gameTypes"
   [canEdit]="true"
+/>
+
+<app-crud-modal
+  *ngIf="showModal"
+  [type]="modalType"
+  [content]="gameTypeSelected"
+  (EarlyLeaveModal)="closeModal()"
+  (SavedElement)="SaveElement($event)"
 />

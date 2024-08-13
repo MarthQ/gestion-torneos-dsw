@@ -15,6 +15,9 @@ export class CRUDTableComponent {
   @Input() contentArray: any[] = [];
   @Input() canEdit: boolean = false;
 
+  // Since I don't need to emit anything during the adding, is it ok if I don't type the EventEmitter ?
+  @Output() rowAdded = new EventEmitter();
+  @Output() rowEdited = new EventEmitter<number>();
   @Output() rowDeleted = new EventEmitter<number>();
 
   contentKeys: string[] = [];
@@ -26,11 +29,15 @@ export class CRUDTableComponent {
     }
   }
 
-  add() {}
+  add() {
+    this.rowAdded.emit();
+  }
 
   delete(row: any) {
     this.rowDeleted.emit(row.id);
   }
 
-  edit(row: any) {}
+  edit(row: any) {
+    this.rowEdited.emit(row.id);
+  }
 }

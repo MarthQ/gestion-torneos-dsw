@@ -12,6 +12,14 @@ export class CRUDManagementComponent {
   constructor(private crudService: CRUDService) {}
 
   gameTypes: GameType[] = [];
+  showModal: boolean = false;
+  gameTypeSelected: GameType = {
+    id: 0,
+    name: '',
+    description: '',
+    tags: '',
+  };
+  modalType: string = '';
 
   ngOnInit() {
     this.getGameTypes();
@@ -24,9 +32,45 @@ export class CRUDManagementComponent {
     });
   }
 
+  AddElement() {
+    this.gameTypeSelected = {
+      id: 0,
+      name: '',
+      description: '',
+      tags: '',
+    };
+    this.modalType = 'Crear';
+    this.showModal = true;
+  }
+
+  EditElement(idSelected: number) {
+    this.gameTypeSelected = this.gameTypes[idSelected - 1];
+    this.modalType = 'Editar';
+    this.showModal = true;
+  }
+
   DeleteElement(event: number) {
     this.crudService.deleteGameType(event).subscribe((response: any) => {
       this.getGameTypes();
     });
+  }
+
+  SaveElement(event: GameType) {
+    if (this.modalType === 'Crear') {
+      this.crudService.createGameType(event).subscribe((response: any) => {
+        this.getGameTypes();
+        this.showModal = false;
+        console.log('Llegamos hasta aca');
+      });
+    } else {
+      this.crudService.updateGameType(event).subscribe((response: any) => {
+        this.getGameTypes();
+        this.showModal = false;
+      });
+    }
+  }
+
+  closeModal() {
+    this.showModal = false;
   }
 }

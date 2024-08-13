@@ -1,0 +1,21 @@
+<div class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ type }} tipo de juego:</h2>
+      <i (click)="closeModal()" class="bx bx-x close-modal"></i>
+    </div>
+    <div class="modal-body">
+      <div class="modal-input" *ngFor="let key of contentKeys">
+        <ng-container *ngIf="key !== 'id'">
+          <label>{{ key }}:</label>
+          <br />
+          <textarea [(ngModel)]="content[key]"></textarea>
+        </ng-container>
+      </div>
+      <button class="save-button" (click)="SaveElement()">
+        <i class="bx bx-save"></i>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>
