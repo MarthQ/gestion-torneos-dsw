@@ -1,0 +1,56 @@
+### Obtener todos los usuarios
+
+GET http://localhost:3000/api/users
+
+
+### Crear un nuevo usuario
+
+# @name createUser
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "name": "Joshua Abel Socolsky",
+  "password": "BocaJuniors2002",
+  "mail": "solbadguy1314@gmail.com",
+  "location":[1]
+}
+
+
+### ID
+@id = {{createUser.response.body.data.id}}
+
+
+### Obtener un solo tipo de juego con un id
+
+GET http://localhost:3000/api/users/{{id}}
+
+# TODO: Decide if we want to use PUT or PATCH
+
+### Modificar un usuario (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/users/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Matthew Ryougi",
+  "password": "domain-expansion-4"
+  "mail": "depto-diseñodesistemas@hotmail.com"
+  "location":[1]
+}
+
+
+### Modificar un usuario (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/users/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Martin Ushiromiya",
+  "password": "la-franquicia-de-dead-rising-murio-con-el-4"
+}
+
+
+### Borrar un usuario (DELETE)
+
+DELETE http://localhost:3000/api/users/{{id}}
