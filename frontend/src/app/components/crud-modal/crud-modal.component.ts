@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  OnChanges,
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { GameType } from 'src/common/interfaces.js';
 
 @Component({
@@ -13,22 +7,31 @@ import { GameType } from 'src/common/interfaces.js';
   styleUrls: ['./crud-modal.component.css'],
 })
 export class CrudModalComponent {
-  @Output() EarlyLeaveModal = new EventEmitter<any>();
+  @Output() EarlyLeaveModal = new EventEmitter();
   @Output() SavedElement = new EventEmitter<GameType>();
 
   @Input() type: string = '';
 
-  @Input() content: GameType = {
+  @Input() gameType: GameType = {
     id: 0,
     name: '',
     description: '',
     tags: '',
   };
 
-  contentKeys: string[] = [];
+  gameTypeKeys: (keyof GameType)[] = [
+    'id' as keyof GameType,
+    'name' as keyof GameType,
+    'description' as keyof GameType,
+    'tags' as keyof GameType,
+  ];
 
-  ngOnChanges() {
-    this.contentKeys = Object.keys(this.content);
+  ngOnInit() {
+    if (this.gameType.id === 0) {
+      this.type = 'Crear';
+    } else {
+      this.type = 'Actualizar';
+    }
   }
 
   closeModal() {
@@ -36,6 +39,6 @@ export class CrudModalComponent {
   }
 
   SaveElement() {
-    this.SavedElement.emit(this.content);
+    this.SavedElement.emit(this.gameType);
   }
 }

@@ -5,11 +5,11 @@
       <i (click)="closeModal()" class="bx bx-x close-modal"></i>
     </div>
     <div class="modal-body">
-      <div class="modal-input" *ngFor="let key of contentKeys">
+      <div class="modal-input" *ngFor="let key of gameTypeKeys">
         <ng-container *ngIf="key !== 'id'">
           <label>{{ key }}:</label>
           <br />
-          <textarea [(ngModel)]="content[key]"></textarea>
+          <textarea [(ngModel)]="gameType[key]"></textarea>
         </ng-container>
       </div>
       <button class="save-button" (click)="SaveElement()">

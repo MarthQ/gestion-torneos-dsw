@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { CRUDService } from 'src/app/services/CRUD/crud.service';
 import { GameType } from 'src/common/interfaces.js';
@@ -9,68 +10,16 @@ import { GameType } from 'src/common/interfaces.js';
   styleUrls: ['./crud-management.component.css'],
 })
 export class CRUDManagementComponent {
-  constructor(private crudService: CRUDService) {}
+  constructor(private router: Router) {}
 
-  gameTypes: GameType[] = [];
-  showModal: boolean = false;
-  gameTypeSelected: GameType = {
-    id: 0,
-    name: '',
-    description: '',
-    tags: '',
-  };
-  modalType: string = '';
+  crudType: string = 'GameTypes';
 
-  ngOnInit() {
-    this.getGameTypes();
+  onChange(event: Event) {
+    this.crudType = (event.target as HTMLInputElement).value;
   }
 
-  getGameTypes(): void {
-    // TODO: Add error handling using subscribe's second parameter
-    this.crudService.getGameTypes().subscribe((response: any) => {
-      this.gameTypes = response.data;
-    });
-  }
-
-  AddElement() {
-    this.gameTypeSelected = {
-      id: 0,
-      name: '',
-      description: '',
-      tags: '',
-    };
-    this.modalType = 'Crear';
-    this.showModal = true;
-  }
-
-  EditElement(idSelected: number) {
-    this.gameTypeSelected = this.gameTypes[idSelected - 1];
-    this.modalType = 'Editar';
-    this.showModal = true;
-  }
-
-  DeleteElement(event: number) {
-    this.crudService.deleteGameType(event).subscribe((response: any) => {
-      this.getGameTypes();
-    });
-  }
-
-  SaveElement(event: GameType) {
-    if (this.modalType === 'Crear') {
-      this.crudService.createGameType(event).subscribe((response: any) => {
-        this.getGameTypes();
-        this.showModal = false;
-        console.log('Llegamos hasta aca');
-      });
-    } else {
-      this.crudService.updateGameType(event).subscribe((response: any) => {
-        this.getGameTypes();
-        this.showModal = false;
-      });
-    }
-  }
-
-  closeModal() {
-    this.showModal = false;
+  loadCrud() {
+    //  Find a way to dynamically add /admin/ to the path without writing it explicitly
+    this.router.navigate(['/admin/', this.crudType]);
   }
 }

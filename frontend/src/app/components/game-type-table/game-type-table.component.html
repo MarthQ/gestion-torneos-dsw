@@ -1,18 +1,19 @@
-<div class="table_component" *ngIf="contentArray.length">
+<h1>Game Types CRUD</h1>
+<div class="table_component" *ngIf="gameTypes.length">
   <table>
     <thead>
       <tr>
         <th>Number</th>
-        <th *ngFor="let header of contentKeys">
+        <th *ngFor="let header of gameTypeKeys">
           {{ header }}
         </th>
         <th *ngIf="canEdit">Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of contentArray; let position = index">
+      <tr *ngFor="let row of gameTypes; let position = index">
         <td>{{ position + 1 }}</td>
-        <td *ngFor="let column of contentKeys">
+        <td *ngFor="let column of gameTypeKeys">
           {{ row[column] }}
         </td>
         <td *ngIf="canEdit">
@@ -26,3 +27,10 @@
     <button (click)="add()" class="addButton">Add</button>
   </div>
 </div>
+
+<app-crud-modal
+  *ngIf="showModal"
+  [gameType]="gameTypeSelected"
+  (EarlyLeaveModal)="closeModal()"
+  (SavedElement)="SaveElement($event)"
+/>

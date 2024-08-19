@@ -32,8 +32,7 @@ input:checked {
   border: 6px solid black;
 }
 
-button.loadCRUD,
-legend {
+button.loadCRUD {
   color: white;
   background-color: black;
   padding: 10px 25px;
@@ -44,10 +43,4 @@ legend {
 
 button.loadCRUD:hover {
   color: #999;
-}
-
-button.loadCRUD:active {
-  background-color: white;
-  color: black;
-  outline: 1px solid black;
 }

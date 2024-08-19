@@ -1,6 +1,6 @@
 .table_component {
   overflow: auto;
-  width: 100%;
+  width: calc(100%-10px);
   padding: 50px 5px 5px 5px;
 }
 
