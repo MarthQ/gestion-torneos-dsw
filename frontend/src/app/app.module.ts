@@ -10,6 +10,7 @@ import { UserComponent } from './components/user/user.component';
 import { CRUDTableComponent } from './components/crud-table/crud-table.component';
 import { CRUDManagementComponent } from './components/crud-management/crud-management.component';
 import { CrudModalComponent } from './components/crud-modal/crud-modal.component';
+import { AdminComponent } from './components/admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { CrudModalComponent } from './components/crud-modal/crud-modal.component
     CRUDTableComponent,
     CRUDManagementComponent,
     CrudModalComponent,
+    AdminComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],

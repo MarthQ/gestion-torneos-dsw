@@ -1,5 +1,9 @@
 <app-navbar (sidebarActive)="onSidebarActive($event)" />
+<div class="main-logo" id="main-logo">
+  <h1>Okizeme</h1>
+  <img src="assets/logo.png" alt="logo" />
+</div>
 <div class="main-content" id="main-content">
   <h1>Welcome to Okizeme!</h1>
-  <app-crud-management />
+  <router-outlet></router-outlet>
 </div>

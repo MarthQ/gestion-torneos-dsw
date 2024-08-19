@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .logo-img {
@@ -16,7 +15,7 @@
   height: 100vh;
   width: 80px;
   background-color: rgb(41, 2, 110);
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0 0.4rem 0.4rem;
   transition: all 0.5s ease;
 }
 
@@ -25,7 +24,7 @@
 }
 
 .sidebar #btn {
-  font-size: 2.5rem;
+  font-size: 2rem;
   position: absolute;
   color: white;
   top: 0.4rem;
@@ -62,7 +61,7 @@
   list-style: none;
   display: flex;
   height: 50px;
-  width: 90%;
+  width: 100%;
   margin: 0.8rem auto;
   line-height: 50px;
 }

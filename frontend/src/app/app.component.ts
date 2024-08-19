@@ -9,7 +9,9 @@ export class AppComponent {
   title = 'NavBar-Test';
 
   onSidebarActive(isActive: boolean) {
+    let mainLogo = document.getElementById('main-logo');
     let mainContent = document.getElementById('main-content');
-    mainContent?.classList.toggle('sidebarActive');
+    mainContent?.classList.toggle('sidebarActiveContent');
+    mainLogo?.classList.toggle('sidebarActiveLogo');
   }
 }
