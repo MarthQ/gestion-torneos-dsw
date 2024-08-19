@@ -1,0 +1,49 @@
+### Obtener todos los tags!
+
+GET http://localhost:3000/api/tags
+
+
+### Crear un nuevo tag
+
+# @name createTag
+POST http://localhost:3000/api/tags
+Content-Type: application/json
+
+{
+  "name": "Street Fighter",
+  "description": "The first franchine to popularize the fighting game genre."
+}
+
+
+### ID
+@id = {{createTag.response.body.data.id}}
+
+
+### Obtener un solo tag usando un id
+
+GET http://localhost:3000/api/tags/{{id}}
+
+### Modificar un tag (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/tags/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Mortal Kombat",
+  "description": "An overrated franchise that has been milked to death and fell off a cliff after MK9."
+}
+
+### Modificar un tag (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/tags/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Melty Blood",
+  "description": "A niche fighting game that has impressive mechanics and a dedicated fanbase."
+}
+
+
+### Borrar un tag (DELETE)
+
+DELETE http://localhost:3000/api/tags/{{id}}
