@@ -28,9 +28,9 @@
   </div>
 </div>
 
-<app-crud-modal
+<app-game-type-modal
   *ngIf="showModal"
   [gameType]="gameTypeSelected"
   (EarlyLeaveModal)="closeModal()"
-  (SavedElement)="SaveElement($event)"
+  (SavedGameType)="SaveGameType($event)"
 />

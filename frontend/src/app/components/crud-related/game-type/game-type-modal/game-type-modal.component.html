@@ -1,0 +1,30 @@
+<div class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ type }} tipo de juego:</h2>
+      <i (click)="closeModal()" class="bx bx-x close-modal"></i>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="gameTypeForm" (ngSubmit)="onSubmit()">
+        <div class="modal-input">
+          <label>Nombre del juego:</label>
+          <br />
+          <textarea type="text" formControlName="name"></textarea>
+
+          <label>Descripción:</label>
+          <br />
+          <textarea type="text" formControlName="description"></textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="save-button"
+          [disabled]="!gameTypeForm.valid"
+        >
+          <i class="bx bx-save"></i>
+          Guardar cambios
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

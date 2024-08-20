@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { CRUDService } from 'src/app/services/CRUD/crud.service';
-import { GameType } from 'src/common/interfaces.js';
-
 @Component({
   selector: 'app-crud-management',
   templateUrl: './crud-management.component.html',

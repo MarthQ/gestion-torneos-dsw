@@ -28,7 +28,7 @@ export class GameTypeTableComponent {
     id: -1,
     name: '',
     description: '',
-    tags: '',
+    tags: [],
   };
 
   ngOnInit() {
@@ -42,6 +42,7 @@ export class GameTypeTableComponent {
     // TODO: Add error handling using subscribe's second parameter
     this.crudService.getGameTypes().subscribe((response: any) => {
       this.gameTypes = response.data;
+      console.log(response.data);
     });
   }
 
@@ -50,9 +51,8 @@ export class GameTypeTableComponent {
       id: 0,
       name: '',
       description: '',
-      tags: '',
+      tags: [],
     };
-    this.modalType = 'Crear';
     this.showModal = true;
   }
 
@@ -64,11 +64,10 @@ export class GameTypeTableComponent {
 
   edit(row: GameType) {
     this.gameTypeSelected = row;
-    this.modalType = 'Editar';
     this.showModal = true;
   }
 
-  SaveElement(event: GameType) {
+  SaveGameType(event: GameType) {
     if (this.modalType === 'Crear') {
       this.crudService.createGameType(event).subscribe((response: any) => {
         this.getGameTypes();

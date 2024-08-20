@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AdminComponent } from './components/admin/admin.component';
 import { AppComponent } from './app.component';
-import { GameTypeTableComponent } from './components/game-type-table/game-type-table.component';
+import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
 
 const routes: Routes = [
   {
