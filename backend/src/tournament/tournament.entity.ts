@@ -32,6 +32,4 @@ export class Tournament extends BaseEntity {
     tags!: Tag[]
     @ManyToMany(() => Inscription, (inscription) => inscription.tournament)
     inscriptions = new Collection<Inscription>(this)
-    //Falta la relacion con usuario (Inscripcion)
-    //Hay que hacer otra entidad para poder ponerle atributos?
 }
