@@ -26,10 +26,6 @@ export class GameTypeModalComponent {
     description: new FormControl('', [Validators.required]),
   });
 
-  constructor() {
-    this.gameTypeForm.valueChanges.subscribe((value) => {});
-  }
-
   ngOnInit() {
     if (this.gameType.id === 0) {
       this.type = 'Crear';

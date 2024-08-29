@@ -40,10 +40,10 @@ export class GameTypeTableComponent {
 
   getGameTypes(): void {
     // TODO: Add error handling using subscribe's second parameter
-    this.crudService.getGameTypes().subscribe((response: any) => {
-      this.gameTypes = response.data;
-      console.log(response.data);
-    });
+    this.crudService.getGameTypes().subscribe(
+      (response: any) => (this.gameTypes = response.data),
+      (err: any) => alert(err.message)
+    );
   }
 
   add() {
@@ -53,31 +53,62 @@ export class GameTypeTableComponent {
       description: '',
       tags: [],
     };
+    this.modalType = 'Crear';
     this.showModal = true;
   }
 
   delete(row: GameType) {
-    this.crudService.deleteGameType(row.id).subscribe((response: any) => {
-      this.getGameTypes();
-    });
+    if (
+      window.confirm(
+        'Estas a punto de borrar el siguiente tipo de juego: \n' +
+          'Id: ' +
+          row.id +
+          '\n' +
+          'Nombre: ' +
+          row.name
+      )
+    ) {
+      this.crudService.deleteGameType(row.id).subscribe((response: any) => {
+        this.getGameTypes();
+      });
+    }
   }
 
   edit(row: GameType) {
     this.gameTypeSelected = row;
     this.showModal = true;
+    this.modalType = 'Modificar';
   }
 
   SaveGameType(event: GameType) {
     if (this.modalType === 'Crear') {
-      this.crudService.createGameType(event).subscribe((response: any) => {
-        this.getGameTypes();
-        this.showModal = false;
-      });
+      if (
+        window.confirm(
+          'Estas a punto de crear el siguiente tipo de juego: \n' +
+            'Nombre: ' +
+            event.name
+        )
+      ) {
+        this.crudService.createGameType(event).subscribe((response: any) => {
+          this.getGameTypes();
+          this.showModal = false;
+        });
+      }
     } else {
-      this.crudService.updateGameType(event).subscribe((response: any) => {
-        this.getGameTypes();
-        this.showModal = false;
-      });
+      if (
+        window.confirm(
+          'Estas a punto de modificar el siguiente tipo de juego: \n' +
+            'Id: ' +
+            event.id +
+            '\n' +
+            'Nombre: ' +
+            event.name
+        )
+      )
+        this.crudService.updateGameType(event).subscribe((response: any) => {
+          this.getGameTypes();
+          this.showModal = false;
+        });
     }
   }
 
