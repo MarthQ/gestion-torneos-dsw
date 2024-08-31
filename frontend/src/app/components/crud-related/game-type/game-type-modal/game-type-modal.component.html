@@ -1,3 +1,4 @@
+<!-- 
 <div class="modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -23,6 +24,48 @@
         >
           <i class="bx bx-save"></i>
           Guardar cambios
+        </button>
+      </form>
+    </div>
+  </div>
+</div> 
+-->
+<div class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ type }} tipo de juego:</h2>
+      <i (click)="closeModal()" class="bx bx-x close-modal"></i>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="gameTypeForm">
+        <mat-form-field>
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Descripcion</mat-label>
+          <textarea matInput formControlName="description"></textarea>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Tags</mat-label>
+          <mat-select multiple formControlName="tags">
+            <mat-option *ngFor="let tag of tagList" [value]="tag">{{
+              tag.name
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!gameTypeForm.valid"
+        >
+          <i class="bx bx-save"></i> Guardar Cambios
+        </button>
+        <button mat-fab color="accent">
+          <i class="bx bx-reset"> </i>
         </button>
       </form>
     </div>

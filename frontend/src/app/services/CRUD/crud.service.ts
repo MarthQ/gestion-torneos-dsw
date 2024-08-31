@@ -10,28 +10,25 @@ import { GameType } from 'src/common/interfaces.js';
 export class CRUDService {
   constructor(private http: HttpClient) {}
 
-  readonly baseUrl = 'http://localhost:3000/api';
-  gameTypes: GameType[] = [];
+  readonly gameTypesUrl = 'http://localhost:3000/api/game-types/';
 
   getGameTypes() {
-    let gameTypesUrl = this.baseUrl + '/game-types';
     console.log('Data Requested');
-    return this.http.get(gameTypesUrl);
+    return this.http.get(this.gameTypesUrl);
   }
 
   createGameType(gameType: GameType) {
-    let gameTypesUrl = this.baseUrl + '/game-types/';
-    return this.http.post(gameTypesUrl, gameType);
+    return this.http.post(this.gameTypesUrl, gameType);
   }
 
   updateGameType(gameType: GameType) {
-    let gameTypesUrl = this.baseUrl + '/game-types/' + gameType.id.toString();
-    console.log(gameTypesUrl);
-    return this.http.put(gameTypesUrl, gameType);
+    let updateUrl = this.gameTypesUrl + gameType.id.toString();
+    console.log(updateUrl);
+    return this.http.put(updateUrl, gameType);
   }
 
   deleteGameType(id: number) {
-    let deletionUrl = this.baseUrl + '/game-types/' + id.toString();
+    let deletionUrl = this.gameTypesUrl + id.toString();
     console.log('Data about to be deleted');
     console.log(id.toString());
     console.log(deletionUrl);

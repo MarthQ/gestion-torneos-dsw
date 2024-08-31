@@ -4,3 +4,9 @@ export interface GameType {
   description: string;
   tags: string[];
 }
+
+export interface Tag {
+  id: number;
+  name: string;
+  description: string;
+}
