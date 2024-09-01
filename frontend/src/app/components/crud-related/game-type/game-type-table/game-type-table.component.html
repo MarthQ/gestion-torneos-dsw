@@ -27,10 +27,3 @@
     <button (click)="add()" class="addButton">Add</button>
   </div>
 </div>
-
-<app-game-type-modal
-  *ngIf="showModal"
-  [gameType]="gameTypeSelected"
-  (EarlyLeaveModal)="closeModal()"
-  (SavedGameType)="SaveGameType($event)"
-/>

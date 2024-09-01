@@ -1,5 +1,6 @@
-import { Component, Output, Input, EventEmitter } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { GameType, Tag } from 'src/common/interfaces.js';
 import { TagService } from 'src/app/services/CRUD/tag.service';
@@ -7,29 +8,21 @@ import { TagService } from 'src/app/services/CRUD/tag.service';
 @Component({
   selector: 'app-game-type-modal',
   templateUrl: './game-type-modal.component.html',
-  styleUrls: ['./game-type-modal.component.css'],
 })
 export class GameTypeModalComponent {
-  constructor(private tagService: TagService) {}
+  constructor(
+    private tagService: TagService,
+    public dialogRef: MatDialogRef<GameTypeModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 
-  @Input() gameType: GameType = {
-    id: 0,
-    name: '',
-    description: '',
-    tags: [],
-  };
   tagList: Tag[] = [];
-
-  @Output() EarlyLeaveModal = new EventEmitter();
-  @Output() SavedGameType = new EventEmitter<GameType>();
 
   type: string = '';
 
   gameTypeForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.maxLength(15)]),
-    description: new FormControl(this.gameType.description, [
-      Validators.required,
-    ]),
+    description: new FormControl('', [Validators.required]),
     tags: new FormControl(),
   });
 
@@ -40,7 +33,7 @@ export class GameTypeModalComponent {
       .getTags()
       .subscribe((response: any) => (this.tagList = response.data));
 
-    if (this.gameType.id === 0) {
+    if (this.data.gameType.id === 0) {
       this.type = 'Crear';
     } else {
       this.type = 'Actualizar';
@@ -49,20 +42,18 @@ export class GameTypeModalComponent {
 
   initializeForms() {
     this.gameTypeForm.setValue({
-      name: this.gameType.name,
-      description: this.gameType.description,
-      tags: this.gameType.tags,
+      name: this.data.gameType.name,
+      description: this.data.gameType.description,
+      tags: this.data.gameType.tags,
     });
   }
 
-  onSubmit() {
-    // Find a way to avoid using !. The gameTypeForm.value.name shouldn't be undefined or null here
-    this.gameType.name = this.gameTypeForm.value.name!;
-    this.gameType.description = this.gameTypeForm.value.description!;
-    this.SavedGameType.emit(this.gameType);
-  }
+  saveChanges() {
+    let gameTypeResponse = {
+      id: this.data.gameType.id,
+      ...this.gameTypeForm.value,
+    };
 
-  closeModal() {
-    this.EarlyLeaveModal.emit();
+    this.dialogRef.close(gameTypeResponse);
   }
 }

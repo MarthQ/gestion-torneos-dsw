@@ -1,8 +1,15 @@
 import { Component } from '@angular/core';
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import { CRUDService } from 'src/app/services/CRUD/crud.service';
 import { GameType } from 'src/common/interfaces.js';
+import { GameTypeModalComponent } from '../game-type-modal/game-type-modal.component';
 
 @Component({
   selector: 'app-game-type-table',
@@ -10,7 +17,11 @@ import { GameType } from 'src/common/interfaces.js';
   styleUrls: ['./game-type-table.component.css'],
 })
 export class GameTypeTableComponent {
-  constructor(private crudService: CRUDService, private router: Router) {}
+  constructor(
+    private crudService: CRUDService,
+    private router: Router,
+    public dialog: MatDialog
+  ) {}
 
   gameTypes: GameType[] = [];
   canEdit: boolean = false;
@@ -22,15 +33,6 @@ export class GameTypeTableComponent {
     'tags' as keyof GameType,
   ];
 
-  showModal: boolean = false;
-  modalType: string = '';
-  gameTypeSelected: GameType = {
-    id: -1,
-    name: '',
-    description: '',
-    tags: [],
-  };
-
   ngOnInit() {
     this.getGameTypes();
     if (this.router.url.includes('admin')) {
@@ -39,22 +41,32 @@ export class GameTypeTableComponent {
   }
 
   getGameTypes(): void {
-    // TODO: Add error handling using subscribe's second parameter
-    this.crudService.getGameTypes().subscribe(
-      (response: any) => (this.gameTypes = response.data),
-      (err: any) => alert(err.message)
-    );
+    this.crudService
+      .getGameTypes()
+      .subscribe((response: any) => (this.gameTypes = response.data));
   }
 
   add() {
-    this.gameTypeSelected = {
+    let gameTypeSelected: GameType = {
       id: 0,
       name: '',
       description: '',
       tags: [],
     };
-    this.modalType = 'Crear';
-    this.showModal = true;
+
+    const dialogRef = this.dialog.open(GameTypeModalComponent, {
+      data: { gameType: gameTypeSelected },
+      height: '400px',
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe((result: GameType) => {
+      if (result) {
+        gameTypeSelected = result;
+        console.log(gameTypeSelected);
+        this.SaveGameType(gameTypeSelected);
+      }
+    });
   }
 
   delete(row: GameType) {
@@ -75,23 +87,34 @@ export class GameTypeTableComponent {
   }
 
   edit(row: GameType) {
-    this.gameTypeSelected = row;
-    this.showModal = true;
-    this.modalType = 'Modificar';
+    let gameTypeSelected: GameType = row;
+
+    const dialogRef = this.dialog.open(GameTypeModalComponent, {
+      data: { gameType: gameTypeSelected },
+      height: '400px',
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        gameTypeSelected = result;
+        console.log(gameTypeSelected);
+        this.SaveGameType(gameTypeSelected);
+      }
+    });
   }
 
-  SaveGameType(event: GameType) {
-    if (this.modalType === 'Crear') {
+  SaveGameType(gameType: GameType) {
+    if (gameType.id === 0) {
       if (
         window.confirm(
           'Estas a punto de crear el siguiente tipo de juego: \n' +
             'Nombre: ' +
-            event.name
+            gameType.name
         )
       ) {
-        this.crudService.createGameType(event).subscribe((response: any) => {
+        this.crudService.createGameType(gameType).subscribe((response: any) => {
           this.getGameTypes();
-          this.showModal = false;
         });
       }
     } else {
@@ -99,20 +122,15 @@ export class GameTypeTableComponent {
         window.confirm(
           'Estas a punto de modificar el siguiente tipo de juego: \n' +
             'Id: ' +
-            event.id +
+            gameType.id +
             '\n' +
             'Nombre: ' +
-            event.name
+            gameType.name
         )
       )
-        this.crudService.updateGameType(event).subscribe((response: any) => {
+        this.crudService.updateGameType(gameType).subscribe((response: any) => {
           this.getGameTypes();
-          this.showModal = false;
         });
     }
-  }
-
-  closeModal() {
-    this.showModal = false;
   }
 }

@@ -1,73 +1,39 @@
-<!-- 
-<div class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>{{ type }} tipo de juego:</h2>
-      <i (click)="closeModal()" class="bx bx-x close-modal"></i>
-    </div>
-    <div class="modal-body">
-      <form [formGroup]="gameTypeForm" (ngSubmit)="onSubmit()">
-        <div class="modal-input">
-          <label>Nombre del juego:</label>
-          <br />
-          <textarea type="text" formControlName="name"></textarea>
+<div mat-dialog-title>
+  <h2>{{ type }} tipo de juego:</h2>
+</div>
+<div mat-dialog-content>
+  <form [formGroup]="gameTypeForm">
+    <mat-form-field>
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
 
-          <label>Descripción:</label>
-          <br />
-          <textarea type="text" formControlName="description"></textarea>
-        </div>
+    <mat-form-field>
+      <mat-label>Descripcion</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
 
-        <button
-          type="submit"
-          class="save-button"
-          [disabled]="!gameTypeForm.valid"
-        >
-          <i class="bx bx-save"></i>
-          Guardar cambios
-        </button>
-      </form>
-    </div>
-  </div>
-</div> 
--->
-<div class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>{{ type }} tipo de juego:</h2>
-      <i (click)="closeModal()" class="bx bx-x close-modal"></i>
-    </div>
-    <div class="modal-body">
-      <form [formGroup]="gameTypeForm">
-        <mat-form-field>
-          <mat-label>Nombre</mat-label>
-          <input matInput formControlName="name" />
-        </mat-form-field>
+    <mat-form-field>
+      <mat-label>Tags</mat-label>
+      <mat-select multiple formControlName="tags">
+        <mat-option *ngFor="let tag of tagList" [value]="tag">{{
+          tag.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
 
-        <mat-form-field>
-          <mat-label>Descripcion</mat-label>
-          <textarea matInput formControlName="description"></textarea>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Tags</mat-label>
-          <mat-select multiple formControlName="tags">
-            <mat-option *ngFor="let tag of tagList" [value]="tag">{{
-              tag.name
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="!gameTypeForm.valid"
-        >
-          <i class="bx bx-save"></i> Guardar Cambios
-        </button>
-        <button mat-fab color="accent">
-          <i class="bx bx-reset"> </i>
-        </button>
-      </form>
-    </div>
+  <div mat-dialog-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!gameTypeForm.valid"
+      (click)="saveChanges()"
+    >
+      <mat-icon fontIcon="save"></mat-icon> Guardar Cambios
+    </button>
+    <button mat-fab color="accent" (click)="initializeForms()">
+      <mat-icon fontIcon="refresh"></mat-icon>
+    </button>
   </div>
 </div>
