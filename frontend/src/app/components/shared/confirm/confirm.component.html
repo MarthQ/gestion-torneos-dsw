@@ -1,0 +1,22 @@
+<div mat-dialog-title>
+  <h2>Estas seguro que quieres {{ typeConfirm }} este elemento:</h2>
+</div>
+<div mat-dialog-content>
+  <h3>
+    <strong>Id: </strong>
+    <b> {{ element.id }}</b>
+    <br />
+    <strong>Name: </strong>
+    <b>
+      {{ element.name }}
+    </b>
+  </h3>
+
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="accept()">
+      <mat-icon fontIcon="check"></mat-icon>
+      Confirmar
+    </button>
+    <button mat-raised-button color="accent" (click)="deny()">Cancelar</button>
+  </div>
+</div>

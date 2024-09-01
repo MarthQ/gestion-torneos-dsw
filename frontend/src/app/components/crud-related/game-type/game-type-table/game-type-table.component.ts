@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { CRUDService } from 'src/app/services/CRUD/crud.service';
 import { GameType } from 'src/common/interfaces.js';
 import { GameTypeModalComponent } from '../game-type-modal/game-type-modal.component';
+import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.component';
 
 @Component({
   selector: 'app-game-type-table',
@@ -41,9 +42,9 @@ export class GameTypeTableComponent {
   }
 
   getGameTypes(): void {
-    this.crudService
-      .getGameTypes()
-      .subscribe((response: any) => (this.gameTypes = response.data));
+    this.crudService.getGameTypes().subscribe((response: any) => {
+      this.gameTypes = response.data;
+    });
   }
 
   add() {
@@ -70,20 +71,17 @@ export class GameTypeTableComponent {
   }
 
   delete(row: GameType) {
-    if (
-      window.confirm(
-        'Estas a punto de borrar el siguiente tipo de juego: \n' +
-          'Id: ' +
-          row.id +
-          '\n' +
-          'Nombre: ' +
-          row.name
-      )
-    ) {
-      this.crudService.deleteGameType(row.id).subscribe((response: any) => {
-        this.getGameTypes();
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmComponent, {
+      data: { element: row, typeConfirm: 'borrar' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.crudService.deleteGameType(row.id).subscribe((response: any) => {
+          this.getGameTypes();
+        });
+      }
+    });
   }
 
   edit(row: GameType) {
@@ -106,31 +104,33 @@ export class GameTypeTableComponent {
 
   SaveGameType(gameType: GameType) {
     if (gameType.id === 0) {
-      if (
-        window.confirm(
-          'Estas a punto de crear el siguiente tipo de juego: \n' +
-            'Nombre: ' +
-            gameType.name
-        )
-      ) {
-        this.crudService.createGameType(gameType).subscribe((response: any) => {
-          this.getGameTypes();
-        });
-      }
+      const dialogRef = this.dialog.open(ConfirmComponent, {
+        data: { element: gameType, typeConfirm: 'crear' },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.crudService
+            .createGameType(gameType)
+            .subscribe((response: any) => {
+              this.getGameTypes();
+            });
+        }
+      });
     } else {
-      if (
-        window.confirm(
-          'Estas a punto de modificar el siguiente tipo de juego: \n' +
-            'Id: ' +
-            gameType.id +
-            '\n' +
-            'Nombre: ' +
-            gameType.name
-        )
-      )
-        this.crudService.updateGameType(gameType).subscribe((response: any) => {
-          this.getGameTypes();
-        });
+      const dialogRef = this.dialog.open(ConfirmComponent, {
+        data: { element: gameType, typeConfirm: 'crear' },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.crudService
+            .updateGameType(gameType)
+            .subscribe((response: any) => {
+              this.getGameTypes();
+            });
+        }
+      });
     }
   }
 }

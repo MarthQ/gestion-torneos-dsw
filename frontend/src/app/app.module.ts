@@ -18,6 +18,7 @@ import { CRUDManagementComponent } from './components/crud-related/crud-manageme
 import { AdminComponent } from './components/admin/admin.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
 import { GameTypeModalComponent } from './components/crud-related/game-type/game-type-modal/game-type-modal.component';
+import { ConfirmComponent } from './components/shared/confirm/confirm.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { GameTypeModalComponent } from './components/crud-related/game-type/game
     AdminComponent,
     GameTypeTableComponent,
     GameTypeModalComponent,
+    ConfirmComponent,
   ],
   imports: [
     BrowserModule,

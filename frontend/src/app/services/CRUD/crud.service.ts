@@ -12,13 +12,13 @@ export class CRUDService {
 
   readonly gameTypesUrl = 'http://localhost:3000/api/game-types/';
 
-  getGameTypes() {
+  getGameTypes(): Observable<GameType[]> {
     console.log('Data Requested');
-    return this.http.get(this.gameTypesUrl);
+    return this.http.get<GameType[]>(this.gameTypesUrl);
   }
 
-  createGameType(gameType: GameType) {
-    return this.http.post(this.gameTypesUrl, gameType);
+  createGameType(gameType: GameType): Observable<GameType> {
+    return this.http.post<GameType>(this.gameTypesUrl, gameType);
   }
 
   updateGameType(gameType: GameType) {
