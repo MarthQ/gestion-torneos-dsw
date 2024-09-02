@@ -1,29 +1,64 @@
-<h1>Game Types CRUD</h1>
-<div class="table_component" *ngIf="gameTypes.length">
-  <table>
-    <thead>
-      <tr>
-        <th>Number</th>
-        <th *ngFor="let header of gameTypeKeys">
-          {{ header }}
-        </th>
-        <th *ngIf="canEdit">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let row of gameTypes; let position = index">
-        <td>{{ position + 1 }}</td>
-        <td *ngFor="let column of gameTypeKeys">
-          {{ row[column] }}
+<mat-card>
+  <mat-card-header>
+    <mat-form-field>
+      <mat-label>Filtrar</mat-label>
+      <input
+        matInput
+        (keyup)="filterChanges($event)"
+        placeholder="'Classic Fighter'"
+      />
+    </mat-form-field>
+  </mat-card-header>
+  <mat-card-content>
+    <table
+      matSort
+      mat-table
+      [dataSource]="dataSource"
+      class=""
+      mat-elevation-z8
+    >
+      <ng-container matColumnDef="id">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Id</th>
+        <td mat-cell *matCellDef="let gameType">{{ gameType.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let gameType">{{ gameType.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Descripción</th>
+        <td mat-cell *matCellDef="let gameType">{{ gameType.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="tags">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Tags</th>
+        <td mat-cell *matCellDef="let gameType">
+          {{ gameType.tags.join(", ") }}
         </td>
-        <td *ngIf="canEdit">
-          <button (click)="edit(row)">Edit</button>
-          <button (click)="delete(row)">Delete</button>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let gameType">
+          <button mat-raised-button color="accent" (click)="edit(gameType)">
+            Editar
+          </button>
+          <button mat-raised-button color="warn" (click)="delete(gameType)">
+            Eliminar
+          </button>
         </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="ExtraButtons">
-    <button (click)="add()" class="addButton">Add</button>
-  </div>
-</div>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableHeaders"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableHeaders"></tr>
+    </table>
+  </mat-card-content>
+  <mat-card-footer>
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+    ></mat-paginator>
+  </mat-card-footer>
+</mat-card>

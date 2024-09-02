@@ -1,70 +1,22 @@
-.table_component {
-  overflow: auto;
-  width: calc(100%-10px);
-  padding: 50px 5px 5px 5px;
-}
-
 table {
   border: 2px solid #b0b0b0;
   height: 100%;
-  width: 100%;
+  width: calc(100%-10px);
+  padding: 50px 5px 5px 5px;
   table-layout: auto;
   border-collapse: collapse;
   border-spacing: 2px;
   text-align: center;
 }
+mat-card {
+  margin: 2%;
+}
+button {
+  margin: 2px;
+}
+
 th {
-  border: 2px solid #b0b0b0;
-  background-color: #ddf0fd;
-  color: #000000;
-  padding: 10px;
-}
-
-td {
-  border: 2px solid #b0b0b0;
-  padding: 10px;
-}
-
-tr:nth-child(even) td {
-  background-color: #e9e8e7;
-  color: #000000;
-}
-
-tr:nth-child(odd) td {
-  background-color: #ffffff;
-  color: #000000;
-}
-
-.ExtraButtons {
-  padding: 10px 0px 0px 0px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-button.addButton {
-  border: 2px solid #24b4fb;
-  background-color: #24b4fb;
-  border-radius: 0.9em;
-  padding: 0.8em 1.2em 0.8em 1em;
-  transition: all ease-in-out 0.2s;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button.addButton span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  font-weight: 600;
-}
-
-button.addButton:hover {
-  background-color: #0071e2;
-}
-
-button.addButton:active {
-  background-color: #ffffff;
-  color: #0071e2;
+  background-color: rgb(41, 2, 110) !important;
+  font-weight: 700;
+  color: white;
 }

@@ -1,16 +1,14 @@
-import { Component } from '@angular/core';
-import {
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialogModule,
-} from '@angular/material/dialog';
+import { Component, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import { CRUDService } from 'src/app/services/CRUD/crud.service';
 import { GameType } from 'src/common/interfaces.js';
 import { GameTypeModalComponent } from '../game-type-modal/game-type-modal.component';
 import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.component';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-game-type-table',
@@ -18,23 +16,21 @@ import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.comp
   styleUrls: ['./game-type-table.component.css'],
 })
 export class GameTypeTableComponent {
+  gameTypes: GameType[] = [];
+  canEdit: boolean = false;
+
+  dataSource: any;
+
+  tableHeaders: string[] = ['id', 'name', 'description', 'tags', 'actions'];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   constructor(
     private crudService: CRUDService,
     private router: Router,
     public dialog: MatDialog
-  ) {}
-
-  gameTypes: GameType[] = [];
-  canEdit: boolean = false;
-
-  gameTypeKeys: (keyof GameType)[] = [
-    'id' as keyof GameType,
-    'name' as keyof GameType,
-    'description' as keyof GameType,
-    'tags' as keyof GameType,
-  ];
-
-  ngOnInit() {
+  ) {
     this.getGameTypes();
     if (this.router.url.includes('admin')) {
       this.canEdit = true;
@@ -44,7 +40,16 @@ export class GameTypeTableComponent {
   getGameTypes(): void {
     this.crudService.getGameTypes().subscribe((response: any) => {
       this.gameTypes = response.data;
+      this.dataSource = new MatTableDataSource<GameType>(this.gameTypes);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
+  }
+
+  filterChanges(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+
+    this.dataSource.filter = filterValue;
   }
 
   add() {
