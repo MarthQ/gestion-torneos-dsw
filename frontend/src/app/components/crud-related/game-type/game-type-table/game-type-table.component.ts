@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import { GameTypeService } from 'src/app/services/CRUD/game-type.service';
-import { GameType } from 'src/common/interfaces.js';
+import { GameType, Tag } from 'src/common/interfaces.js';
 import { GameTypeModalComponent } from '../game-type-modal/game-type-modal.component';
 import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.component';
 import { MatTableDataSource } from '@angular/material/table';
@@ -46,8 +46,9 @@ export class GameTypeTableComponent {
     });
   }
 
-  formatTags(gameType: GameType): string {
-    return gameType.tags ? gameType.tags.map((tag) => tag.name).join(', ') : '';
+  // Is this function ok or should I do something more efficient ?
+  formatTags(tags: Tag[]): string {
+    return tags ? tags.map((tag) => tag.name).join(', ') : '';
   }
 
   filterChanges(event: Event) {

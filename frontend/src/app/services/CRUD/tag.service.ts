@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { Tag } from 'src/common/interfaces.js';
 
@@ -11,9 +12,8 @@ export class TagService {
 
   readonly tagsUrl = 'http://localhost:3000/api/tags';
 
-  getTags() {
-    console.log('Tags Requested');
-    return this.http.get(this.tagsUrl);
+  getTags(): Observable<Tag[]> {
+    return this.http.get<Tag[]>(this.tagsUrl);
   }
 
   createTag(tag: Tag) {
