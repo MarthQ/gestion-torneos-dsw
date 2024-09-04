@@ -7,7 +7,7 @@ import { GameType } from 'src/common/interfaces.js';
 @Injectable({
   providedIn: 'root',
 })
-export class CRUDService {
+export class GameTypeService {
   constructor(private http: HttpClient) {}
 
   readonly gameTypesUrl = 'http://localhost:3000/api/game-types/';

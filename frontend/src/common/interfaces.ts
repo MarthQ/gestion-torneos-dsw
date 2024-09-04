@@ -5,7 +5,7 @@ export interface CrudElement {
 
 export interface GameType extends CrudElement {
   description: string;
-  tags: string[];
+  tags: Tag[];
 }
 
 export interface Tag extends CrudElement {

@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
-import { CRUDService } from 'src/app/services/CRUD/crud.service';
+import { GameTypeService } from 'src/app/services/CRUD/game-type.service';
 import { GameType } from 'src/common/interfaces.js';
 import { GameTypeModalComponent } from '../game-type-modal/game-type-modal.component';
 import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.component';
@@ -27,7 +27,7 @@ export class GameTypeTableComponent {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private crudService: CRUDService,
+    private gameTypeService: GameTypeService,
     private router: Router,
     public dialog: MatDialog
   ) {
@@ -38,12 +38,16 @@ export class GameTypeTableComponent {
   }
 
   getGameTypes(): void {
-    this.crudService.getGameTypes().subscribe((response: any) => {
+    this.gameTypeService.getGameTypes().subscribe((response: any) => {
       this.gameTypes = response.data;
       this.dataSource = new MatTableDataSource<GameType>(this.gameTypes);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  formatTags(gameType: GameType): string {
+    return gameType.tags ? gameType.tags.map((tag) => tag.name).join(', ') : '';
   }
 
   filterChanges(event: Event) {
@@ -70,7 +74,7 @@ export class GameTypeTableComponent {
       if (result) {
         gameTypeSelected = result;
         console.log(gameTypeSelected);
-        this.SaveGameType(gameTypeSelected);
+        this.saveGameType(gameTypeSelected);
       }
     });
   }
@@ -82,9 +86,11 @@ export class GameTypeTableComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.crudService.deleteGameType(row.id).subscribe((response: any) => {
-          this.getGameTypes();
-        });
+        this.gameTypeService
+          .deleteGameType(row.id)
+          .subscribe((response: any) => {
+            this.getGameTypes();
+          });
       }
     });
   }
@@ -102,12 +108,12 @@ export class GameTypeTableComponent {
       if (result) {
         gameTypeSelected = result;
         console.log(gameTypeSelected);
-        this.SaveGameType(gameTypeSelected);
+        this.saveGameType(gameTypeSelected);
       }
     });
   }
 
-  SaveGameType(gameType: GameType) {
+  saveGameType(gameType: GameType) {
     if (gameType.id === 0) {
       const dialogRef = this.dialog.open(ConfirmComponent, {
         data: { element: gameType, typeConfirm: 'crear' },
@@ -115,7 +121,7 @@ export class GameTypeTableComponent {
 
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          this.crudService
+          this.gameTypeService
             .createGameType(gameType)
             .subscribe((response: any) => {
               this.getGameTypes();
@@ -129,7 +135,7 @@ export class GameTypeTableComponent {
 
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          this.crudService
+          this.gameTypeService
             .updateGameType(gameType)
             .subscribe((response: any) => {
               this.getGameTypes();

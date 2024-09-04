@@ -35,13 +35,13 @@
       <ng-container matColumnDef="tags">
         <th mat-sort-header mat-header-cell *matHeaderCellDef>Tags</th>
         <td mat-cell *matCellDef="let gameType">
-          {{ gameType.tags.join(", ") }}
+          {{ formatTags(gameType.tags) }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-sort-header mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let gameType">
+        <td mat-cell *matCellDef="let gameType" class="table-actions">
           <button mat-raised-button color="accent" (click)="edit(gameType)">
             Editar
           </button>
@@ -60,5 +60,9 @@
       [pageSizeOptions]="[5, 10, 20]"
       showFirstLastButtons
     ></mat-paginator>
+    <button mat-raised-button color="primary" class="add-btn" (click)="add()">
+      <mat-icon fontIcon="add"></mat-icon>
+      Crear
+    </button>
   </mat-card-footer>
 </mat-card>
