@@ -38,8 +38,8 @@ export class GameTypeTableComponent {
   }
 
   getGameTypes(): void {
-    this.gameTypeService.getGameTypes().subscribe((response: any) => {
-      this.gameTypes = response.data;
+    this.gameTypeService.getGameTypes().subscribe((response: GameType[]) => {
+      this.gameTypes = response;
       this.dataSource = new MatTableDataSource<GameType>(this.gameTypes);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -74,7 +74,6 @@ export class GameTypeTableComponent {
     dialogRef.afterClosed().subscribe((result: GameType) => {
       if (result) {
         gameTypeSelected = result;
-        console.log(gameTypeSelected);
         this.saveGameType(gameTypeSelected);
       }
     });
@@ -131,7 +130,7 @@ export class GameTypeTableComponent {
       });
     } else {
       const dialogRef = this.dialog.open(ConfirmComponent, {
-        data: { element: gameType, typeConfirm: 'crear' },
+        data: { element: gameType, typeConfirm: 'modificar' },
       });
 
       dialogRef.afterClosed().subscribe((result) => {

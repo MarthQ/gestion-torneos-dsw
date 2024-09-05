@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { GameType } from 'src/common/interfaces.js';
 
@@ -14,7 +14,9 @@ export class GameTypeService {
 
   getGameTypes(): Observable<GameType[]> {
     console.log('Data Requested');
-    return this.http.get<GameType[]>(this.gameTypesUrl);
+    return this.http
+      .get<{ data: GameType[] }>(this.gameTypesUrl)
+      .pipe(map((response) => response.data));
   }
 
   createGameType(gameType: GameType) {

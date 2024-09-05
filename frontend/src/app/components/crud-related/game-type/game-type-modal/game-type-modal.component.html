@@ -16,7 +16,7 @@
     <mat-form-field>
       <mat-label>Tags</mat-label>
       <mat-select multiple formControlName="tags">
-        <mat-option *ngFor="let tag of tagList" [value]="tag">{{
+        <mat-option *ngFor="let tag of tagList" [value]="tag.id">{{
           tag.name
         }}</mat-option>
       </mat-select>
