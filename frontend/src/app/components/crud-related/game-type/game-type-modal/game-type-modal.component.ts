@@ -29,7 +29,7 @@ export class GameTypeModalComponent {
   ngOnInit() {
     this.tagService
       .getTags()
-      .subscribe((response: any) => (this.tagList = response.data));
+      .subscribe((response: Tag[]) => (this.tagList = response));
 
     this.initializeForms();
 

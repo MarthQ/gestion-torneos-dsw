@@ -20,7 +20,8 @@ export class GameTypeService {
   }
 
   createGameType(gameType: GameType) {
-    return this.http.post<GameType>(this.gameTypesUrl, gameType);
+    const { id, ...gameTypeData } = gameType;
+    return this.http.post<GameType>(this.gameTypesUrl, gameTypeData);
   }
 
   updateGameType(gameType: GameType) {
