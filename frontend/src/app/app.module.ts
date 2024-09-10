@@ -23,6 +23,8 @@ import { AdminComponent } from './components/admin/admin.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
 import { GameTypeModalComponent } from './components/crud-related/game-type/game-type-modal/game-type-modal.component';
 import { ConfirmComponent } from './components/shared/confirm/confirm.component';
+import { UserCrudTableComponent } from './components/crud-related/user-crud/user-crud-table/user-crud-table.component';
+import { UserCrudModalComponent } from './components/crud-related/user-crud/user-crud-modal/user-crud-modal.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { ConfirmComponent } from './components/shared/confirm/confirm.component'
     GameTypeTableComponent,
     GameTypeModalComponent,
     ConfirmComponent,
+    UserCrudTableComponent,
+    UserCrudModalComponent,
   ],
   imports: [
     BrowserModule,
