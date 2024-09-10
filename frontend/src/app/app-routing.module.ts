@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { AdminComponent } from './components/admin/admin.component';
 import { AppComponent } from './app.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
-
+import { GameComponent } from './components/crud-related/game/game-table/game.component';
 const routes: Routes = [
   {
     path: 'admin',
@@ -15,6 +14,11 @@ const routes: Routes = [
         path: 'GameTypes',
         component: GameTypeTableComponent,
         title: 'GameType CRUD',
+      },
+      {
+        path: 'Game',
+        component: GameComponent,
+        title: 'Game CRUD',
       },
     ],
   },
