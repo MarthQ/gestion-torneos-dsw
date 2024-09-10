@@ -69,7 +69,7 @@ export class UserCrudTableComponent {
       name: '',
       password: '',
       mail: '',
-      location: [],
+      location: null,
     };
 
     const dialogRef = this.dialog.open(UserCrudModalComponent, {

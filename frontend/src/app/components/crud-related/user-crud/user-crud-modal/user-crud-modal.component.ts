@@ -26,7 +26,7 @@ export class UserCrudModalComponent {
       Validators.minLength(8),
     ]),
     mail: new FormControl('', [Validators.required, Validators.email]),
-    location: new FormControl('', [Validators.required]),
+    location: new FormControl(0, [Validators.required]),
   });
 
   ngOnInit() {
@@ -48,7 +48,7 @@ export class UserCrudModalComponent {
       name: this.data.user.name,
       password: this.data.user.password,
       mail: this.data.user.mail,
-      location: this.data.user.location.id,
+      location: this.data.user.location?.id || 0,
     });
   }
 

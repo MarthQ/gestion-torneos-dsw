@@ -15,7 +15,7 @@ export interface Tag extends CrudElement {
 export interface User extends CrudElement {
   password: string;
   mail: string;
-  location: Location[];
+  location: Location | null;
 }
 
 export interface Location extends CrudElement {}
