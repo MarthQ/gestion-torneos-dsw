@@ -15,8 +15,6 @@ export class User extends BaseEntity {
     mail!: string
     @ManyToOne(() => Location, {nullable: false})
     location!: Location
-    @ManyToOne(() => Inscription)
-    gametype!: Rel<Inscription>
     @ManyToMany(() => Inscription, (inscription) => inscription.user)
     inscriptions = new Collection<Inscription>(this)
 } 
