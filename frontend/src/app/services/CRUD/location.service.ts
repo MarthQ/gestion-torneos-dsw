@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-
-import { Location } from 'src/common/interfaces.js';
+import { Location } from 'src/common/interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +28,7 @@ export class LocationService {
     return this.http.put(updateUrl, location);
   }
 
-  deleteTag(id: number) {
+  deleteLocation(id: number) {
     let deletionUrl = this.locationsUrl + id.toString();
     console.log('Data about to be deleted');
     console.log(id.toString());

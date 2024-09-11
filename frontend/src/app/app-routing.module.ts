@@ -5,6 +5,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { AppComponent } from './app.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
 import { UserCrudTableComponent } from './components/crud-related/user-crud/user-crud-table/user-crud-table.component';
+import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,11 @@ const routes: Routes = [
         path: 'Users',
         component: UserCrudTableComponent,
         title: 'User CRUD',
+      },
+      {
+        path: 'Locations',
+        component: LocationTableComponent,
+        title: 'Location CRUD',
       },
     ],
   },

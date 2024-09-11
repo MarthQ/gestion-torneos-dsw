@@ -25,6 +25,8 @@ import { GameTypeModalComponent } from './components/crud-related/game-type/game
 import { ConfirmComponent } from './components/shared/confirm/confirm.component';
 import { UserCrudTableComponent } from './components/crud-related/user-crud/user-crud-table/user-crud-table.component';
 import { UserCrudModalComponent } from './components/crud-related/user-crud/user-crud-modal/user-crud-modal.component';
+import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
+import { LocationModalComponent } from './components/crud-related/location/location-modal/location-modal.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,8 @@ import { UserCrudModalComponent } from './components/crud-related/user-crud/user
     ConfirmComponent,
     UserCrudTableComponent,
     UserCrudModalComponent,
+    LocationTableComponent,
+    LocationModalComponent,
   ],
   imports: [
     BrowserModule,
