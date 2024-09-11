@@ -10,7 +10,7 @@ export interface GameType extends CrudElement {
 
 export interface Game extends CrudElement {
    cant_torneos : number;
-   gametype: string[];
+   gametype: GameType | null;
    tags: string[];
 }
 

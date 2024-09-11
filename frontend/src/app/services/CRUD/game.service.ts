@@ -10,7 +10,7 @@ export class GameService {
   constructor(private http: HttpClient) {}
   readonly gameUrl = 'http://localhost:3000/api/games/';
 
-  getGame(): Observable<Game[]> {
+  getGames(): Observable<Game[]> {
     console.log('Data Requested');
     return this.http.get<Game[]>(this.gameUrl);
   }

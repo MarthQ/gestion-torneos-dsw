@@ -7,7 +7,8 @@ import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.comp
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { GameModalService } from '../game-modal/game.modal.service';
+import { GameModalComponent } from '../game-modal/game-modal/game-modal.component';
+
 
 @Component({
   selector: 'app-game',
@@ -19,7 +20,7 @@ export class GameComponent {
   game: Game[] = [];
   canEdit: boolean = false;
   dataSource: any;
-  tableHeaders: string[] = ['id', 'name', 'cant_torneos', 'game_type', 'tags', 'actions'];
+  tableHeaders: string[] = ['id', 'name', 'cant_torneos', 'gametype', 'tags', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -29,14 +30,14 @@ export class GameComponent {
     private router: Router,
     public dialog: MatDialog
   ) {
-    this.getGame();
+    this.getGames();
     if (this.router.url.includes('admin')) {
       this.canEdit = true;
     }
   }
 
-  getGame(): void {
-    this.gameService.getGame().subscribe((response: any) => {
+  getGames(): void {
+    this.gameService.getGames().subscribe((response: any) => {
       this.game = response.data;
       this.dataSource = new MatTableDataSource<Game>(this.game);
       this.dataSource.paginator = this.paginator;
@@ -55,11 +56,11 @@ export class GameComponent {
       id: 0,
       name: '',
       cant_torneos: 0,
-      gametype: [],
+      gametype: null,
       tags: [],
     };
 
-    const dialogRef = this.dialog.open(GameModalService, {
+    const dialogRef = this.dialog.open(GameModalComponent, {
       data: { game: gameSelected },
       height: '400px',
       width: '400px',
@@ -82,7 +83,7 @@ export class GameComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.gameService.deleteGame(row.id).subscribe((response: any) => {
-          this.getGame();
+          this.getGames();
         });
       }
     });
@@ -91,7 +92,7 @@ export class GameComponent {
   edit(row: Game) {
     let gameSelected: Game = row;
 
-    const dialogRef = this.dialog.open(GameModalService, {
+    const dialogRef = this.dialog.open(GameModalComponent, {
       data: { game: gameSelected },
       height: '400px',
       width: '400px',
@@ -117,7 +118,7 @@ export class GameComponent {
           this.gameService
             .createGame(game)
             .subscribe((response: any) => {
-              this.getGame();
+              this.getGames();
             });
         }
       });
@@ -131,7 +132,7 @@ export class GameComponent {
           this.gameService
             .updateGame(game)
             .subscribe((response: any) => {
-              this.getGame();
+              this.getGames();
             });
         }
       });

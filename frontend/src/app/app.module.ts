@@ -24,6 +24,7 @@ import { GameTypeTableComponent } from './components/crud-related/game-type/game
 import { GameTypeModalComponent } from './components/crud-related/game-type/game-type-modal/game-type-modal.component';
 import { ConfirmComponent } from './components/shared/confirm/confirm.component';
 import { GameComponent } from './components/crud-related/game/game-table/game.component';
+import { GameModalComponent } from './components/crud-related/game/game-modal/game-modal/game-modal.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { GameComponent } from './components/crud-related/game/game-table/game.co
     GameTypeModalComponent,
     ConfirmComponent,
     GameComponent,
+    GameModalComponent,
   ],
   imports: [
     BrowserModule,

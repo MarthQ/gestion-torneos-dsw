@@ -5,7 +5,7 @@
         <input
           matInput
           (keyup)="filterChanges($event)"
-          placeholder="'Classic Fighter'"
+          placeholder="'Blaz Blue'"
         />
       </mat-form-field>
     </mat-card-header>
@@ -27,22 +27,22 @@
           <td mat-cell *matCellDef="let game">{{ game.name }}</td>
         </ng-container>
   
-        <ng-container matColumnDef="cant torneos">
+        <ng-container matColumnDef="cant_torneos">
           <th mat-sort-header mat-header-cell *matHeaderCellDef>Cant torneos</th>
           <td mat-cell *matCellDef="let game">{{ game.cant_torneos }}</td>
         </ng-container>
   
-        <ng-container matColumnDef="tags">
+        <ng-container matColumnDef="gametype">
           <th mat-sort-header mat-header-cell *matHeaderCellDef>Tags</th>
           <td mat-cell *matCellDef="let game">
-            {{ game.tags.join(", ") }}
+            {{ game.gametype}}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="game types">
+        <ng-container matColumnDef="tags">
             <th mat-sort-header mat-header-cell *matHeaderCellDef>Game Types</th>
             <td mat-cell *matCellDef="let game">
-              {{ game.gametypes.join(", ") }}
+              {{ game.tags}}
             </td>
           </ng-container>
   
@@ -67,6 +67,10 @@
         [pageSizeOptions]="[5, 10, 20]"
         showFirstLastButtons
       ></mat-paginator>
+      <button mat-raised-button color="primary" class="add-btn" (click)="add()">
+        <mat-icon fontIcon="add"></mat-icon>
+        Crear
+      </button>
     </mat-card-footer>
   </mat-card>
   
