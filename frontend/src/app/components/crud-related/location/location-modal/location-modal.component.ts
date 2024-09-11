@@ -15,7 +15,7 @@ export class LocationModalComponent {
   type: string = '';
 
   locationForm = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.maxLength(40)]),
+    name: new FormControl('', [Validators.maxLength(40)]),
   });
 
   ngOnInit() {

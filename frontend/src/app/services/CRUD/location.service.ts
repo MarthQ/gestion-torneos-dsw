@@ -9,7 +9,7 @@ import { Location } from 'src/common/interfaces';
 export class LocationService {
   constructor(private http: HttpClient) {}
 
-  readonly locationsUrl = 'http://localhost:3000/api/locations';
+  readonly locationsUrl = 'http://localhost:3000/api/locations/';
 
   getLocations(): Observable<Location[]> {
     return this.http
