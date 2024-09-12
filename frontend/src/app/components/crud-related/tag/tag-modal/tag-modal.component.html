@@ -1,0 +1,30 @@
+<div mat-dialog-title>
+  <h2>{{ type }} tag:</h2>
+</div>
+<div mat-dialog-content>
+  <form [formGroup]="tagForm">
+    <mat-form-field>
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Descripcion</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+  </form>
+
+  <div mat-dialog-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!tagForm.valid"
+      (click)="saveChanges()"
+    >
+      <mat-icon fontIcon="save"></mat-icon> Guardar Cambios
+    </button>
+    <button mat-fab color="accent" (click)="initializeForms()">
+      <mat-icon fontIcon="refresh"></mat-icon>
+    </button>
+  </div>
+</div>
