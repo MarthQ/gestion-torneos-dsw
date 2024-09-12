@@ -99,7 +99,6 @@ export class LocationTableComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         locationSelected = result;
-        console.log(locationSelected);
         this.saveLocation(locationSelected);
       }
     });

@@ -19,20 +19,19 @@ export class LocationService {
 
   createLocation(location: Location) {
     const { id, ...locationData } = location;
+
     return this.http.post(this.locationsUrl, locationData);
   }
 
   updateLocation(location: Location) {
     let updateUrl = this.locationsUrl + location.id.toString();
-    console.log(updateUrl);
+
     return this.http.put(updateUrl, location);
   }
 
   deleteLocation(id: number) {
     let deletionUrl = this.locationsUrl + id.toString();
-    console.log('Data about to be deleted');
-    console.log(id.toString());
-    console.log(deletionUrl);
+
     return this.http.delete(deletionUrl);
   }
 }
