@@ -6,7 +6,7 @@ const em = ORM.em
 
 async function findAll(req: Request, res: Response) {
     try {
-        const Games = await em.find(Game, {}, { populate: ['tags'] })
+        const Games = await em.find(Game, {}, { populate: ['tags', 'gametype'] })
         res.status(200).json({
             message: 'Found all games',
             data: Games,
@@ -19,7 +19,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
-        const game = await em.findOneOrFail(Game, {id}, { populate: ['tags'] })
+        const game = await em.findOneOrFail(Game, {id}, { populate: ['tags', 'gametype'] })
         res.status(200).json({message: 'Found game', data: game})
     }catch(error: any){
         res.status(500).json({message: error.message})
