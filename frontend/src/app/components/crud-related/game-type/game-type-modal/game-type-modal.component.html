@@ -18,18 +18,13 @@
       <mat-select multiple formControlName="tags">
         <mat-option *ngFor="let tag of tagList" [value]="tag.id">{{
           tag.name
-        }}</mat-option>
+          }}</mat-option>
       </mat-select>
     </mat-form-field>
   </form>
 
   <div mat-dialog-actions>
-    <button
-      mat-raised-button
-      color="primary"
-      [disabled]="!gameTypeForm.valid"
-      (click)="saveChanges()"
-    >
+    <button mat-raised-button color="primary" [disabled]="!gameTypeForm.valid" (click)="saveChanges()">
       <mat-icon fontIcon="save"></mat-icon> Guardar Cambios
     </button>
     <button mat-fab color="accent" (click)="initializeForms()">

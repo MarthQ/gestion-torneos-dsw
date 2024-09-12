@@ -15,6 +15,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { UserComponent } from './components/user/user.component';
@@ -23,6 +25,8 @@ import { AdminComponent } from './components/admin/admin.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
 import { GameTypeModalComponent } from './components/crud-related/game-type/game-type-modal/game-type-modal.component';
 import { ConfirmComponent } from './components/shared/confirm/confirm.component';
+import { InscriptionTableComponent } from './components/crud-related/inscription/inscription-table/inscription-table.component';
+import { InscriptionModalComponent } from './components/crud-related/inscription/inscription-modal/inscription-modal.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +38,8 @@ import { ConfirmComponent } from './components/shared/confirm/confirm.component'
     GameTypeTableComponent,
     GameTypeModalComponent,
     ConfirmComponent,
+    InscriptionTableComponent,
+    InscriptionModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,6 +57,8 @@ import { ConfirmComponent } from './components/shared/confirm/confirm.component'
     MatPaginatorModule,
     MatSortModule,
     MatCardModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,0 +1,53 @@
+<div mat-dialog-title>
+    <h2>{{ type }} inscripción:</h2>
+</div>
+<div mat-dialog-content>
+    <form [formGroup]="inscriptionForm">
+        <mat-form-field>
+            <mat-label>Usuario</mat-label>
+            <mat-select formControlName="user">
+                <mat-option *ngFor="let user of userList" [value]="user.id">{{
+                    user.name
+                    }}</mat-option>
+            </mat-select>
+            <!-- <mat-error *ngIf="user.hasError('required')">You must make a selection</mat-error> -->
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Torneo</mat-label>
+            <mat-select formControlName="tournament">
+                <mat-option *ngFor="let tournament of tournamentList" [value]="tournament.id">{{
+                    tournament.name
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Puntuación</mat-label>
+            <textarea matInput formControlName="score"></textarea>
+        </mat-form-field>
+
+
+        <mat-form-field>
+            <mat-label>Ranking</mat-label>
+            <textarea matInput formControlName="ranking"></textarea>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Choose a date</mat-label>
+            <input formControlName="inscriptiondate" matInput type="datetime-local" placeholder="start date">
+            <!-- <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker></mat-form-field> -->
+        </mat-form-field>
+    </form>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="primary" [disabled]="!inscriptionForm.valid" (click)="saveChanges()">
+            <mat-icon fontIcon="save"></mat-icon> Guardar Cambios
+        </button>
+        <button mat-fab color="accent" (click)="initializeForms()">
+            <mat-icon fontIcon="refresh"></mat-icon>
+        </button>
+    </div>
+</div>

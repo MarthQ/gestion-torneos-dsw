@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './components/admin/admin.component';
 import { AppComponent } from './app.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
+import { InscriptionTableComponent } from './components/crud-related/inscription/inscription-table/inscription-table.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,11 @@ const routes: Routes = [
         path: 'GameTypes',
         component: GameTypeTableComponent,
         title: 'GameType CRUD',
+      },
+      {
+        path: 'Inscriptions',
+        component: InscriptionTableComponent,
+        title: 'Inscription CRUD',
       },
     ],
   },
