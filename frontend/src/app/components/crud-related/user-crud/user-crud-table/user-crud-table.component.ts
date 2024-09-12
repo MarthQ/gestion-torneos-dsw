@@ -112,7 +112,6 @@ export class UserCrudTableComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         userSelected = result;
-        console.log(userSelected);
         this.saveUser(userSelected);
       }
     });
