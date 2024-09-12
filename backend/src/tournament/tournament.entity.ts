@@ -5,7 +5,8 @@ import {
     ManyToOne,
     ManyToMany,
     Rel,
-    Collection
+    Collection,
+    OneToMany,
 } from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Game } from '../game/game.entity.js'
@@ -30,6 +31,6 @@ export class Tournament extends BaseEntity {
     game!: Rel<Game>
     @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
     tags!: Tag[]
-    @ManyToMany(() => Inscription, (inscription) => inscription.tournament)
+    @OneToMany(() => Inscription, (inscription) => inscription.tournament)
     inscriptions = new Collection<Inscription>(this)
 }

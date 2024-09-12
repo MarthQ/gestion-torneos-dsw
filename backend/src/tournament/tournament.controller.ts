@@ -6,7 +6,7 @@ const em = ORM.em
 
 async function findAll(req: Request, res: Response) {
     try {
-        const Tournaments = await em.find(Tournament, {}, { populate: ['tags'] })
+        const Tournaments = await em.find(Tournament, {}, { populate: ['tags', 'game'] })
         res.status(200).json({
             message: 'Found all tournaments',
             data: Tournaments,
@@ -19,7 +19,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
-        const tournament = await em.findOneOrFail(Tournament, {id}, { populate: ['tags'] })
+        const tournament = await em.findOneOrFail(Tournament, {id}, { populate: ['tags', 'game'] })
         res.status(200).json({message: 'Found tournament', data: tournament})
     }catch(error: any){
         res.status(500).json({message: error.message})
