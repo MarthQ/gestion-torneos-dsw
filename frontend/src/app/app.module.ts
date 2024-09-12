@@ -27,6 +27,8 @@ import { UserCrudTableComponent } from './components/crud-related/user-crud/user
 import { UserCrudModalComponent } from './components/crud-related/user-crud/user-crud-modal/user-crud-modal.component';
 import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
 import { LocationModalComponent } from './components/crud-related/location/location-modal/location-modal.component';
+import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
+import { TagModalComponent } from './components/crud-related/tag/tag-modal/tag-modal.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +44,8 @@ import { LocationModalComponent } from './components/crud-related/location/locat
     UserCrudModalComponent,
     LocationTableComponent,
     LocationModalComponent,
+    TagTableComponent,
+    TagModalComponent,
   ],
   imports: [
     BrowserModule,

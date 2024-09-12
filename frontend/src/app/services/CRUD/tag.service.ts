@@ -10,7 +10,7 @@ import { Tag } from 'src/common/interfaces.js';
 export class TagService {
   constructor(private http: HttpClient) {}
 
-  readonly tagsUrl = 'http://localhost:3000/api/tags';
+  readonly tagsUrl = 'http://localhost:3000/api/tags/';
 
   getTags(): Observable<Tag[]> {
     return this.http
