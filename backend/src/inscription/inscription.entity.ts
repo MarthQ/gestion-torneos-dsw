@@ -2,7 +2,9 @@ import {
     Entity,
     Property,
     ManyToMany,
-    Collection
+    Collection,
+    ManyToOne,
+    OneToMany,
 } from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Tournament } from '../tournament/tournament.entity.js'
@@ -16,8 +18,8 @@ export class Inscription extends BaseEntity {
     ranking!: string
     @Property()
     inscriptiondate!: Date
-    @ManyToMany(() => Tournament, (tournament) => tournament.inscriptions, { owner: true })
+    @ManyToOne(() => Tournament, { nullable: false })
     tournament!: Tournament[]
-    @ManyToMany(() => User, (user) => user.inscriptions, { owner: true })
+    @ManyToOne(() => User, { nullable: false })
     user!: User[]
 }
