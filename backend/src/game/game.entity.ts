@@ -21,13 +21,11 @@ export class Game extends BaseEntity {
     @Property({ nullable: false, unique: true })
     name!: string
     @Property()
-    cant_torneos!: number
+    canttorneos!: number
     @ManyToOne(() => Game_Type, { nullable: false })
     gametype!: Rel<Game_Type>
     @ManyToMany(() => Tag, (tag) => tag.games, { owner: true })
     tags!: Tag[]
-    @OneToMany(() => Tournament, (tournament) => tournament.game, {
-        cascade: [Cascade.ALL],
-    })
-    user = new Collection<Tournament>(this)
+    @OneToMany(() => Tournament, (tournament) => tournament.game, {cascade: [Cascade.ALL],})
+    tournament = new Collection<Tournament>(this)
 }

@@ -12,7 +12,6 @@ export class InscriptionService {
   readonly inscriptionsUrl = 'http://localhost:3000/api/inscription/';
 
   getInscriptions(): Observable<Inscription[]> {
-    console.log('Data Requested');
     return this.http
       .get<{ data: Inscription[] }>(this.inscriptionsUrl)
       .pipe(map((response) => response.data));
@@ -25,15 +24,11 @@ export class InscriptionService {
 
   updateInscription(inscription: Inscription) {
     let updateUrl = this.inscriptionsUrl + inscription.id.toString();
-    console.log(updateUrl);
     return this.http.put(updateUrl, inscription);
   }
 
   deleteInscription(id: number) {
     let deletionUrl = this.inscriptionsUrl + id.toString();
-    console.log('Data about to be deleted');
-    console.log(id.toString());
-    console.log(deletionUrl);
     return this.http.delete(deletionUrl);
   }
 }
