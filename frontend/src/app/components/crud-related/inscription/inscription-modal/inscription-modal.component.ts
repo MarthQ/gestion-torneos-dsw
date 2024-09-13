@@ -10,6 +10,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TournamentService } from 'src/app/services/CRUD/tournament.service';
 import { UserCrudService } from 'src/app/services/CRUD/user-crud.service';
 import { Tournament, User } from 'src/common/interfaces';
+import { selectRequiredValidator } from 'src/common/validators';
 
 @Component({
   selector: 'app-inscription-modal',
@@ -84,12 +85,4 @@ export class InscriptionModalComponent {
 
     this.dialogRef.close(inscriptionResponse);
   }
-}
-
-export function selectRequiredValidator(ctrl: AbstractControl): ValidatorFn {
-  return (control: AbstractControl): { [key: string]: any } | null => {
-    return control.value && control.value > 0
-      ? null
-      : { required: { value: control.value } };
-  };
 }
