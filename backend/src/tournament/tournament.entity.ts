@@ -15,22 +15,18 @@ import { Inscription } from '../inscription/inscription.entity.js'
 
 @Entity()
 export class Tournament extends BaseEntity {
-    @PrimaryKey()
-    id?: number
     @Property({ nullable: false, unique: true })
     name!: string
     @Property()
-    desc!: string
+    description!: string
     @Property()
     datetimeinit!: Date
-    @Property()
-    cant_personas!: number
     @Property()
     status!: string
     @ManyToOne(() => Game, { nullable: false })
     game!: Rel<Game>
     @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
-    tags!: Tag[]
+    tags = new Collection<Tag>(this)
     @OneToMany(() => Inscription, (inscription) => inscription.tournament)
     inscriptions = new Collection<Inscription>(this)
 }

@@ -7,7 +7,7 @@ import { tagRouter } from './tag/tag.routes.js'
 import { gameRouter } from './game/game.routes.js'
 import { tournamentRouter } from './tournament/tournament.routes.js'
 import { userRouter } from './user/user.routes.js'
-import { locationRouter } from './user/location.routes.js'
+import { locationRouter } from './location/location.routes.js'
 import { inscriptionRouter } from './inscription/inscription.routes.js'
 import cors from 'cors'
 
@@ -26,8 +26,8 @@ app.use('/api/tags', tagRouter)
 app.use('/api/games', gameRouter)
 app.use('/api/tournaments', tournamentRouter)
 app.use('/api/users', userRouter)
-app.use('/api/locations',locationRouter)
-app.use('/api/inscription', inscriptionRouter)
+app.use('/api/locations', locationRouter)
+app.use('/api/inscriptions', inscriptionRouter)
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
