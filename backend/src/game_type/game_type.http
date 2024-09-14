@@ -10,7 +10,6 @@ POST http://localhost:3000/api/game-types
 Content-Type: application/json
 
 {
-  "name": "Tag Fighter",
   "description": "Subgenre of fighting games where players control a team of characters, typically in pairs, and can switch between them during gameplay.",
   "tags":[1]
 }
