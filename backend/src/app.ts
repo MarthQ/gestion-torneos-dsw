@@ -9,9 +9,11 @@ import { tournamentRouter } from './tournament/tournament.routes.js'
 import { userRouter } from './user/user.routes.js'
 import { locationRouter } from './user/location.routes.js'
 import { inscriptionRouter } from './inscription/inscription.routes.js'
+import cors from 'cors'
 
 const app = express()
 app.use(express.json())
+app.use(cors())
 
 // After base middlewares like express
 app.use((req, res, next) => {
@@ -24,7 +26,7 @@ app.use('/api/tags', tagRouter)
 app.use('/api/games', gameRouter)
 app.use('/api/tournaments', tournamentRouter)
 app.use('/api/users', userRouter)
-app.use('/api/locations',locationRouter)
+app.use('/api/locations', locationRouter)
 app.use('/api/inscription', inscriptionRouter)
 
 app.use((_, res) => {

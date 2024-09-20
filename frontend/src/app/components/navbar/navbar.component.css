@@ -79,7 +79,7 @@
   background-color: white;
   color: rgb(41, 2, 110);
 }
-.sidebar ul li a i {
+.sidebar ul li a mat-icon {
   font-size: 1.5rem;
   min-width: 50px;
   text-align: center;

@@ -21,17 +21,17 @@ export class GameTypeModalComponent {
   type: string = '';
 
   gameTypeForm = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.maxLength(15)]),
+    name: new FormControl('', [Validators.required, Validators.maxLength(40)]),
     description: new FormControl('', [Validators.required]),
     tags: new FormControl(),
   });
 
   ngOnInit() {
-    this.initializeForms();
-
     this.tagService
       .getTags()
-      .subscribe((response: any) => (this.tagList = response.data));
+      .subscribe((response: Tag[]) => (this.tagList = response));
+
+    this.initializeForms();
 
     if (this.data.gameType.id === 0) {
       this.type = 'Crear';
@@ -44,7 +44,7 @@ export class GameTypeModalComponent {
     this.gameTypeForm.setValue({
       name: this.data.gameType.name,
       description: this.data.gameType.description,
-      tags: this.data.gameType.tags,
+      tags: this.data.gameType.tags.map((tag: Tag) => tag.id),
     });
   }
 

@@ -1,8 +1,8 @@
 <div mat-dialog-title>
-  <h2>{{ type }} tipo de juego:</h2>
+  <h2>{{ type }} tag:</h2>
 </div>
 <div mat-dialog-content>
-  <form [formGroup]="gameTypeForm">
+  <form [formGroup]="tagForm">
     <mat-form-field>
       <mat-label>Nombre</mat-label>
       <input matInput formControlName="name" />
@@ -12,22 +12,13 @@
       <mat-label>Descripcion</mat-label>
       <textarea matInput formControlName="description"></textarea>
     </mat-form-field>
-
-    <mat-form-field>
-      <mat-label>Tags</mat-label>
-      <mat-select multiple formControlName="tags">
-        <mat-option *ngFor="let tag of tagList" [value]="tag.id">{{
-          tag.name
-        }}</mat-option>
-      </mat-select>
-    </mat-form-field>
   </form>
 
   <div mat-dialog-actions>
     <button
       mat-raised-button
       color="primary"
-      [disabled]="!gameTypeForm.valid"
+      [disabled]="!tagForm.valid"
       (click)="saveChanges()"
     >
       <mat-icon fontIcon="save"></mat-icon> Guardar Cambios

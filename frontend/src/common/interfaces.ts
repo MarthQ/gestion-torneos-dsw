@@ -5,7 +5,7 @@ export interface CrudElement {
 
 export interface GameType extends CrudElement {
   description: string;
-  tags: string[];
+  tags: Tag[];
 }
 
 export interface Game extends CrudElement {
@@ -17,3 +17,11 @@ export interface Game extends CrudElement {
 export interface Tag extends CrudElement {
   description: string;
 }
+
+export interface User extends CrudElement {
+  password: string;
+  mail: string;
+  location: Location | null;
+}
+
+export interface Location extends CrudElement {}

@@ -1,24 +1,31 @@
 <div mat-dialog-title>
-  <h2>{{ type }} tipo de juego:</h2>
+  <h2>{{ type }} usuario:</h2>
 </div>
 <div mat-dialog-content>
-  <form [formGroup]="gameTypeForm">
+  <form [formGroup]="userForm">
     <mat-form-field>
       <mat-label>Nombre</mat-label>
       <input matInput formControlName="name" />
     </mat-form-field>
 
     <mat-form-field>
-      <mat-label>Descripcion</mat-label>
-      <textarea matInput formControlName="description"></textarea>
+      <mat-label>Contraseña</mat-label>
+      <textarea matInput formControlName="password"></textarea>
     </mat-form-field>
 
     <mat-form-field>
-      <mat-label>Tags</mat-label>
-      <mat-select multiple formControlName="tags">
-        <mat-option *ngFor="let tag of tagList" [value]="tag.id">{{
-          tag.name
-        }}</mat-option>
+      <mat-label>Mail</mat-label>
+      <textarea matInput formControlName="mail"></textarea>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Localización</mat-label>
+      <mat-select formControlName="location">
+        <mat-option
+          *ngFor="let location of locationList"
+          [value]="location.id"
+          >{{ location.name }}</mat-option
+        >
       </mat-select>
     </mat-form-field>
   </form>
@@ -27,7 +34,7 @@
     <button
       mat-raised-button
       color="primary"
-      [disabled]="!gameTypeForm.valid"
+      [disabled]="!userForm.valid"
       (click)="saveChanges()"
     >
       <mat-icon fontIcon="save"></mat-icon> Guardar Cambios

@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TagService } from 'src/app/services/CRUD/tag.service';
-import { CRUDService } from 'src/app/services/CRUD/crud.service';
-import { Game, GameType, Tag } from 'src/common/interfaces';
+import { GameTypeService } from 'src/app/services/CRUD/game-type.service';
+import { GameType, Tag } from 'src/common/interfaces';
 
 @Component({
   selector: 'app-game-modal',
@@ -13,7 +13,7 @@ import { Game, GameType, Tag } from 'src/common/interfaces';
 export class GameModalComponent {
   constructor(
     private tagService: TagService,
-    private gameTypeService: CRUDService,
+    private gameTypeService: GameTypeService,
     public dialogRef: MatDialogRef<GameModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
