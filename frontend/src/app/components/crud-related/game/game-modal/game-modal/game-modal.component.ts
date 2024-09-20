@@ -1,24 +1,25 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { GameService } from 'src/app/services/CRUD/game.service';
+import { TagService } from 'src/app/services/CRUD/tag.service';
+import { CRUDService } from 'src/app/services/CRUD/crud.service';
 import { Game, GameType, Tag } from 'src/common/interfaces';
 
 @Component({
   selector: 'app-game-modal',
   templateUrl: './game-modal.component.html',
-  styleUrls: ['./game-modal.component.css']
+  styleUrls: ['./game-modal.component.css'],
 })
 export class GameModalComponent {
   constructor(
-    private gameService: GameService,
+    private tagService: TagService,
+    private gameTypeService: CRUDService,
     public dialogRef: MatDialogRef<GameModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   tagList: Tag[] = [];
   gametypeList: GameType[] = [];
-
 
   type: string = '';
 
@@ -32,9 +33,13 @@ export class GameModalComponent {
   ngOnInit() {
     this.initializeForms();
 
-    this.gameService
-      .getGames()
+    this.tagService
+      .getTags()
       .subscribe((response: any) => (this.tagList = response.data));
+
+    this.gameTypeService
+      .getGameTypes()
+      .subscribe((response: any) => (this.gametypeList = response.data));
 
     if (this.data.game.id === 0) {
       this.type = 'Crear';

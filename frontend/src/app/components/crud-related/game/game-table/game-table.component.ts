@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Game } from 'src/common/interfaces'
+import { Game } from 'src/common/interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { GameService } from 'src/app/services/CRUD/game.service';
@@ -9,18 +9,18 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { GameModalComponent } from '../game-modal/game-modal/game-modal.component';
 
+import { Tag } from 'src/common/interfaces';
 
 @Component({
-  selector: 'app-game',
-  templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css']
+  selector: 'app-game-table',
+  templateUrl: './game-table.component.html',
+  styleUrls: ['./game-table.component.css'],
 })
-
-export class GameComponent {
+export class GameTableComponent {
   game: Game[] = [];
   canEdit: boolean = false;
   dataSource: any;
-  tableHeaders: string[] = ['id', 'name', 'cant_torneos', 'gametype', 'tags', 'actions'];
+  tableHeaders: string[] = ['id', 'name', 'gametype', 'tags', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -51,6 +51,10 @@ export class GameComponent {
     this.dataSource.filter = filterValue;
   }
 
+  formatTags(tags: Tag[]): string {
+    return tags ? tags.map((tag) => tag.name).join(', ') : '';
+  }
+
   add() {
     let gameSelected: Game = {
       id: 0,
@@ -70,7 +74,7 @@ export class GameComponent {
       if (result) {
         gameSelected = result;
         console.log(gameSelected);
-        this.SaveGame(gameSelected);
+        this.saveGame(gameSelected);
       }
     });
   }
@@ -102,12 +106,12 @@ export class GameComponent {
       if (result) {
         gameSelected = result;
         console.log(gameSelected);
-        this.SaveGame(gameSelected);
+        this.saveGame(gameSelected);
       }
     });
   }
 
-  SaveGame(game: Game) {
+  saveGame(game: Game) {
     if (game.id === 0) {
       const dialogRef = this.dialog.open(ConfirmComponent, {
         data: { element: game, typeConfirm: 'crear' },
@@ -115,11 +119,9 @@ export class GameComponent {
 
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          this.gameService
-            .createGame(game)
-            .subscribe((response: any) => {
-              this.getGames();
-            });
+          this.gameService.createGame(game).subscribe((response: any) => {
+            this.getGames();
+          });
         }
       });
     } else {
@@ -129,11 +131,9 @@ export class GameComponent {
 
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          this.gameService
-            .updateGame(game)
-            .subscribe((response: any) => {
-              this.getGames();
-            });
+          this.gameService.updateGame(game).subscribe((response: any) => {
+            this.getGames();
+          });
         }
       });
     }
