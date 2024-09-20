@@ -9,9 +9,8 @@ export interface GameType extends CrudElement {
 }
 
 export interface Game extends CrudElement {
-   cant_torneos : number;
-   gametype: GameType | null;
-   tags: string[];
+  gametype: GameType | null;
+  tags: string[];
 }
 
 export interface Tag extends CrudElement {

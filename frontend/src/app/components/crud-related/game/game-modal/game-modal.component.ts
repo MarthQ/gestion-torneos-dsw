@@ -25,21 +25,22 @@ export class GameModalComponent {
 
   gameForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.maxLength(15)]),
-    cant_torneos: new FormControl('', [Validators.required]),
-    gametype: new FormControl(),
+    gametype: new FormControl('', [Validators.required]),
     tags: new FormControl(),
   });
 
   ngOnInit() {
     this.initializeForms();
 
-    this.tagService
-      .getTags()
-      .subscribe((response: any) => (this.tagList = response.data));
+    this.tagService.getTags().subscribe((response: Tag[]) => {
+      this.tagList = response;
+      console.log(response);
+    });
 
-    this.gameTypeService
-      .getGameTypes()
-      .subscribe((response: any) => (this.gametypeList = response.data));
+    this.gameTypeService.getGameTypes().subscribe((response: GameType[]) => {
+      this.gametypeList = response;
+      console.log(response);
+    });
 
     if (this.data.game.id === 0) {
       this.type = 'Crear';
@@ -51,7 +52,6 @@ export class GameModalComponent {
   initializeForms() {
     this.gameForm.setValue({
       name: this.data.game.name,
-      cant_torneos: this.data.game.cant_torneos,
       gametype: this.data.game.gametype,
       tags: this.data.game.tags,
     });

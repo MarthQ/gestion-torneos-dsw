@@ -7,7 +7,7 @@ import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.comp
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { GameModalComponent } from '../game-modal/game-modal/game-modal.component';
+import { GameModalComponent } from '../game-modal/game-modal.component';
 
 import { Tag } from 'src/common/interfaces';
 
@@ -37,8 +37,8 @@ export class GameTableComponent {
   }
 
   getGames(): void {
-    this.gameService.getGames().subscribe((response: any) => {
-      this.game = response.data;
+    this.gameService.getGames().subscribe((response: Game[]) => {
+      this.game = response;
       this.dataSource = new MatTableDataSource<Game>(this.game);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -59,7 +59,6 @@ export class GameTableComponent {
     let gameSelected: Game = {
       id: 0,
       name: '',
-      cant_torneos: 0,
       gametype: null,
       tags: [],
     };
