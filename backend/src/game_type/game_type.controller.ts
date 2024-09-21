@@ -8,8 +8,8 @@ const em = ORM.em
 
 const GameTypeSchema = z.object({
     id: z.number().gt(0).optional(),
-    name: z.string(),
-    description: z.string(),
+    name: z.string({ message: 'Name must be a string' }),
+    description: z.string({ message: 'Description must be a string' }),
     tags: z.array(z.number()),
 })
 
@@ -56,15 +56,14 @@ async function add(req: Request, res: Response) {
 }
 async function update(req: Request, res: Response) {
     try {
-        const id = Number.parseInt(req.params.id)
-        const gameType = await em.findOneOrFail(Game_Type, id, { populate: ['tags'] })
-        // Thing is, since I used safeParse with GameTypeSchema. This only would work for a PUT method, not a PATCH method
-        const sanitizedInput = GameTypeSchema.safeParse(req.body)
+        const sanitizedInput = GameTypeSchema.partial().safeParse(req.body)
 
         if (!sanitizedInput.success) {
             throw fromZodError(sanitizedInput.error)
         } else {
-            if (sanitizedInput.data.tags.length === 0) {
+            const id = Number.parseInt(req.params.id)
+            const gameType = await em.findOneOrFail(Game_Type, id, { populate: ['tags'] })
+            if (sanitizedInput.data.tags?.length === 0) {
                 gameType.tags.removeAll()
             }
             em.assign(gameType, sanitizedInput.data)
