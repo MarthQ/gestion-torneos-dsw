@@ -1,0 +1,45 @@
+<div mat-dialog-title>
+  <h2>{{ type }} juego:</h2>
+</div>
+<div mat-dialog-content>
+  <form [formGroup]="gameForm">
+    <mat-form-field>
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Tipo de juego</mat-label>
+      <mat-select formControlName="gametype">
+        <mat-option
+          *ngFor="let gametype of gametypeList"
+          [value]="gametype.id"
+          >{{ gametype.name }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Tags</mat-label>
+      <mat-select multiple formControlName="tags">
+        <mat-option *ngFor="let tag of tagList" [value]="tag.id">{{
+          tag.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+  <div mat-dialog-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!gameForm.valid"
+      (click)="saveChanges()"
+    >
+      <mat-icon fontIcon="save"></mat-icon> Guardar Cambios
+    </button>
+    <button mat-fab color="accent" (click)="initializeForms()">
+      <mat-icon fontIcon="refresh"></mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { AdminComponent } from './components/admin/admin.component';
 import { AppComponent } from './app.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
+import { GameTableComponent } from './components/crud-related/game/game-table/game-table.component';
 import { UserCrudTableComponent } from './components/crud-related/user-crud/user-crud-table/user-crud-table.component';
 import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
 import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
-
 const routes: Routes = [
   {
     path: 'admin',
@@ -20,6 +19,11 @@ const routes: Routes = [
         title: 'GameType CRUD',
       },
       {
+        path: 'Games',
+        component: GameTableComponent,
+        title: 'Game CRUD',
+      },
+      {
         path: 'Users',
         component: UserCrudTableComponent,
         title: 'User CRUD',
@@ -29,7 +33,7 @@ const routes: Routes = [
         component: LocationTableComponent,
         title: 'Location CRUD',
       },
-        {
+      {
         path: 'Tags',
         component: TagTableComponent,
         title: 'Tag CRUD',

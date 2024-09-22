@@ -23,6 +23,8 @@ import { AdminComponent } from './components/admin/admin.component';
 import { GameTypeTableComponent } from './components/crud-related/game-type/game-type-table/game-type-table.component';
 import { GameTypeModalComponent } from './components/crud-related/game-type/game-type-modal/game-type-modal.component';
 import { ConfirmComponent } from './components/shared/confirm/confirm.component';
+import { GameTableComponent } from './components/crud-related/game/game-table/game-table.component';
+import { GameModalComponent } from './components/crud-related/game/game-modal/game-modal.component';
 import { UserCrudTableComponent } from './components/crud-related/user-crud/user-crud-table/user-crud-table.component';
 import { UserCrudModalComponent } from './components/crud-related/user-crud/user-crud-modal/user-crud-modal.component';
 import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
@@ -40,6 +42,8 @@ import { TagModalComponent } from './components/crud-related/tag/tag-modal/tag-m
     GameTypeTableComponent,
     GameTypeModalComponent,
     ConfirmComponent,
+    GameTableComponent,
+    GameModalComponent,
     UserCrudTableComponent,
     UserCrudModalComponent,
     LocationTableComponent,

@@ -8,6 +8,11 @@ export interface GameType extends CrudElement {
   tags: Tag[];
 }
 
+export interface Game extends CrudElement {
+  gametype: GameType | null;
+  tags: Tag[];
+}
+
 export interface Tag extends CrudElement {
   description: string;
 }
