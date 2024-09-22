@@ -10,7 +10,7 @@ export interface GameType extends CrudElement {
 
 export interface Game extends CrudElement {
   gametype: GameType | null;
-  tags: string[];
+  tags: Tag[];
 }
 
 export interface Tag extends CrudElement {

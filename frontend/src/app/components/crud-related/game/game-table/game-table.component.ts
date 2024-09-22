@@ -72,7 +72,6 @@ export class GameTableComponent {
     dialogRef.afterClosed().subscribe((result: Game) => {
       if (result) {
         gameSelected = result;
-        console.log(gameSelected);
         this.saveGame(gameSelected);
       }
     });
@@ -104,7 +103,6 @@ export class GameTableComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         gameSelected = result;
-        console.log(gameSelected);
         this.saveGame(gameSelected);
       }
     });

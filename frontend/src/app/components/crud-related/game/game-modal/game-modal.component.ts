@@ -34,12 +34,10 @@ export class GameModalComponent {
 
     this.tagService.getTags().subscribe((response: Tag[]) => {
       this.tagList = response;
-      console.log(response);
     });
 
     this.gameTypeService.getGameTypes().subscribe((response: GameType[]) => {
       this.gametypeList = response;
-      console.log(response);
     });
 
     if (this.data.game.id === 0) {
@@ -52,8 +50,8 @@ export class GameModalComponent {
   initializeForms() {
     this.gameForm.setValue({
       name: this.data.game.name,
-      gametype: this.data.game.gametype,
-      tags: this.data.game.tags,
+      gametype: this.data.game.gametype.id,
+      tags: this.data.game.tags.map((tag: Tag) => tag.id),
     });
   }
 

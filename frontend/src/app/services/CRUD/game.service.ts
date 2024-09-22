@@ -17,7 +17,8 @@ export class GameService {
   }
 
   createGame(game: Game): Observable<Game> {
-    return this.http.post<Game>(this.gameUrl, game);
+    const { id, ...gameData } = game;
+    return this.http.post<Game>(this.gameUrl, gameData);
   }
 
   updateGame(game: Game) {
