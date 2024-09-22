@@ -1,0 +1,51 @@
+### Obtener todos los juegos
+
+GET http://localhost:3000/api/games
+
+
+### Crear un nuevo tag
+
+# @name createGame
+POST http://localhost:3000/api/games
+Content-Type: application/json
+
+{
+  "name": "Street Fighter 3rd Strike",
+  "description": "A game that is considered by many to be the best fighting game ever made.",
+  "gametype": 1,
+  "tags": [1]
+}
+
+
+### ID
+@id = {{createGame.response.body.data.id}}
+
+
+### Obtener un solo tag usando un id
+
+GET http://localhost:3000/api/games/{{id}}
+
+### Modificar un tag (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/games/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Mortal Kombat 10",
+  "description": "Allegedly the best Mortal Kombat game ever made.",
+}
+
+### Modificar un tag (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/games/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Melty Blood",
+  "description": "A niche fighting game that has impressive mechanics and a dedicated fanbase."
+}
+
+
+### Borrar un tag (DELETE)
+
+DELETE http://localhost:3000/api/games/{{id}}

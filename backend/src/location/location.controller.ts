@@ -1,23 +1,22 @@
 import { Request, Response } from 'express'
-import { Tag } from './tag.entity.js'
+import { Location } from './location.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
 const em = ORM.em
 
-const TagSchema = z.object({
+const LocationSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
 })
 
 async function findAll(req: Request, res: Response) {
     try {
-        const tags = await em.find(Tag, {})
+        const Locations = await em.find(Location, {})
         res.status(200).json({
-            message: 'Found all tags',
-            data: tags,
+            message: 'Found all locations',
+            data: Locations,
         })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
@@ -27,8 +26,8 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const tags = await em.findOneOrFail(Tag, { id })
-        res.status(200).json({ message: 'Found the tag', data: tags })
+        const location = await em.findOneOrFail(Location, { id })
+        res.status(200).json({ message: 'Found location', data: location })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
@@ -36,47 +35,43 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
     try {
-        const sanitizedTag = TagSchema.safeParse(req.body)
+        const sanitizedLocation = LocationSchema.safeParse(req.body)
 
-        if (!sanitizedTag.success) {
-            throw fromZodError(sanitizedTag.error)
+        if (!sanitizedLocation.success) {
+            throw fromZodError(sanitizedLocation.error)
         } else {
-            const tag = em.create(Tag, sanitizedTag.data)
+            const location = em.create(Location, sanitizedLocation.data)
             await em.flush()
-            res.status(201).json({
-                message: 'Successfully created a new tag',
-                data: tag,
-            })
+            res.status(201).json({ message: 'Location created', data: location })
         }
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
 }
-
 async function update(req: Request, res: Response) {
     try {
-        const sanitizedTag = TagSchema.partial().safeParse(req.body)
+        const sanitizedLocation = LocationSchema.partial().safeParse(req.body)
 
-        if (!sanitizedTag.success) {
-            throw fromZodError(sanitizedTag.error)
+        if (!sanitizedLocation.success) {
+            throw fromZodError(sanitizedLocation.error)
         } else {
             const id = Number.parseInt(req.params.id)
-            const tagReference = em.getReference(Tag, id)
-            em.assign(tagReference, sanitizedTag.data)
+            const location = em.getReference(Location, id)
+            em.assign(location, sanitizedLocation.data)
             await em.flush()
-            res.status(200).json({ message: 'Successfully updated the tag' })
         }
+        res.status(200).json({ message: 'Location updated' })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json(error.message)
     }
 }
 
 async function remove(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const tagReference = em.getReference(Tag, id)
-        await em.removeAndFlush(tagReference)
-        res.status(200).send({ message: 'Successfully deleted the tag' })
+        const location = em.getReference(Location, id)
+        await em.removeAndFlush(location)
+        res.status(200).send({ message: 'Location deleted' })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
