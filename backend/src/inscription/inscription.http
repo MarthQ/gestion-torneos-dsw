@@ -1,0 +1,55 @@
+### Obtener todas las inscripciones
+
+GET http://localhost:3000/api/inscriptions
+
+
+### Crear un nuevo inscripcion
+
+# @name createInscription
+POST http://localhost:3000/api/inscriptions
+Content-Type: application/json
+
+{
+  "score": 0,
+  "ranking": 0,
+  "inscriptionDate": "2024-13-09T00:00:00.000Z",
+  "tournament": 1,
+  "user": 1,
+}
+
+
+### ID
+@id = {{createInscription.response.body.data.id}}
+
+
+### Obtener una sola inscripcion usando un id
+
+GET http://localhost:3000/api/inscriptions/{{id}}
+
+### Modificar una inscripcion (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/inscriptions/{{id}}
+Content-Type: application/json
+
+{
+  "score": 10,
+  "ranking": 5,
+  "inscriptionDate": "2024-13-09T00:00:00.000Z",
+  "tournament": 1,
+  "user": 1,
+}
+
+
+### Modificar una inscripcion (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/inscriptions/{{id}}
+Content-Type: application/json
+
+{
+  "score": 20
+}
+
+
+### Borrar una inscripcion (DELETE)
+
+DELETE http://localhost:3000/api/inscriptions/{{id}}

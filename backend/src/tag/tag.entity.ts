@@ -1,10 +1,4 @@
-import {
-    Collection,
-    Entity,
-    ManyToMany,
-    PrimaryKey,
-    Property,
-} from '@mikro-orm/core'
+import { Collection, Entity, ManyToMany, Property } from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Game_Type } from '../game_type/game_type.entity.js'
 import { Game } from '../game/game.entity.js'
@@ -19,7 +13,7 @@ export class Tag extends BaseEntity {
     description!: string
 
     @ManyToMany(() => Game_Type, (game_type) => game_type.tags)
-    game_types = new Collection<Game_Type>(this)
+    gameTypes = new Collection<Game_Type>(this)
 
     @ManyToMany(() => Game, (game) => game.tags)
     games = new Collection<Game>(this)
