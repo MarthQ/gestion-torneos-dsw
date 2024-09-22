@@ -21,11 +21,9 @@ Content-Type: application/json
 @id = {{createUser.response.body.data.id}}
 
 
-### Obtener un solo tipo de juego con un id
+### Obtener un solo tipo de usuario con un id
 
 GET http://localhost:3000/api/users/{{id}}
-
-# TODO: Decide if we want to use PUT or PATCH
 
 ### Modificar un usuario (PUT - Modificar recurso completo e idempotente)
 
@@ -49,7 +47,6 @@ Content-Type: application/json
   "name": "Martin Ushiromiya",
   "password": "la-franquicia-de-dead-rising-murio-con-el-4"
 }
-
 
 ### Borrar un usuario (DELETE)
 

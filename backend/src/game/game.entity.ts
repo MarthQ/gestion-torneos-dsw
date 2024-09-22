@@ -16,16 +16,12 @@ import { Tag } from '../tag/tag.entity.js'
 
 @Entity()
 export class Game extends BaseEntity {
-    @PrimaryKey()
-    id?: number
     @Property({ nullable: false, unique: true })
     name!: string
-    @Property()
-    canttorneos!: number
     @ManyToOne(() => Game_Type, { nullable: false })
     gametype!: Rel<Game_Type>
     @ManyToMany(() => Tag, (tag) => tag.games, { owner: true })
-    tags!: Tag[]
-    @OneToMany(() => Tournament, (tournament) => tournament.game, {cascade: [Cascade.ALL],})
+    tags = new Collection<Tag>(this)
+    @OneToMany(() => Tournament, (tournament) => tournament.game, { cascade: [Cascade.ALL] })
     tournament = new Collection<Tournament>(this)
 }
