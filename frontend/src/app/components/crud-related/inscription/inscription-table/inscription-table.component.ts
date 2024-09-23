@@ -79,7 +79,7 @@ export class InscriptionTableComponent {
       tournament: null,
       score: 0,
       ranking: 0,
-      inscriptiondate: new Date(),
+      inscriptionDate: null,
     };
 
     const dialogRef = this.dialog.open(InscriptionModalComponent, {

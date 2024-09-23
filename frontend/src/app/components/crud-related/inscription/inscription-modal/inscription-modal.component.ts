@@ -36,9 +36,12 @@ export class InscriptionModalComponent {
       Validators.required,
       selectRequiredValidator,
     ]),
-    score: new FormControl('', Validators.pattern('^[0-9999]*$')),
-    ranking: new FormControl('', Validators.pattern('^[0-9999]*$')),
-    inscriptiondate: new FormControl(new Date(), Validators.required),
+    score: new FormControl(0, Validators.min(0)),
+    ranking: new FormControl(0, Validators.min(0)),
+    inscriptionDate: new FormControl(
+      new Date().toISOString().slice(0, 16),
+      Validators.required
+    ),
   });
 
   ngOnInit() {
@@ -67,18 +70,23 @@ export class InscriptionModalComponent {
       tournament: this.data.inscription.tournament?.id || null,
       score: this.data.inscription.score,
       ranking: this.data.inscription.ranking,
-      inscriptiondate: this.data.inscription.inscriptiondate,
+      inscriptionDate:
+        this.data.inscription.inscriptionDate.slice(0, 16) ??
+        new Date().toISOString().slice(0, 16),
     });
   }
 
   generateDate() {
-    new Date();
+    return new Date();
   }
 
   saveChanges() {
     let inscriptionResponse = {
       id: this.data.inscription.id,
       ...this.inscriptionForm.value,
+      inscriptionDate: new Date(
+        this.inscriptionForm.value.inscriptionDate!
+      ).toISOString(),
     };
 
     console.log(inscriptionResponse);

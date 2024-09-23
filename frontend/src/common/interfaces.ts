@@ -24,7 +24,7 @@ export interface Inscription extends CrudElement {
   tournament: Tournament | null;
   score: number;
   ranking: number;
-  inscriptiondate: Date;
+  inscriptionDate: Date | null;
 }
 
 export interface User extends CrudElement {

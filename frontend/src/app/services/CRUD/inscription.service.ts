@@ -9,7 +9,7 @@ import { Inscription } from 'src/common/interfaces';
 export class InscriptionService {
   constructor(private http: HttpClient) {}
 
-  readonly inscriptionsUrl = 'http://localhost:3000/api/inscription/';
+  readonly inscriptionsUrl = 'http://localhost:3000/api/inscriptions/';
 
   getInscriptions(): Observable<Inscription[]> {
     return this.http
@@ -19,6 +19,9 @@ export class InscriptionService {
 
   createInscription(inscription: Inscription) {
     const { id, ...inscriptionData } = inscription;
+    console.log(inscriptionData);
+    console.log(typeof inscriptionData.score);
+    console.log(typeof inscriptionData.ranking);
     return this.http.post<Inscription>(this.inscriptionsUrl, inscriptionData);
   }
 
