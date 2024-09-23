@@ -8,6 +8,12 @@ export interface GameType extends CrudElement {
   tags: Tag[];
 }
 
+export interface Game extends CrudElement {
+  name: string;
+  gametype: GameType | null;
+  tags: Tag[];
+}
+
 export interface Tag extends CrudElement {
   name: string;
   description: string;
@@ -40,11 +46,4 @@ export interface Tournament extends CrudElement {
   maxParticipants: number;
   status: string;
   inscriptions: Inscription[];
-}
-
-export interface Game extends CrudElement {
-  name: string;
-  cant_torneos: number;
-  gametype: GameType | null;
-  tags: string[];
 }

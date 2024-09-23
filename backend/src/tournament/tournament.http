@@ -1,0 +1,58 @@
+### Obtener todos los torneos
+
+GET http://localhost:3000/api/tournaments
+
+
+### Crear un nuevo torneo
+
+# @name createTournament
+POST http://localhost:3000/api/tournaments
+Content-Type: application/json
+
+{
+  "name": "Parry Palace 1st Tournament",
+  "description": "The first tournament of the Parry Palace group.",
+  "datetimeinit": "2024-13-09T00:00:00.000Z",
+  "status": "In progress",
+  "game": 1,
+  "tags": [1],
+}
+
+
+### ID
+@id = {{createTournament.response.body.data.id}}
+
+
+### Obtener un solo torneo usando un id
+
+GET http://localhost:3000/api/tournaments/{{id}}
+
+### Modificar un torneo (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/tournaments/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Parry Palace 2nd Tournament",
+  "description": "The second tournament of the Parry Palace group.",
+  "datetimeinit": "2024-10-01T00:00:00.000Z",
+  "status": "Done",
+  "game": 1,
+  "tags": [1, 2],
+}
+
+
+### Modificar un torneo (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/tournaments/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Parry Palace 3rd Tournament",
+  "description": "The third tournament of the Parry Palace group.",
+}
+
+
+### Borrar un torneo (DELETE)
+
+DELETE http://localhost:3000/api/tournaments/{{id}}
