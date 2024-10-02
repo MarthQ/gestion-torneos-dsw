@@ -24,15 +24,11 @@ export class TagService {
 
   updateTag(tag: Tag) {
     let updateUrl = this.tagsUrl + tag.id.toString();
-    console.log(updateUrl);
     return this.http.put(updateUrl, tag);
   }
 
   deleteTag(id: number) {
     let deletionUrl = this.tagsUrl + id.toString();
-    console.log('Data about to be deleted');
-    console.log(id.toString());
-    console.log(deletionUrl);
     return this.http.delete(deletionUrl);
   }
 }

@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { LocationService } from 'src/app/services/CRUD/location.service';
 import { User, Location } from 'src/common/interfaces';
+import { selectRequiredValidator } from 'src/common/validators';
 
 @Component({
   selector: 'app-user-crud-modal',
@@ -26,7 +27,10 @@ export class UserCrudModalComponent {
       Validators.minLength(8),
     ]),
     mail: new FormControl('', [Validators.required, Validators.email]),
-    location: new FormControl(0, [Validators.required]),
+    location: new FormControl(null, [
+      Validators.required,
+      selectRequiredValidator,
+    ]),
   });
 
   ngOnInit() {
@@ -48,7 +52,7 @@ export class UserCrudModalComponent {
       name: this.data.user.name,
       password: this.data.user.password,
       mail: this.data.user.mail,
-      location: this.data.user.location?.id || 0,
+      location: this.data.user.location?.id || null,
     });
   }
 

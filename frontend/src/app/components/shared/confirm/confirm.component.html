@@ -1,15 +1,14 @@
 <div mat-dialog-title>
-  <h2>Estas seguro que quieres {{ typeConfirm }} este elemento:</h2>
+  <h2>
+    Estas seguro que quieres {{ typeConfirm }} este elemento
+    {{ typeConfirm != "crear" ? ":" : "" }}
+  </h2>
 </div>
 <div mat-dialog-content>
-  <h3>
+  <h3 *ngIf="element.id != 0">
     <strong>id: </strong>
     <b> {{ element.id }}</b>
     <br />
-    <strong>Name: </strong>
-    <b>
-      {{ element.name }}
-    </b>
   </h3>
 
   <div mat-dialog-actions>
