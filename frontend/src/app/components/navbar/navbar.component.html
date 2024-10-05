@@ -1,0 +1,59 @@
+<div class="sidebar" [class.active]="isToggled">
+  <div class="logo">
+    <img src="assets/ten.png" alt="logo" class="logo-img" />
+  </div>
+  <div class="top">
+    <mat-icon
+      id="btn"
+      [fontIcon]="isToggled ? 'chevron_left' : 'chevron_right'"
+      (click)="toggleSidebar()"
+    ></mat-icon>
+  </div>
+  <div class="user">
+    <app-user />
+  </div>
+  <ul>
+    <li>
+      <a href="#">
+        <mat-icon fontIcon="grid_view"></mat-icon>
+        <span class="nav-item">Dashboard</span>
+      </a>
+      <span class="tooltip">Dashboard</span>
+    </li>
+    <li>
+      <a href="#">
+        <mat-icon fontIcon="emoji_events"></mat-icon>
+        <span class="nav-item">Mis Torneos</span>
+      </a>
+      <span class="tooltip">Mis Torneos</span>
+    </li>
+    <li>
+      <a href="#">
+        <mat-icon fontIcon="explore"></mat-icon>
+        <span class="nav-item">Buscar Torneos</span>
+      </a>
+      <span class="tooltip">Buscar Torneos</span>
+    </li>
+    <li>
+      <a href="#">
+        <mat-icon fontIcon="edit_note"></mat-icon>
+        <span class="nav-item">Inscribirse a Torneo</span>
+      </a>
+      <span class="tooltip">Inscribirse a Torneo</span>
+    </li>
+    <li>
+      <a href="#">
+        <mat-icon fontIcon="add_circle"></mat-icon>
+        <span class="nav-item">Crear Torneo</span>
+      </a>
+      <span class="tooltip">Crear Torneo</span>
+    </li>
+    <li>
+      <a href="#" id="unlog">
+        <mat-icon fontIcon="logout"></mat-icon>
+        <span class="nav-item">Desloguearse</span>
+      </a>
+      <span class="tooltip">Desloguearse</span>
+    </li>
+  </ul>
+</div>

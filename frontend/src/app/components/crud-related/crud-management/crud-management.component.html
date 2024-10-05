@@ -1,0 +1,25 @@
+<!-- TODO: Button that switches between all the possibles CRUD -->
+
+<fieldset class="multiswitch">
+  <legend>¿What CRUD would you like to use?</legend>
+
+  <div class="slide-container">
+    <input type="radio" name="type_CRUD" id="type_CRUD1" checked value="GameTypes" (change)="onChange($event)" />
+    <label for="type_CRUD3">Game Types</label>
+    <input type="radio" name="type_CRUD" id="type_CRUD2" value="Games" (change)="onChange($event)" />
+    <label for="type_CRUD2">Games</label>
+    <input type="radio" name="type_CRUD" id="type_CRUD8" value="Inscriptions" (change)="onChange($event)" />
+    <label for="type_CRUD1">Inscriptions</label>
+    <input type="radio" name="type_CRUD" id="type_CRUD4" value="Tags" (change)="onChange($event)" />
+    <label for="type_CRUD2">Tags</label>
+    <input type="radio" name="type_CRUD" id="type_CRUD3" value="Users" (change)="onChange($event)" />
+    <label for="type_CRUD1">Users</label>
+    <input type="radio" name="type_CRUD" id="type_CRUD6" value="Locations" (change)="onChange($event)" />
+    <label for="type_CRUD6">Locations</label>
+  </div>
+  <div>
+    <button type="submit" class="LoadCRUD" (click)="loadCrud()">Load</button>
+  </div>
+</fieldset>
+
+<router-outlet></router-outlet>
