@@ -35,6 +35,7 @@ import { LocationTableComponent } from './components/crud-related/location/locat
 import { LocationModalComponent } from './components/crud-related/location/location-modal/location-modal.component';
 import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
 import { TagModalComponent } from './components/crud-related/tag/tag-modal/tag-modal.component';
+import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { TagModalComponent } from './components/crud-related/tag/tag-modal/tag-m
     LocationModalComponent,
     TagTableComponent,
     TagModalComponent,
+    SearchTournamentComponent,
   ],
 
   imports: [

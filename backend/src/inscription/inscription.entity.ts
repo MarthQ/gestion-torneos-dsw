@@ -6,9 +6,9 @@ import { User } from '../user/user.entity.js'
 @Entity()
 export class Inscription extends BaseEntity {
     @Property()
-    score!: number
+    victories!: number
     @Property()
-    ranking!: string
+    loses!: number
     @Property()
     inscriptionDate!: Date
     @ManyToOne(() => Tournament, { nullable: false })
