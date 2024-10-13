@@ -1,0 +1,32 @@
+<div mat-dialog-title>
+  <h2>Inscribirse a un torneo:</h2>
+</div>
+<div mat-dialog-content>
+  <form [formGroup]="inscriptionForm">
+    <mat-form-field>
+      <mat-label>Usuario</mat-label>
+      <input mat-input formControlName="user" ng-disabled="true" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Nickname del torneo</mat-label>
+      <input mat-input formControlName="nickname" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Torneo</mat-label>
+      <input mat-input formControlName="tournament" ng-disabled="true" />
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!inscriptionForm.valid"
+        (click)="confirm()"
+      >
+        Confirmar Inscripción<mat-icon>list_alt_check</mat-icon>
+      </button>
+    </div>
+  </form>
+</div>

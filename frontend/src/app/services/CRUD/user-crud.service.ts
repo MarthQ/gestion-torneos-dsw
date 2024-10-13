@@ -18,6 +18,13 @@ export class UserCrudService {
       .pipe(map((response) => response.data));
   }
 
+  getUser(id: number): Observable<User> {
+    const getUrl = this.usersUrl + id.toString();
+    return this.http
+      .get<{ data: User }>(getUrl)
+      .pipe(map((response) => response.data));
+  }
+
   createUser(user: User) {
     const { id, ...userData } = user;
 
@@ -25,13 +32,13 @@ export class UserCrudService {
   }
 
   updateUser(user: User) {
-    let updateUrl = this.usersUrl + user.id.toString();
+    const updateUrl = this.usersUrl + user.id.toString();
 
     return this.http.put(updateUrl, user);
   }
 
   deleteUser(id: number) {
-    let deletionUrl = this.usersUrl + id.toString();
+    const deletionUrl = this.usersUrl + id.toString();
 
     return this.http.delete(deletionUrl);
   }

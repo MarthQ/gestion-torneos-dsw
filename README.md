@@ -70,8 +70,8 @@ erDiagram
     Inscripcion {
         int idUsuario PK,FK
         int idTorneo PK,FK
-        int puntaje
-        string ranking
+        int victorias
+        int derrotas
         datetime fechahora-inscripcion
     }
 

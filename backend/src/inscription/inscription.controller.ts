@@ -8,8 +8,9 @@ const em = ORM.em
 
 const InscriptionSchema = z.object({
     id: z.number().gt(0).optional(),
-    victories: z.number({ message: 'Score must be a number' }),
-    loses: z.number({ message: 'Score must be a number' }),
+    victories: z.number({ message: 'Victories must be a number' }),
+    loses: z.number({ message: 'Loses must be a number' }),
+    nickname: z.string({ message: 'Nickname must be a string' }),
     inscriptionDate: z.string().datetime({ message: 'The inscription date must be a date' }),
     tournament: z.number({ message: 'Tournament must be a number representing a tournament id' }),
     user: z.number({ message: 'User must be a number representing a user id' }),

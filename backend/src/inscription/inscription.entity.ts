@@ -10,6 +10,8 @@ export class Inscription extends BaseEntity {
     @Property()
     loses!: number
     @Property()
+    nickname!: string
+    @Property()
     inscriptionDate!: Date
     @ManyToOne(() => Tournament, { nullable: false })
     tournament!: Rel<Tournament>
