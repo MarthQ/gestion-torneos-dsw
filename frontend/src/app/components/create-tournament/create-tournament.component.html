@@ -1,0 +1,37 @@
+<p>hola amigo</p>
+<div>
+    <form [formGroup]="creatingForm" class="form">
+        <mat-form-field>
+            <mat-label>Nombre del Torneo</mat-label>
+            <input matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Descripción del Torneo</mat-label>
+            <input matInput formControlName="description">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Fecha del Torneo</mat-label>
+            <input matInput formControlName="datetimeinit" type="datetime-local">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Juego</mat-label>
+            <mat-select formControlName="game">
+                <mat-option *ngFor="let game of gameList" [value]="game.id">{{
+                    game.name
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Tags</mat-label>
+            <mat-select multiple formControlName="tags">
+                <mat-option *ngFor="let tag of tagList" [value]="tag.id">{{
+                    tag.name
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" [disabled]="!creatingForm.valid" (click)="createTournament()">
+            <mat-icon fontIcon="save"></mat-icon> Crear Torneo
+        </button>
+    </form>
+</div>
