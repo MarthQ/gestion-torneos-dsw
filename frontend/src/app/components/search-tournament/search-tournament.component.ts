@@ -56,7 +56,6 @@ export class SearchTournamentComponent {
   }
 
   inscribe(tournamentSelected: Tournament) {
-    console.log(this.user);
     if (!this.user) {
       console.log("There isn't a user logged");
     } else {
@@ -66,16 +65,13 @@ export class SearchTournamentComponent {
         width: '400px',
       });
 
-      dialogRef.afterClosed().subscribe((result: Inscription) => {
+      dialogRef.afterClosed().subscribe((result) => {
         if (result) {
           const newInscription = result;
 
-          this.dialog.open(ConfirmComponent, {
-            height: '400px',
-            width: '400px',
-          });
+          const confirmDialogRef = this.dialog.open(ConfirmComponent);
 
-          dialogRef.afterClosed().subscribe((confirmation: boolean) => {
+          confirmDialogRef.afterClosed().subscribe((confirmation) => {
             if (confirmation) {
               this.inscriptionService
                 .createInscription(newInscription)

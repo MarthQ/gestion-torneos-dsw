@@ -24,6 +24,11 @@ export class UserInscriptionModalComponent {
     tournament: new FormControl(this.tournament.name, [Validators.required]),
   });
 
+  ngOnInit() {
+    this.inscriptionForm.get('user')?.disable();
+    this.inscriptionForm.get('tournament')?.disable();
+  }
+
   confirm() {
     let inscription = {
       victories: 0,
