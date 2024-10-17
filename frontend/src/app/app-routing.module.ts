@@ -50,7 +50,7 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'tournament-info',
+    path: 'tournament-info/:id',
     component: TournamentInfoComponent
   },
   { path: 'searchTournament', component: SearchTournamentComponent },

@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ActivatedRoute } from '@angular/router';
 import { InscriptionService } from 'src/app/services/CRUD/inscription.service';
 import { TournamentService } from 'src/app/services/CRUD/tournament.service';
 import { UserService } from 'src/app/services/User/user.service';
@@ -19,7 +20,7 @@ export class TournamentInfoComponent {
   inscriptions: Inscription[] = [];
   dataSource: any;
   tableHeaders: string[] = ['user', 'nickname','inscriptionDate'];
-  curTournament: number=1;
+  curTournament: number=0;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -28,11 +29,14 @@ export class TournamentInfoComponent {
     private tournamentService: TournamentService,
     private inscriptionService: InscriptionService,
     private userService: UserService,
+    private route: ActivatedRoute,
     public dialog: MatDialog
   ){
     this.getInscriptions();
   }
-
+  ngOnInit(){
+    this.route.params.subscribe(params => {this.curTournament = params['id']})
+  }
   getInscriptions(){
       this.inscriptionService.getInscriptions()
       .subscribe((response: Inscription[]) => {
