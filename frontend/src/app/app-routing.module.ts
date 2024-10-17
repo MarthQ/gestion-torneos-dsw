@@ -9,6 +9,8 @@ import { UserCrudTableComponent } from './components/crud-related/user-crud/user
 import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
 import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
 import { CreateTournamentComponent } from './components/create-tournament/create-tournament.component';
+import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
+
 const routes: Routes = [
   {
     path: 'admin',
@@ -47,13 +49,12 @@ const routes: Routes = [
       },
     ],
   },
-
   {
     path: 'createTournament',
     component: CreateTournamentComponent,
     title: 'Crear un Torneo',
   },
-  // {path: 'searchTournaments', component: SearchTournamentComponent},
+  { path: 'searchTournament', component: SearchTournamentComponent },
   // {path: 'searchUsers', component: SearchUsersComponent}
   { path: '**', component: AdminComponent },
   //! Change for {path: '**', component: LandingComponent, title: 'Okizeme'}

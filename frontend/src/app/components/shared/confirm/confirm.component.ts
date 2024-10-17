@@ -13,8 +13,8 @@ export class ConfirmComponent {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
-  typeConfirm: string = this.data.typeConfirm;
-  element: CrudElement = this.data.element;
+  typeConfirm: string | null = this.data?.typeConfirm;
+  element: CrudElement | null = this.data?.element;
 
   accept() {
     this.dialogRef.close(true);

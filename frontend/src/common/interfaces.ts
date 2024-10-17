@@ -22,9 +22,11 @@ export interface Tag extends CrudElement {
 export interface Inscription extends CrudElement {
   user: User | null;
   tournament: Tournament | null;
-  score: number;
-  ranking: number;
-  inscriptionDate: Date | null;
+  victories: number;
+  loses: number;
+  nickname: string;
+  // Sometimes we use dates.toISOString() so its convenient to also make it accept string
+  inscriptionDate: Date | string | null;
 }
 
 export interface User extends CrudElement {
@@ -32,6 +34,7 @@ export interface User extends CrudElement {
   password: string;
   mail: string;
   location: Location | null;
+  inscriptions?: Inscription[];
 }
 
 export interface Location extends CrudElement {
@@ -44,6 +47,8 @@ export interface Tournament extends CrudElement {
   game: Game | null;
   datetimeinit: Date | null;
   status: string;
+  game: Game;
+  tags: Tag[];
   inscriptions: Inscription[];
   tags: Tag[];
 }

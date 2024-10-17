@@ -24,10 +24,11 @@ export class InscriptionTableComponent {
   tableHeaders: string[] = [
     'id',
     'user',
+    'nickname',
     'tournament',
-    'score',
-    'ranking',
     'inscriptiondate',
+    'victories',
+    'loses',
     'actions',
   ];
 
@@ -76,9 +77,10 @@ export class InscriptionTableComponent {
     let inscriptionSelected: Inscription = {
       id: 0,
       user: null,
+      nickname: '',
       tournament: null,
-      score: 0,
-      ranking: 0,
+      victories: 0,
+      loses: 0,
       inscriptionDate: null,
     };
 

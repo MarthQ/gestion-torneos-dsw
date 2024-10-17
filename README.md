@@ -44,7 +44,6 @@ erDiagram
     Juego {
         int id PK
         string nombre
-        id cant-torneos
     }
 
     Tipo_Juego {
@@ -56,11 +55,10 @@ erDiagram
 
     Torneo {
         int id PK
-        string titulo
-        string descripcion
-        datetime fechahora-inicio
-        int cant-personas
-        string estado
+        string name
+        string description
+        datetime datetimeinit
+        string status
     }
 
     Tag {
@@ -72,13 +70,12 @@ erDiagram
     Inscripcion {
         int idUsuario PK,FK
         int idTorneo PK,FK
-        int puntaje
-        string ranking
+        int victorias
+        int derrotas
         datetime fechahora-inscripcion
     }
 
     Estandar {
-        string estadotorneos
     }
 
     Moderador {}
@@ -108,16 +105,16 @@ erDiagram
 _Regularidad:_
 |Req|Detalle|
 |:-|:-|
-|CRUD simple|1. CRUD Usuario<br>2. CRUD Tipo de Torneo<br>3. CRUD Tipo de Juego|
-|CRUD dependiente|1. CRUD de Torneos {depende de} CRUD Tipo de Torneo<br>2. CRUD Videojuegos {depende de} CRUD Tipo de Juego|
+|CRUD simple|1. CRUD Localidad<br>2. CRUD Tipo de Torneo<br>3. CRUD Tipo de Juego|
+|CRUD dependiente|1. CRUD de Usuario {depende de} CRUD Localidades<br>2. CRUD Videojuegos {depende de} CRUD Tipo de Juego|
 |Listado<br>+<br>detalle| 1. Podio de cada Torneo filtrado por Puntaje/Condición de Victoria => Detalle: Localidad<br>2. Listado de Torneos filtrado por juego => Detalle: Fecha|
-|CUU/Epic|1. Generar llave de torneo<br>2. Inscribir usuario a torneo|
+|CUU/Epic|1. Creacion de Torneo<br>2. Inscribir usuario a torneo|
 
 _Adicionales para Aprobación:_
 |Req|Detalle|
 |:-|:-|
-|CRUD |1. CRUD Usuarios<br>2. CRUD Tipo de Torneo<br>3. CRUD Tipo de Juego<br>4. CRUD de Torneos<br>5. CRUD Videojuegos<br>6. CRUD Localidades<br>7. CRUD Moderador|
-|CUU/Epic|1. Generar llave de torneo.<br>2. Inscribir usuario a torneo.<br>3. Generar promedio de torneos ganados por juego.|
+|CRUD |1. CRUD Usuarios<br>2. CRUD Tipo de Torneo<br>3. CRUD Tipo de Juego<br>4. CRUD Videojuegos<br>5. CRUD Localidades<br>6. CRUD Moderador|
+|CUU/Epic|1. Generar llave de torneo.<br>2. Inscribir usuario a torneo.<br>3. Creacion de Torneo|
 
 ### Alcance Adicional Voluntario
 

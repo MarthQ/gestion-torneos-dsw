@@ -1,0 +1,32 @@
+<div mat-dialog-title class="modal">
+  <h2>Inscribirse a un torneo:</h2>
+</div>
+<div mat-dialog-content class="modal">
+  <form [formGroup]="inscriptionForm">
+    <mat-form-field>
+      <mat-label>Usuario</mat-label>
+      <input matInput formControlName="user" [attr.disabled]="1" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Nickname del torneo</mat-label>
+      <input matInput formControlName="nickname" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Torneo</mat-label>
+      <input matInput formControlName="tournament" [attr.disabled]="1" />
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!inscriptionForm.valid"
+        (click)="confirm()"
+      >
+        Confirmar Inscripción<mat-icon>list_alt_check</mat-icon>
+      </button>
+    </div>
+  </form>
+</div>
