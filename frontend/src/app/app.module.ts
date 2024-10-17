@@ -37,6 +37,7 @@ import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-t
 import { TagModalComponent } from './components/crud-related/tag/tag-modal/tag-modal.component';
 import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
 import { UserInscriptionModalComponent } from './components/user-inscription-modal/user-inscription-modal.component';
+import { TournamentInfoComponent } from './components/tournament-info/tournament-info.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,6 +60,7 @@ import { UserInscriptionModalComponent } from './components/user-inscription-mod
     TagModalComponent,
     SearchTournamentComponent,
     UserInscriptionModalComponent,
+    TournamentInfoComponent,
   ],
 
   imports: [
