@@ -113,6 +113,7 @@ export class TagTableComponent {
 
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
+          console.log(tag);
           this.tagService.createTag(tag).subscribe((response: any) => {
             this.getTags();
           });

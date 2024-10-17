@@ -1,4 +1,11 @@
-<p>hola amigo</p>
+<div class="title">
+    <h1>
+        Crear Torneo
+    </h1>
+    <h2>
+        Ingrese los datos del torneo:
+    </h2>
+</div>
 <div>
     <form [formGroup]="creatingForm" class="form">
         <mat-form-field>
@@ -31,7 +38,11 @@
         </mat-form-field>
 
         <button mat-raised-button color="primary" [disabled]="!creatingForm.valid" (click)="createTournament()">
-            <mat-icon fontIcon="save"></mat-icon> Crear Torneo
+            <mat-icon fontIcon="check"></mat-icon> Crear
         </button>
+        <div *ngIf="isTournamentCreated" class="success-message">
+            Torneo creado con éxito!
+        </div>
     </form>
+
 </div>

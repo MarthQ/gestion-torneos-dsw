@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { max } from 'rxjs';
 import { GameService } from 'src/app/services/CRUD/game.service';
 import { TagService } from 'src/app/services/CRUD/tag.service';
 import { TournamentService } from 'src/app/services/CRUD/tournament.service';
@@ -17,7 +16,7 @@ export class CreateTournamentComponent {
     private gameService: GameService,
     private tournamentService: TournamentService
   ) {}
-
+  isTournamentCreated: boolean = false;
   tagList: Tag[] = [];
   gameList: Game[] = [];
 
@@ -60,5 +59,8 @@ export class CreateTournamentComponent {
         console.log('Tournament Created');
         console.log(response);
       });
+
+    this.isTournamentCreated = true;
+    this.creatingForm.reset();
   }
 }
