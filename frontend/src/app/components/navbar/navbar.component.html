@@ -3,11 +3,7 @@
     <img src="assets/ten.png" alt="logo" class="logo-img" />
   </div>
   <div class="top">
-    <mat-icon
-      id="btn"
-      [fontIcon]="isToggled ? 'chevron_left' : 'chevron_right'"
-      (click)="toggleSidebar()"
-    ></mat-icon>
+    <mat-icon id="btn" [fontIcon]="isToggled ? 'chevron_left' : 'chevron_right'" (click)="toggleSidebar()"></mat-icon>
   </div>
   <div class="user">
     <app-user />
@@ -42,7 +38,7 @@
       <span class="tooltip">Inscribirse a Torneo</span>
     </li>
     <li>
-      <a href="#">
+      <a routerLink="createTournament">
         <mat-icon fontIcon="add_circle"></mat-icon>
         <span class="nav-item">Crear Torneo</span>
       </a>
