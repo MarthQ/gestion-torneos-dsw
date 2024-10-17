@@ -1,0 +1,50 @@
+table {
+  border: 2px solid #b0b0b0;
+  height: 100%;
+  width: calc(100%-10px);
+  padding: 50px 5px 5px 5px;
+  table-layout: auto;
+  border-collapse: collapse;
+  border-spacing: 2px;
+  text-align: center;
+}
+mat-card {
+  margin: 2%;
+}
+mat-card-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+button {
+  margin: 2px;
+}
+
+mat-card-header > h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  width: 100%;
+  color: rgb(41, 2, 110);
+}
+mat-card-header > mat-form-field {
+  width: 25%;
+}
+
+th {
+  background-color: rgb(41, 2, 110) !important;
+  font-weight: 700;
+  color: white;
+}
+
+#inscribe-btn {
+  color: white;
+  transition: 0.3s ease;
+}
+#inscribe-btn:hover {
+  background-color: white;
+  color: rgb(103, 58, 183);
+
+  transition: 0.3s ease;
+}

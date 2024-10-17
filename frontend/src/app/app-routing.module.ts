@@ -8,6 +8,8 @@ import { GameTableComponent } from './components/crud-related/game/game-table/ga
 import { UserCrudTableComponent } from './components/crud-related/user-crud/user-crud-table/user-crud-table.component';
 import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
 import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
+import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
+
 const routes: Routes = [
   {
     path: 'admin',
@@ -46,7 +48,7 @@ const routes: Routes = [
       },
     ],
   },
-  // {path: 'searchTournaments', component: SearchTournamentComponent},
+  { path: 'searchTournament', component: SearchTournamentComponent },
   // {path: 'searchUsers', component: SearchUsersComponent}
   { path: '**', component: AdminComponent },
   //! Change for {path: '**', component: LandingComponent, title: 'Okizeme'}
