@@ -35,9 +35,11 @@ import { LocationTableComponent } from './components/crud-related/location/locat
 import { LocationModalComponent } from './components/crud-related/location/location-modal/location-modal.component';
 import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
 import { TagModalComponent } from './components/crud-related/tag/tag-modal/tag-modal.component';
+import { CreateTournamentComponent } from './components/create-tournament/create-tournament.component';
 import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
 import { UserInscriptionModalComponent } from './components/user-inscription-modal/user-inscription-modal.component';
 import { TournamentInfoComponent } from './components/tournament-info/tournament-info.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -58,6 +60,7 @@ import { TournamentInfoComponent } from './components/tournament-info/tournament
     LocationModalComponent,
     TagTableComponent,
     TagModalComponent,
+    CreateTournamentComponent,
     SearchTournamentComponent,
     UserInscriptionModalComponent,
     TournamentInfoComponent,

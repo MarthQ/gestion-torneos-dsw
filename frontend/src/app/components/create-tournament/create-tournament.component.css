@@ -1,0 +1,28 @@
+.form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.form>mat-form-field {
+    width: 100%;
+    max-width: 400px;
+    margin: 10px;
+}
+
+.success-message {
+    margin-top: 16px;
+}
+
+h1 {
+    margin: 30px 16px 16px 16px;
+    font-size: 2.7rem;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
