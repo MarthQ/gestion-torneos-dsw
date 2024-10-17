@@ -47,8 +47,6 @@ export interface Tournament extends CrudElement {
   game: Game | null;
   datetimeinit: Date | null;
   status: string;
-  game: Game;
-  tags: Tag[];
   inscriptions: Inscription[];
   tags: Tag[];
 }
