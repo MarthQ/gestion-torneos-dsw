@@ -30,21 +30,36 @@
       </ng-container>
 
       <ng-container matColumnDef="tournament">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          Nickname del torneo
+        </th>
+        <td mat-cell *matCellDef="let inscription">
+          {{ inscription.nickname }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tournament">
         <th mat-sort-header mat-header-cell *matHeaderCellDef>Torneo</th>
         <td mat-cell *matCellDef="let inscription">
           {{ formatTournament(inscription.tournament) }}
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="score">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Puntuación</th>
-        <td mat-cell *matCellDef="let inscription">{{ inscription.score }}</td>
+      <ng-container matColumnDef="victories">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          Victorias en el torneo
+        </th>
+        <td mat-cell *matCellDef="let inscription">
+          {{ inscription.victories }}
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="ranking">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Ranking</th>
+      <ng-container matColumnDef="loses">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          Derrotas en el torneo
+        </th>
         <td mat-cell *matCellDef="let inscription">
-          {{ inscription.ranking }}
+          {{ inscription.loses }}
         </td>
       </ng-container>
 

@@ -1,0 +1,72 @@
+<mat-card>
+  <mat-card-header>
+    <h1>Listado de torneos</h1>
+    <mat-form-field>
+      <mat-label>Filtrar</mat-label>
+      <input
+        matInput
+        (keyup)="filterChanges($event)"
+        placeholder="'Capcom Cup'"
+      />
+    </mat-form-field>
+  </mat-card-header>
+  <mat-card-content>
+    <table
+      matSort
+      mat-table
+      [dataSource]="dataSource"
+      class=""
+      mat-elevation-z8
+    >
+      <ng-container matColumnDef="name">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let tournament">{{ tournament.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Descripción</th>
+        <td mat-cell *matCellDef="let tournament">
+          {{ tournament.description }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let tournament">
+          {{ tournament.datetimeinit.slice(0, 16) }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="game">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Juego</th>
+        <td mat-cell *matCellDef="let tournament">
+          {{ tournament.game.name }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let tournament">
+          <button
+            id="inscribe-btn"
+            mat-fab
+            color="primary"
+            (click)="inscribe(tournament)"
+            [attr.disabled]="isRegistered(tournament)"
+          >
+            <mat-icon>edit_note</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableHeaders"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableHeaders"></tr>
+    </table>
+  </mat-card-content>
+  <mat-card-footer>
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+    ></mat-paginator>
+  </mat-card-footer>
+</mat-card>

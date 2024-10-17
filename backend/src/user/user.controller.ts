@@ -29,7 +29,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const user = await em.findOneOrFail(User, { id }, { populate: ['location'] })
+        const user = await em.findOneOrFail(User, { id }, { populate: ['location', 'inscriptions'] })
         res.status(200).json({ message: 'Found user', data: user })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
