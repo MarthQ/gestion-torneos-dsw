@@ -44,9 +44,9 @@ export interface Location extends CrudElement {
 export interface Tournament extends CrudElement {
   name: string;
   description: string;
-  datetimeinit: Date;
+  game: Game | null;
+  datetimeinit: Date | null;
   status: string;
-  game: Game;
-  tags: Tag[];
   inscriptions: Inscription[];
+  tags: Tag[];
 }

@@ -19,7 +19,8 @@ export class TagService {
   }
 
   createTag(tag: Tag) {
-    return this.http.post(this.tagsUrl, tag);
+    const { id, ...tagData } = tag;
+    return this.http.post(this.tagsUrl, tagData);
   }
 
   updateTag(tag: Tag) {

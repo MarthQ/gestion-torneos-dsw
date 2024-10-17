@@ -8,6 +8,7 @@ import { GameTableComponent } from './components/crud-related/game/game-table/ga
 import { UserCrudTableComponent } from './components/crud-related/user-crud/user-crud-table/user-crud-table.component';
 import { LocationTableComponent } from './components/crud-related/location/location-table/location-table.component';
 import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
+import { CreateTournamentComponent } from './components/create-tournament/create-tournament.component';
 import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
 
 const routes: Routes = [
@@ -47,6 +48,11 @@ const routes: Routes = [
         title: 'Tag CRUD',
       },
     ],
+  },
+  {
+    path: 'createTournament',
+    component: CreateTournamentComponent,
+    title: 'Crear un Torneo',
   },
   { path: 'searchTournament', component: SearchTournamentComponent },
   // {path: 'searchUsers', component: SearchUsersComponent}
