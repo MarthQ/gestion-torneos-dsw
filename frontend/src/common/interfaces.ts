@@ -26,7 +26,7 @@ export interface Inscription extends CrudElement {
   loses: number;
   nickname: string;
   // Sometimes we use dates.toISOString() so its convenient to also make it accept string
-  inscriptionDate: Date | String | null;
+  inscriptionDate: Date | string | null;
 }
 
 export interface User extends CrudElement {

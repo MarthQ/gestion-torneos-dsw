@@ -52,6 +52,7 @@
             mat-fab
             color="primary"
             (click)="inscribe(tournament)"
+            [attr.disabled]="isRegistered(tournament)"
           >
             <mat-icon>edit_note</mat-icon>
           </button>

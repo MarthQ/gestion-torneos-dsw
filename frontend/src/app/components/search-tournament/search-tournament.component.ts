@@ -31,11 +31,15 @@ export class SearchTournamentComponent {
     private userService: UserService,
     public dialog: MatDialog
   ) {
+    this.getUser();
     this.getTournaments();
+  }
+
+  getUser(): void {
     this.userService.getUser().subscribe((response: User) => {
       this.user = response;
+      console.log(response);
     });
-    console.log(this.user);
   }
 
   getTournaments(): void {
@@ -76,12 +80,18 @@ export class SearchTournamentComponent {
               this.inscriptionService
                 .createInscription(newInscription)
                 .subscribe((response: any) => {
-                  // this.getInscriptions();
+                  this.getUser();
                 });
             }
           });
         }
       });
     }
+  }
+
+  isRegistered(tournament: Tournament) {
+    return this.user?.inscriptions!.some(
+      (inscription) => (inscription.id = tournament.id)
+    );
   }
 }
