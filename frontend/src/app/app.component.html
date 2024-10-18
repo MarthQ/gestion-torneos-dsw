@@ -1,9 +1,23 @@
-<app-navbar (sidebarActive)="onSidebarActive($event)" />
-<div class="main-logo" id="main-logo">
-  <h1>Okizeme</h1>
-  <img src="assets/logo.png" alt="logo" />
-</div>
-
-<div class="main-content" id="main-content">
-  <router-outlet></router-outlet>
-</div>
+<app-navbar (menuClicked)="showMenu()" (accountClicked)="showAccount()" />
+<mat-sidenav-container>
+  <mat-sidenav
+    mode="over"
+    position="start"
+    [(opened)]="menuSideBarActive"
+    class="sidebar"
+  >
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+  <mat-sidenav
+    mode="over"
+    position="end"
+    [(opened)]="accountSideBarActive"
+    class="sidebar"
+    ><app-user
+  /></mat-sidenav>
+  <section>
+    <div class="main-content" id="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+</mat-sidenav-container>

@@ -1,53 +1,15 @@
 .main-content {
   position: relative;
-  background-color: #eeeeee;
   top: 0;
   left: 80px;
   transition: all 0.5s ease;
   width: calc(100% - 80px);
   padding: 0px 0px;
-  outline-color: red;
 }
 
-.sidebarActiveContent {
-  left: 250px;
-  width: calc(100% - 250px);
-}
-
-.main-logo {
-  background-color: rgb(41, 2, 110);
-  border-radius: 0 0 50px 0;
-  left: 80px;
-  width: calc(30% - 80px);
-  height: 80px;
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  transition: ease 0.5s;
-}
-
-.main-logo h1 {
-  color: white;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  font-size: 2.5rem;
-  font-family: "Satisfy", cursive;
-}
-
-.main-logo img {
-  width: 40%;
-  height: 80%;
-  margin-right: 10px;
-}
-
-.sidebarActiveLogo {
-  width: calc(30% - 80px);
-  left: 250px;
-
-  transition: ease 0.5s;
+.sidebar {
+  position: fixed;
+  height: 100%;
+  width: 25%;
+  background-color: var(--main-color);
 }

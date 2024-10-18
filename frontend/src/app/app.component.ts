@@ -6,12 +6,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'NavBar-Test';
+  menuSideBarActive: boolean = false;
+  accountSideBarActive: boolean = false;
 
-  onSidebarActive(isActive: boolean) {
-    let mainLogo = document.getElementById('main-logo');
-    let mainContent = document.getElementById('main-content');
-    mainContent?.classList.toggle('sidebarActiveContent');
-    mainLogo?.classList.toggle('sidebarActiveLogo');
+  showMenu() {
+    this.menuSideBarActive = !this.menuSideBarActive;
+  }
+  showAccount() {
+    this.accountSideBarActive = !this.accountSideBarActive;
   }
 }

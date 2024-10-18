@@ -1,124 +1,38 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.logo-img {
-  width: 100px;
-}
-
-.sidebar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 80px;
-  background-color: rgb(41, 2, 110);
-  padding: 0.4rem 0 0.4rem 0.4rem;
-  transition: all 0.5s ease;
-}
-
-.sidebar.active {
-  width: 250px;
-}
-
-.sidebar #btn {
-  font-size: 2rem;
-  position: absolute;
-  color: white;
-  top: 0.4rem;
-  left: 50%;
-  transform: translateX(-50%);
-  cursor: pointer;
-  transition: all 1s ease;
-}
-
-.sidebar.active #btn {
-  left: 90%;
-  transition: all 1s ease;
-}
-
-.sidebar .logo {
+.navbar {
+  background-color: var(--main-color);
   color: white;
   display: flex;
-  height: 100px;
-  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main-logo {
+  display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-  opacity: 0;
-  transition: all 1s ease;
+  flex-wrap: wrap;
 }
 
-.sidebar.active .logo {
-  opacity: 1;
-  transition: all 1s ease;
+.main-logo h1 {
+  font-size: 2.5rem;
+  font-family: "Satisfy", cursive;
 }
 
-.sidebar ul li {
-  position: relative;
-  list-style: none;
-  display: flex;
-  height: 50px;
-  width: 100%;
-  margin: 0.8rem auto;
-  line-height: 50px;
+.icon {
+  padding: 0.5rem;
+  border-radius: 30%;
+  outline: solid white;
+  cursor: pointer;
+
+  transition: 0.5s ease;
 }
 
-.sidebar ul li a {
-  color: white;
-  text-decoration: none;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  border-radius: 0.5rem;
-}
-
-.sidebar ul li a:hover {
+.icon:hover {
+  padding: 0.5rem;
+  border-radius: 30%;
+  outline: solid var(--main-color);
+  color: var(--main-color);
   background-color: white;
-  color: rgb(41, 2, 110);
-}
-.sidebar ul li a mat-icon {
-  font-size: 1.5rem;
-  min-width: 50px;
-  text-align: center;
-  height: 50px;
-  border-radius: 12px;
-  line-height: 50px;
-}
 
-.sidebar .nav-item {
-  opacity: 0;
-  transition: all 0.5s ease;
-}
-.sidebar.active .nav-item {
-  opacity: 1;
-  transition: all 0.5s ease;
-}
-
-.sidebar ul li .tooltip {
-  position: absolute;
-  left: 125px;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
-  border-radius: 0.6rem;
-  padding: 0.4rem 1.2rem;
-  line-height: 1.8rem;
-  z-index: 0;
-  opacity: 0;
-  background-color: white;
-  color: rgb(41, 2, 110);
-  font-weight: 600;
-}
-
-.sidebar ul li:hover .tooltip {
-  opacity: 1;
-  transition: all 0.5s ease;
-  z-index: 20;
-}
-
-.sidebar.active ul li .tooltip {
-  display: none;
+  transition: 0.5s ease;
 }

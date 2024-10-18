@@ -33,7 +33,7 @@ mat-card-header > mat-form-field {
 }
 
 th {
-  background-color: rgb(41, 2, 110) !important;
+  background-color: var(--main-color) !important;
   font-weight: 700;
   color: white;
 }

@@ -1,0 +1,74 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.logo-img {
+  width: 100px;
+}
+
+.sidebar #btn {
+  font-size: 2rem;
+  position: absolute;
+  color: white;
+  top: 0.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  transition: all 1s ease;
+}
+
+.sidebar.active #btn {
+  left: 90%;
+  transition: all 1s ease;
+}
+
+.logo {
+  color: white;
+  display: flex;
+  height: 100px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 1s ease;
+}
+
+.logo {
+  opacity: 1;
+  transition: all 1s ease;
+}
+
+ul li {
+  position: relative;
+  list-style: none;
+  display: flex;
+  height: 50px;
+  width: 100%;
+  margin: 0.8rem auto;
+  line-height: 50px;
+}
+
+ul li a {
+  color: white;
+  text-decoration: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+}
+
+ul li a:hover {
+  background-color: white;
+  color: var(--main-color);
+}
+ul li a mat-icon {
+  font-size: 1.5rem;
+  min-width: 50px;
+  text-align: center;
+  height: 50px;
+  border-radius: 12px;
+  line-height: 50px;
+}
