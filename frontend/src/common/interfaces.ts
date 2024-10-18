@@ -21,7 +21,7 @@ export interface Tag extends CrudElement {
 
 export interface Inscription extends CrudElement {
   user: User | null;
-  tournament: Tournament | null;
+  tournament: Tournament | number | null;
   victories: number;
   loses: number;
   nickname: string;

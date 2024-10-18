@@ -1,0 +1,26 @@
+.landing {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+
+  flex-direction: column;
+}
+
+.landing h1 {
+  font-family: "Montserrat", serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  margin-top: 1.5rem;
+}
+
+.mainBtn {
+  justify-content: space-between;
+}
+
+.mainBtn button {
+  font-size: 1rem;
+  padding: 2rem;
+  margin: 3rem;
+}

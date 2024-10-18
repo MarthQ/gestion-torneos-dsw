@@ -18,6 +18,13 @@
   font-family: "Satisfy", cursive;
 }
 
+.main-logo h1 {
+  cursor: pointer;
+  outline: solid rgba(255, 255, 255, 0.5);
+  border-radius: 9999px;
+  padding: 0.5rem;
+}
+
 .icon {
   padding: 0.5rem;
   border-radius: 30%;

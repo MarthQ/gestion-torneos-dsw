@@ -52,4 +52,4 @@ Content-Type: application/json
 
 ### Borrar una inscripcion (DELETE)
 
-DELETE http://localhost:3000/api/inscriptions/5
+DELETE http://localhost:3000/api/inscriptions/{{id}}

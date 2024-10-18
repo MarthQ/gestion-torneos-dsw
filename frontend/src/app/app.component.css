@@ -1,15 +1,23 @@
+* {
+  background-image: url("src/assets/texture.png");
+}
+
+.page {
+  height: calc(100vh - 56px);
+}
+
 .main-content {
   position: relative;
   top: 0;
-  left: 80px;
+
   transition: all 0.5s ease;
-  width: calc(100% - 80px);
-  padding: 0px 0px;
+  width: calc(100% - 160px);
+  padding: 0px 80px 0px 80px;
 }
 
 .sidebar {
   position: fixed;
   height: 100%;
-  width: 25%;
+  width: 49vw;
   background-color: var(--main-color);
 }
