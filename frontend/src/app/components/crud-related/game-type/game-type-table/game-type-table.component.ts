@@ -13,7 +13,7 @@ import { MatSort } from '@angular/material/sort';
 @Component({
   selector: 'app-game-type-table',
   templateUrl: './game-type-table.component.html',
-  styleUrls: ['./game-type-table.component.css'],
+  styleUrls: ['../../crud-table_styles.css'],
 })
 export class GameTypeTableComponent {
   gameTypes: GameType[] = [];

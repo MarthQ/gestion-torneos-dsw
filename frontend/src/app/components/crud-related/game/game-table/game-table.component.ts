@@ -14,7 +14,7 @@ import { Tag } from 'src/common/interfaces';
 @Component({
   selector: 'app-game-table',
   templateUrl: './game-table.component.html',
-  styleUrls: ['./game-table.component.css'],
+  styleUrls: ['../../crud-table_styles.css'],
 })
 export class GameTableComponent {
   game: Game[] = [];

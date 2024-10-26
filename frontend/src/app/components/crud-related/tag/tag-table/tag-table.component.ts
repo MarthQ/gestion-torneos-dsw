@@ -13,7 +13,7 @@ import { MatSort } from '@angular/material/sort';
 @Component({
   selector: 'app-tag-table',
   templateUrl: './tag-table.component.html',
-  styleUrls: ['./tag-table.component.css'],
+  styleUrls: ['../../crud-table_styles.css'],
 })
 export class TagTableComponent {
   tags: Tag[] = [];
