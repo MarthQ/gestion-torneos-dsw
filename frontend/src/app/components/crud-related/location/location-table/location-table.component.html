@@ -30,10 +30,36 @@
       <ng-container matColumnDef="actions">
         <th mat-sort-header mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let location" class="table-actions">
-          <button mat-raised-button color="accent" (click)="edit(location)">
+          <button
+            mat-mini-fab
+            color="accent"
+            (click)="edit(location)"
+            class="show-on-mobile"
+          >
+            <mat-icon fontIcon="edit"></mat-icon>
+          </button>
+          <button
+            mat-mini-fab
+            color="warn"
+            (click)="delete(location)"
+            class="show-on-mobile"
+          >
+            <mat-icon fontIcon="delete"></mat-icon>
+          </button>
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="edit(location)"
+            class="hide-on-mobile"
+          >
             Editar
           </button>
-          <button mat-raised-button color="warn" (click)="delete(location)">
+          <button
+            mat-raised-button
+            color="warn"
+            (click)="delete(location)"
+            class="hide-on-mobile"
+          >
             Eliminar
           </button>
         </td>

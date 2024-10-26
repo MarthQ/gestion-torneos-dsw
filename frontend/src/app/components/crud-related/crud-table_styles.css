@@ -25,3 +25,17 @@ th {
   width: 15%;
   height: 5vh;
 }
+
+.show-on-mobile {
+  display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .hide-on-mobile {
+    display: none;
+  }
+
+  .show-on-mobile {
+    display: block;
+  }
+}

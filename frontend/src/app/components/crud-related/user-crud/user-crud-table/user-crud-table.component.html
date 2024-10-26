@@ -24,18 +24,43 @@
       </ng-container>
 
       <ng-container matColumnDef="password">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Contraseña</th>
-        <td mat-cell *matCellDef="let user">{{ user.password }}</td>
+        <th
+          mat-sort-header
+          mat-header-cell
+          *matHeaderCellDef
+          class="hide-on-mobile"
+        >
+          Contraseña
+        </th>
+        <td mat-cell *matCellDef="let user" class="hide-on-mobile">
+          {{ user.password }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="mail">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Mail</th>
-        <td mat-cell *matCellDef="let user">{{ user.mail }}</td>
+        <th
+          mat-sort-header
+          mat-header-cell
+          *matHeaderCellDef
+          class="hide-on-mobile"
+        >
+          Mail
+        </th>
+        <td mat-cell *matCellDef="let user" class="hide-on-mobile">
+          {{ user.mail }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="location">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Localización</th>
-        <td mat-cell *matCellDef="let user">
+        <th
+          mat-sort-header
+          mat-header-cell
+          *matHeaderCellDef
+          class="hide-on-mobile"
+        >
+          Localización
+        </th>
+        <td mat-cell *matCellDef="let user" class="hide-on-mobile">
           {{ formatLocation(user.location) }}
         </td>
       </ng-container>
@@ -43,10 +68,36 @@
       <ng-container matColumnDef="actions">
         <th mat-sort-header mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let user" class="table-actions">
-          <button mat-raised-button color="accent" (click)="edit(user)">
+          <button
+            mat-mini-fab
+            color="accent"
+            (click)="edit(user)"
+            class="show-on-mobile"
+          >
+            <mat-icon fontIcon="edit"></mat-icon>
+          </button>
+          <button
+            mat-mini-fab
+            color="warn"
+            (click)="delete(user)"
+            class="show-on-mobile"
+          >
+            <mat-icon fontIcon="delete"></mat-icon>
+          </button>
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="edit(user)"
+            class="hide-on-mobile"
+          >
             Editar
           </button>
-          <button mat-raised-button color="warn" (click)="delete(user)">
+          <button
+            mat-raised-button
+            color="warn"
+            (click)="delete(user)"
+            class="hide-on-mobile"
+          >
             Eliminar
           </button>
         </td>
