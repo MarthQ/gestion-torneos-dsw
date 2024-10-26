@@ -19,6 +19,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { UserComponent } from './components/user/user.component';
@@ -90,6 +91,7 @@ import { LandingComponent } from './components/landing/landing.component';
     MatNativeDateModule,
     MatToolbarModule,
     MatSidenavModule,
+    MatButtonToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
