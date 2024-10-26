@@ -11,6 +11,6 @@ export class UserService {
   constructor(private userCrudService: UserCrudService) {}
 
   getUser() {
-    return this.userCrudService.getUser(3);
+    return this.userCrudService.getUser(1);
   }
 }

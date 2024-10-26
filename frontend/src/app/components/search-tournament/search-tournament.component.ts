@@ -3,7 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-
+import { AppRoutingModule } from 'src/app/app-routing.module';
+import { Router } from '@angular/router';
 import { Tournament, Inscription, User } from 'src/common/interfaces';
 import { TournamentService } from 'src/app/services/CRUD/tournament.service';
 import { InscriptionService } from 'src/app/services/CRUD/inscription.service';
@@ -25,10 +26,12 @@ export class SearchTournamentComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+
   constructor(
     private tournamentService: TournamentService,
     private inscriptionService: InscriptionService,
     private userService: UserService,
+    private router: Router,
     public dialog: MatDialog
   ) {
     this.getUser();
@@ -93,5 +96,8 @@ export class SearchTournamentComponent {
     return this.user?.inscriptions!.some(
       (inscription) => (inscription.id = tournament.id)
     );
+  }
+  redirect(id:number){
+    this.router.navigate(["/tournament-info", id])
   }
 }

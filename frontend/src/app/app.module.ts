@@ -43,6 +43,7 @@ import { SearchTournamentComponent } from './components/search-tournament/search
 import { UserInscriptionModalComponent } from './components/user-inscription-modal/user-inscription-modal.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { LandingComponent } from './components/landing/landing.component';
+import { TournamentInfoComponent } from './components/tournament-info/tournament-info.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { LandingComponent } from './components/landing/landing.component';
     UserInscriptionModalComponent,
     SidebarComponent,
     LandingComponent,
+    TournamentInfoComponent,
   ],
 
   imports: [

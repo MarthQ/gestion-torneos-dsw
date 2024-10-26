@@ -50,7 +50,7 @@ export class GameModalComponent {
   initializeForms() {
     this.gameForm.setValue({
       name: this.data.game.name,
-      gametype: this.data.game.gametype.id,
+      gametype: this.data.game.gametype?.id || null,
       tags: this.data.game.tags.map((tag: Tag) => tag.id),
     });
   }

@@ -11,6 +11,7 @@ import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-t
 import { CreateTournamentComponent } from './components/create-tournament/create-tournament.component';
 import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
 import { LandingComponent } from './components/landing/landing.component';
+import { TournamentInfoComponent } from './components/tournament-info/tournament-info.component';
 
 const routes: Routes = [
   {
@@ -49,6 +50,11 @@ const routes: Routes = [
         title: 'Tag CRUD',
       },
     ],
+  },
+  {
+    path: 'tournament-info/:id',
+    component: TournamentInfoComponent,
+    title: 'Información del Torneo',
   },
   {
     path: 'createTournament',
