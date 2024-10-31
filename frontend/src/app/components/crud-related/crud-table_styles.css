@@ -1,12 +1,12 @@
 table {
   border: 2px solid #b0b0b0;
   height: 100%;
-  width: calc(100%-10px);
   padding: 50px 5px 5px 5px;
   table-layout: auto;
   border-collapse: collapse;
   border-spacing: 2px;
-  text-align: center;
+  justify-content: center;
+  align-items: center;
 }
 mat-card {
   margin: 2%;
@@ -20,6 +20,7 @@ th {
   font-weight: 700;
   color: white;
 }
+
 .add-btn {
   margin: 16px;
   width: 15%;

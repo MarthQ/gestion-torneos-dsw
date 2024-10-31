@@ -24,22 +24,43 @@
       </ng-container>
 
       <ng-container matColumnDef="description">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Descripción</th>
-        <td mat-cell *matCellDef="let tournament">
+        <th
+          mat-sort-header
+          mat-header-cell
+          *matHeaderCellDef
+          class="hide-on-mobile"
+        >
+          Descripción
+        </th>
+        <td mat-cell *matCellDef="let tournament" class="hide-on-mobile">
           {{ tournament.description }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="date">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Fecha</th>
-        <td mat-cell *matCellDef="let tournament">
+        <th
+          mat-sort-header
+          mat-header-cell
+          *matHeaderCellDef
+          class="hide-on-mobile"
+        >
+          Fecha
+        </th>
+        <td mat-cell *matCellDef="let tournament" class="hide-on-mobile">
           {{ tournament.datetimeinit.slice(0, 16) }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="game">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>Juego</th>
-        <td mat-cell *matCellDef="let tournament">
+        <th
+          mat-sort-header
+          mat-header-cell
+          *matHeaderCellDef
+          class="hide-on-mobile"
+        >
+          Juego
+        </th>
+        <td mat-cell *matCellDef="let tournament" class="hide-on-mobile">
           {{ tournament.game.name }}
         </td>
       </ng-container>
@@ -61,10 +82,10 @@
             id="info"
             mat-fab
             color="primary"
-            (click)="redirect(tournament.id)">          
+            (click)="redirect(tournament.id)"
+          >
             <mat-icon>contact_mail</mat-icon>
           </button>
-
         </td>
       </ng-container>
 

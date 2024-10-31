@@ -11,13 +11,9 @@
   margin: 10px;
 }
 
-.success-message {
-  margin-top: 16px;
-}
-
 h1 {
-  margin: 30px 16px 16px 16px;
   font-size: 2.7rem;
+  font-weight: 700;
 }
 
 mat-card {
@@ -25,10 +21,26 @@ mat-card {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 0px 0px 16px 0px;
 }
 
 mat-card-header {
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
+}
+
+.form-body {
+  padding: 5px 0px;
+}
+.form-body button {
+  width: 100%;
+}
+
+.form-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 16px;
 }
