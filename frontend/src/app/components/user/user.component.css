@@ -19,5 +19,5 @@ p.username {
 .user {
   display: flex;
   align-items: center;
-  margin: 1rem 0;
+  justify-content: center;
 }

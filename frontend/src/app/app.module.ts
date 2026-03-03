@@ -17,6 +17,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { UserComponent } from './components/user/user.component';
@@ -38,6 +41,8 @@ import { TagModalComponent } from './components/crud-related/tag/tag-modal/tag-m
 import { CreateTournamentComponent } from './components/create-tournament/create-tournament.component';
 import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
 import { UserInscriptionModalComponent } from './components/user-inscription-modal/user-inscription-modal.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { LandingComponent } from './components/landing/landing.component';
 import { TournamentInfoComponent } from './components/tournament-info/tournament-info.component';
 
 @NgModule({
@@ -63,6 +68,8 @@ import { TournamentInfoComponent } from './components/tournament-info/tournament
     CreateTournamentComponent,
     SearchTournamentComponent,
     UserInscriptionModalComponent,
+    SidebarComponent,
+    LandingComponent,
     TournamentInfoComponent,
   ],
 
@@ -84,6 +91,9 @@ import { TournamentInfoComponent } from './components/tournament-info/tournament
     MatCardModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatButtonToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

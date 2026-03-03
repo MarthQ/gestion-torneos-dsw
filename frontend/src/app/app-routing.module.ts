@@ -10,6 +10,7 @@ import { LocationTableComponent } from './components/crud-related/location/locat
 import { TagTableComponent } from './components/crud-related/tag/tag-table/tag-table.component';
 import { CreateTournamentComponent } from './components/create-tournament/create-tournament.component';
 import { SearchTournamentComponent } from './components/search-tournament/search-tournament.component';
+import { LandingComponent } from './components/landing/landing.component';
 import { TournamentInfoComponent } from './components/tournament-info/tournament-info.component';
 
 const routes: Routes = [
@@ -51,19 +52,21 @@ const routes: Routes = [
     ],
   },
   {
-
     path: 'tournament-info/:id',
     component: TournamentInfoComponent,
-    title: 'Información del Torneo'
- },
+    title: 'Información del Torneo',
+  },
   {
     path: 'createTournament',
     component: CreateTournamentComponent,
     title: 'Crear un Torneo',
   },
-  { path: 'searchTournament', component: SearchTournamentComponent },
-  // {path: 'searchUsers', component: SearchUsersComponent}
-  { path: '**', component: AdminComponent },
+  {
+    path: 'searchTournament',
+    component: SearchTournamentComponent,
+    title: 'Buscar un torneo',
+  },
+  { path: '**', component: LandingComponent, title: 'Okizeme' },
   //! Change for {path: '**', component: LandingComponent, title: 'Okizeme'}
 ];
 

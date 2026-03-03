@@ -13,7 +13,7 @@ import { MatSort } from '@angular/material/sort';
 @Component({
   selector: 'app-user-crud-table',
   templateUrl: './user-crud-table.component.html',
-  styleUrls: ['./user-crud-table.component.css'],
+  styleUrls: ['../../crud-table_styles.css'],
 })
 export class UserCrudTableComponent {
   users: User[] = [];

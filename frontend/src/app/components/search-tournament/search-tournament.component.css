@@ -33,7 +33,7 @@ mat-card-header > mat-form-field {
 }
 
 th {
-  background-color: rgb(41, 2, 110) !important;
+  background-color: var(--main-color) !important;
   font-weight: 700;
   color: white;
 }
@@ -47,4 +47,18 @@ th {
   color: rgb(103, 58, 183);
 
   transition: 0.3s ease;
+}
+
+.show-on-mobile {
+  display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .hide-on-mobile {
+    display: none;
+  }
+
+  .show-on-mobile {
+    display: block;
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,11 +8,14 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent {
   constructor(private router: Router) {}
-  isToggled = false;
-  @Output() sidebarActive = new EventEmitter<boolean>();
+  @Output() menuClicked = new EventEmitter();
+  @Output() accountClicked = new EventEmitter();
 
-  toggleSidebar() {
-    this.isToggled = !this.isToggled;
-    this.sidebarActive.emit(this.isToggled);
+  showMenu() {
+    this.menuClicked.emit();
+  }
+
+  showAccount() {
+    this.accountClicked.emit();
   }
 }

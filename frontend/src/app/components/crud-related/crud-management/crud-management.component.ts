@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-crud-management',
@@ -9,14 +10,14 @@ import { Router } from '@angular/router';
 export class CRUDManagementComponent {
   constructor(private router: Router) {}
 
-  crudType: string = 'GameTypes';
-
-  onChange(event: Event) {
-    this.crudType = (event.target as HTMLInputElement).value;
-  }
+  crudForm = new FormGroup({
+    crudType: new FormControl('GameTypes'),
+  });
 
   loadCrud() {
     //  Find a way to dynamically add /admin/ to the path without writing it explicitly
-    this.router.navigate(['/admin/', this.crudType]);
+    const selectedCrud = this.crudForm.get('crudType')?.value;
+    console.log('Selected CRUD:', selectedCrud);
+    this.router.navigate(['/admin/', selectedCrud]);
   }
 }

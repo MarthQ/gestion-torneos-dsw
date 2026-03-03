@@ -13,7 +13,7 @@ import { map } from 'rxjs';
 @Component({
   selector: 'app-inscription-table',
   templateUrl: './inscription-table.component.html',
-  styleUrls: ['./inscription-table.component.css'],
+  styleUrls: ['../../crud-table_styles.css'],
 })
 export class InscriptionTableComponent {
   inscriptions: Inscription[] = [];

@@ -12,7 +12,7 @@ import { ConfirmComponent } from 'src/app/components/shared/confirm/confirm.comp
 @Component({
   selector: 'app-location-table',
   templateUrl: './location-table.component.html',
-  styleUrls: ['./location-table.component.css'],
+  styleUrls: ['../../crud-table_styles.css'],
 })
 export class LocationTableComponent {
   locations: Location[] = [];
