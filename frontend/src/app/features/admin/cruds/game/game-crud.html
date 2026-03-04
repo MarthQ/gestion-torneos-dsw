@@ -1,0 +1,114 @@
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold text-white">Gestión de Juegos</h1>
+    <h2 class="text-gray-400">Administra el catálogo de juegos disponibles para torneos.</h2>
+  </div>
+  <button class="btn btn-primary shadow-lg">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nuevo Juego
+  </button>
+</div>
+
+<div
+  class="bg-base-300 p-4 rounded-xl border border-gray-700 mb-6 flex flex-wrap gap-4 items-center"
+>
+  <div class="relative flex-1">
+    <input
+      type="text"
+      placeholder="Buscar por nombre o ID..."
+      class="input input-bordered w-full pl-10 border-gray-600 focus:border-indigo-500"
+    />
+    <span
+      class="icon-[material-symbols--search] left-2 top-2 text-gray-500 absolute"
+      style="width: 24px; height: 24px"
+    ></span>
+  </div>
+  <select class="select select-bordered bg-primary-900 border-gray-600">
+    <option disabled selected class="text-gray-500">Filtrar por Tipo</option>
+    <option>Lucha (Fighting)</option>
+    <option>Shooter (FPS)</option>
+    <option>Deportes</option>
+  </select>
+  <button class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost">
+    <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
+  </button>
+</div>
+
+<div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
+  <table class="table w-full">
+    <!-- head -->
+    <thead class="bg-base-300 text-gray-300">
+      <tr>
+        <th class="rounded-tl-xl">Portada</th>
+        <th>Nombre del Juego</th>
+        <th>Tipo / Género</th>
+        <th>ID IGDB</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-300">
+      <!-- Fila 1 -->
+      <tr class="hover:bg-gray-700/30 transition-colors">
+        <td>
+          <div class="avatar">
+            <div class="mask mask-squircle w-12 h-12">
+              <img src="https://placehold.co/100x140/1e293b/white?text=MK1" alt="Cover" />
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="font-bold">Mortal Kombat 1</div>
+          <span class="badge badge-sm badge-ghost text-xs">Agregado: 12/10/24</span>
+        </td>
+        <td><span class="badge badge-outline border-indigo-500 text-indigo-400">Lucha</span></td>
+        <td class="font-mono text-xs text-gray-500">#129384</td>
+        <td>
+          <div class="flex justify-center gap-2">
+            <button class="btn btn-square btn-sm btn-ghost hover:text-indigo-400">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-square btn-sm btn-ghost hover:text-red-400">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <!-- Fila 2 -->
+      <tr class="hover:bg-gray-700/30 transition-colors">
+        <td>
+          <div class="avatar">
+            <div class="mask mask-squircle w-12 h-12">
+              <img src="https://placehold.co/100x140/1e293b/white?text=SF6" alt="Cover" />
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="font-bold">Street Fighter 6</div>
+          <span class="badge badge-sm badge-ghost text-xs">Agregado: 15/10/24</span>
+        </td>
+        <td><span class="badge badge-outline border-indigo-500 text-indigo-400">Lucha</span></td>
+        <td class="font-mono text-xs text-gray-500">#882731</td>
+        <td>
+          <div class="flex justify-center gap-2">
+            <button class="btn btn-square btn-sm btn-ghost hover:text-yellow-300">
+              <span class="icon-[boxicons--edit-filled]" style="width: 24px; height: 24px"></span>
+            </button>
+            <button class="btn btn-square btn-sm btn-ghost hover:text-red-400">
+              <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- Paginación -->
+<div class="flex justify-center mt-6">
+  <div class="join">
+    <button class="join-item btn btn-sm bg-gray-800 border-gray-700">«</button>
+    <button class="join-item btn btn-sm bg-indigo-600 text-white border-indigo-600">1</button>
+    <button class="join-item btn btn-sm bg-gray-800 border-gray-700">2</button>
+    <button class="join-item btn btn-sm bg-gray-800 border-gray-700">3</button>
+    <button class="join-item btn btn-sm bg-gray-800 border-gray-700">»</button>
+  </div>
+</div>

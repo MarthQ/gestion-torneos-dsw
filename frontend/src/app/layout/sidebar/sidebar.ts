@@ -29,27 +29,27 @@ export class Sidebar {
   adminSidebarButtons = signal([
     {
       name: 'CRUD Juegos',
-      routerPath: 'admin/crud/games',
+      routerPath: 'admin/crud/game',
       icon: `icon-[bx--joystick]`,
     },
     {
       name: 'CRUD Tipo de juegos',
-      routerPath: 'admin/crud/game-types',
+      routerPath: 'admin/crud/game-type',
       icon: `icon-[ri--game-line]`,
     },
     {
       name: 'CRUD Localidades',
-      routerPath: 'admin/crud/locations',
+      routerPath: 'admin/crud/location',
       icon: `icon-[mdi--location]`,
     },
     {
       name: 'CRUD Usuarios',
-      routerPath: 'admin/crud/users',
+      routerPath: 'admin/crud/user',
       icon: `icon-[mdi--users]`,
     },
     {
       name: 'CRUD Torneos',
-      routerPath: 'admin/crud/users',
+      routerPath: 'admin/crud/tournament',
       icon: `icon-[solar--cup-bold]`,
     },
   ]);
