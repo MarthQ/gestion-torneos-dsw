@@ -1,1 +1,116 @@
-<p>tournament-crud works!</p>,
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold text-white">Gestión de Torneos</h1>
+    <h2 class="text-gray-400">Administra el catálogo de torneos disponibles.</h2>
+  </div>
+  <button class="btn btn-primary shadow-lg">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nuevo Torneo
+  </button>
+</div>
+
+<div
+  class="bg-base-300 p-4 rounded-xl border border-gray-700 mb-6 flex flex-wrap gap-4 items-center"
+>
+  <div class="relative flex-1">
+    <input
+      type="text"
+      placeholder="Buscar por nombre o ID..."
+      class="input input-bordered w-full pl-10 border-gray-600 focus:border-indigo-500"
+    />
+    <span
+      class="icon-[material-symbols--search] left-2 top-2 text-gray-500 absolute"
+      style="width: 24px; height: 24px"
+    ></span>
+  </div>
+  <select class="select select-bordered bg-primary-900 border-gray-600">
+    <option disabled selected class="text-gray-500">Filtrar por Juego</option>
+    <option>Lucha (Fighting)</option>
+    <option>Shooter (FPS)</option>
+    <option>Deportes</option>
+  </select>
+  <button class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost">
+    <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
+  </button>
+</div>
+
+<div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
+  @if (!tournamentResource.hasValue()) {
+    <h2 class="text-3xl text-center py-5">No se hallaron resultados</h2>
+  } @else {
+    <table class="table w-full">
+      <!-- head -->
+      <thead class="bg-base-300 text-gray-300">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Fecha de Inicio</th>
+          <th>Estado</th>
+          <th>Creador</th>
+          <th>Juego</th>
+          <th>Ubicación</th>
+          <th>Cupo máximo</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-300">
+        @for (tournament of tournamentResource.value(); track tournament.id) {
+          <tr class="hover:bg-gray-700/30 transition-colors">
+            <td>
+              {{ tournament.id }}
+            </td>
+            <td>
+              <div class="font-bold">{{ tournament.name }}</div>
+            </td>
+            <td>
+              <div class="line-clamp-2 text-sm text-gray-400">
+                {{ tournament.description }}
+              </div>
+            </td>
+            <td>
+              {{ tournament.datetimeinit | date: 'dd/MM/yyyy' }}
+            </td>
+            <td>
+              <span class="badge badge-outline border-indigo-500 text-indigo-400">{{
+                tournament.status
+              }}</span>
+            </td>
+            <td class="font-mono text-xs text-gray-500">
+              {{ tournament.creator }}
+            </td>
+            <td class="text-orange-400">
+              {{ tournament.game.name }}
+            </td>
+            <td class="font-mono text-green-400">
+              {{ tournament.location }}
+            </td>
+            <td class="font-mono text-green-400">
+              {{ tournament.maxParticipants }}
+            </td>
+            <td>
+              <div class="flex justify-center gap-2">
+                <button class="btn btn-square btn-sm btn-ghost hover:text-indigo-400">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-square btn-sm btn-ghost hover:text-red-400">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+<!-- Paginación -->
+<div class="flex justify-center mt-6">
+  <div class="join">
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">«</button>
+    <button class="join-item btn btn-sm btn-primary text-white border-indigo-600">1</button>
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">2</button>
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">3</button>
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">»</button>
+  </div>
+</div>
