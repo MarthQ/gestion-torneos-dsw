@@ -10,9 +10,10 @@ POST http://localhost:3000/api/games
 Content-Type: application/json
 
 {
-  "name": "Street Fighter 3rd Strike",
+  "id": 1,
+  "name": "Mortaru Kombattu Nazi",
   "description": "A game that is considered by many to be the best fighting game ever made.",
-  "gametype": 1,
+  "gametype": 2,
   "tags": [1]
 }
 

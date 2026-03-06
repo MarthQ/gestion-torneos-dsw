@@ -10,12 +10,11 @@ const GameTypeSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
     description: z.string({ message: 'Description must be a string' }),
-    tags: z.array(z.number()),
 })
 
 async function findAll(req: Request, res: Response) {
     try {
-        const gameTypes = await em.find(Game_Type, {}, { populate: ['tags'] })
+        const gameTypes = await em.find(Game_Type, {})
         res.status(200).json({
             message: 'Found all game types',
             data: gameTypes,
@@ -28,7 +27,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const gameType = await em.findOneOrFail(Game_Type, { id }, { populate: ['tags'] })
+        const gameType = await em.findOneOrFail(Game_Type, { id })
         res.status(200).json({ message: 'Found the game type', data: gameType })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
@@ -62,10 +61,7 @@ async function update(req: Request, res: Response) {
             throw fromZodError(sanitizedInput.error)
         } else {
             const id = Number.parseInt(req.params.id)
-            const gameType = await em.findOneOrFail(Game_Type, id, { populate: ['tags'] })
-            if (sanitizedInput.data.tags?.length === 0) {
-                gameType.tags.removeAll()
-            }
+            const gameType = await em.findOneOrFail(Game_Type, id)
             em.assign(gameType, sanitizedInput.data)
             await em.flush()
             res.status(200).json({ message: 'Successfully updated the game type' })
