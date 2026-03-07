@@ -10,6 +10,7 @@ import { locationRouter } from './location/location.routes.js'
 import { inscriptionRouter } from './inscription/inscription.routes.js'
 import { roleRouter } from './role/role.routes.js'
 import cors from 'cors'
+import { matchupRouter } from './matchup/matchup.routes.js'
 
 const app = express()
 app.use(express.json())
@@ -28,6 +29,7 @@ app.use('/api/users', userRouter)
 app.use('/api/locations', locationRouter)
 app.use('/api/inscriptions', inscriptionRouter)
 app.use('/api/roles', roleRouter)
+app.use('/api/matchups', matchupRouter)
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
