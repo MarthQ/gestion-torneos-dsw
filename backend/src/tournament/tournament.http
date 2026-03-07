@@ -14,8 +14,10 @@ Content-Type: application/json
   "description": "The first tournament of the Parry Palace group",
   "datetimeinit": "2026-03-06T18:22:49.062Z",
   "status": "In progress",
+  "maxParticipants": 32,
+  "creator": 1,
   "game": 1,
-  "tags": []
+  "inscriptions": []
 }
 
 
@@ -37,8 +39,10 @@ Content-Type: application/json
   "description": "The second tournament of the Parry Palace group.",
   "datetimeinit": "2024-10-01T00:00:00.000Z",
   "status": "Done",
+  "maxParticipants": 32,
+  "creator": 1,
   "game": 1,
-  "tags": [1, 2],
+  "inscriptions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
 }
 
 
