@@ -1,0 +1,49 @@
+### Obtener todos los roles
+
+GET http://localhost:3000/api/tags
+
+
+### Crear un nuevo rol
+
+# @name createUser
+POST http://localhost:3000/api/tags
+Content-Type: application/json
+
+{
+  "name": "Has Reward",
+  "description": "Indicates that the tournament has a reward available."
+}
+
+
+### ID
+@id = {{createUser.response.body.data.id}}
+
+
+### Obtener un solo tipo de rol
+
+GET http://localhost:3000/api/tags/{{id}}
+
+### Modificar un rol (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/tags/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Doesn't have reward",
+  "description": "Indicates that the tournament does not have a reward available."
+}
+
+
+### Modificar un rol (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/tags/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Virtual",
+  "description": "Indicates that the tournament is virtual."
+}
+
+### Borrar un rol (DELETE)
+
+DELETE http://localhost:3000/api/tags/{{id}}

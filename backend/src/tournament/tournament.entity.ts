@@ -13,6 +13,7 @@ import { Game } from '../game/game.entity.js'
 import { Inscription } from '../inscription/inscription.entity.js'
 import { User } from '../user/user.entity.js'
 import { Location } from '../location/location.entity.js'
+import { Tag } from '../tag/tag.entity.js'
 
 @Entity()
 export class Tournament extends BaseEntity {
@@ -34,4 +35,7 @@ export class Tournament extends BaseEntity {
     game!: Rel<Game>
     @OneToMany(() => Inscription, (inscription) => inscription.tournament)
     inscriptions = new Collection<Inscription>(this)
+
+    @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
+    tags = new Collection<Tag>(this)
 }
