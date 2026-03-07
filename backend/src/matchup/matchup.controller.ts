@@ -7,18 +7,26 @@ import { fromZodError } from 'zod-validation-error'
 const em = ORM.em
 
 const matchupSchema = z.object({
-   id: z.number().gt(0).optional(),
-   player1Rounds: z.number({message:"Rounds must be a number"}).gt(0, {message:"Rounds must be greater to 0"}),
-   player2Rounds: z.number({message:"Rounds must be a number"}).gt(0, {message:"Rounds must be greater to 0"}),
-   status: z.string({message:"Status must be a string"}),
-   bracket: z.string({message:"Bracket must be a string"}),
-   round: z.number({message:"Round must be a number"}),
-   player1Inscription: z.number({message:"Player 1 ID must be a number"}).optional(),
-   player2Inscription: z.number({message:"Player 2 ID must be a number"}).optional(),
-   winnerInscription: z.number({message:"Winner's ID must be a number"}).optional(),
-   tournament: z.number({message:"Tournament must be a number"}),
-   winnerNextMatchup: z.number({message:"Matchup ID must be a number"}),
-   losersNextMatchup: z.number({message:"Matchup ID must be a number"}),
+    id: z.number().gt(0).optional(),
+    player1Rounds: z
+        .number({ message: 'Rounds must be a number' })
+        .gt(0, { message: 'Rounds must be greater to 0' }),
+    player2Rounds: z
+        .number({ message: 'Rounds must be a number' })
+        .gt(0, { message: 'Rounds must be greater to 0' }),
+    status: z.string({ message: 'Status must be a string' }),
+    bracket: z.string({ message: 'Bracket must be a string' }),
+    round: z.number({ message: 'Round must be a number' }),
+    player1Inscription: z
+        .number({ message: 'Player 1 ID must be a number referencing a Inscription' })
+        .optional(),
+    player2Inscription: z
+        .number({ message: 'Player 2 ID must be a number referencing a Inscription' })
+        .optional(),
+    winnerInscription: z.number({ message: "Winner's ID must be a number" }).optional(),
+    tournament: z.number({ message: 'Tournament must be a number' }),
+    winnerNextMatchup: z.number({ message: 'Matchup ID must be a number' }).optional(),
+    losersNextMatchup: z.number({ message: 'Matchup ID must be a number' }).optional(),
 })
 
 async function findAll(req: Request, res: Response) {
