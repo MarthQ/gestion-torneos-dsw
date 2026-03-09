@@ -8,14 +8,26 @@ import { environment } from 'src/environments/environment';
 export class LocationService {
   private http = inject(HttpClient);
 
-  getAllLocations(): Observable<Location[]> {
-    return this.http.get<ApiResponse<Location[]>>(`${environment.apiUrl}/locations`).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error fetching: ', error);
-        return throwError(() => new Error(`No se pudieron obtener torneos`));
-      }),
-    );
+  // Without pagination
+  getLocations(): Observable<Location[]> {
+    return this.http
+      .get<ApiResponse<Location[]>>(`${environment.apiUrl}/locations`)
+      .pipe(map((response) => response.data));
+  }
+
+  getLocationsPaginated(
+    query?: string,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Observable<PaginatedResponse<Location>> {
+    const params: any = { page, pageSize };
+    if (query) params.query = query;
+
+    return this.http
+      .get<
+        ApiResponse<Location[]> & { meta: PaginatedResponse<Location>['meta'] }
+      >(`${environment.apiUrl}/locations`, { params })
+      .pipe(map((response) => ({ data: response.data, meta: response.meta })));
   }
 
   addLocation(newLocation: Location): Observable<Location> {
