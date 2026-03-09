@@ -1,4 +1,4 @@
 export interface Location {
-  postalCode: string;
+  id: number;
   name: string;
 }

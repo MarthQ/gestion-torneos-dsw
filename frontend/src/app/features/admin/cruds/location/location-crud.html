@@ -1,2 +1,96 @@
-<p>location works!</p>
-,
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold text-white">Gestión de Localidades</h1>
+    <h2 class="text-gray-400">
+      Administra el catálogo de localidades disponibles para torneos y para usuarios.
+    </h2>
+  </div>
+  <button class="btn btn-primary shadow-lg" (click)="addLocation()">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nueva Localidad
+  </button>
+</div>
+
+<div
+  class="bg-base-300 p-4 rounded-xl border border-gray-700 mb-6 flex flex-wrap gap-4 items-center"
+>
+  <div class="relative flex-1">
+    <input
+      type="text"
+      placeholder="Buscar por nombre o ID..."
+      class="input input-bordered w-full pl-10 border-gray-600 focus:border-indigo-500"
+    />
+    <span
+      class="icon-[material-symbols--search] left-2 top-2 text-gray-500 absolute"
+      style="width: 24px; height: 24px"
+    ></span>
+  </div>
+  <button class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost">
+    <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
+  </button>
+</div>
+
+<div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
+  <table class="table w-full">
+    <!-- head -->
+    <thead class="bg-base-300 text-gray-300">
+      <tr>
+        <th>ID</th>
+        <th>Nombre de la Localidad</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-300">
+      @for (location of locationResource.value(); track location.name) {
+        <tr class="hover:bg-gray-700/30 transition-colors">
+          <td>
+            <div class="font-mono text-sm text-gray-500">{{ location.id }}</div>
+          </td>
+          <td>
+            <div class="font-bold badge badge-info">
+              <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
+              {{ location.name }}
+            </div>
+          </td>
+          <td>
+            <div class="flex justify-center gap-2">
+              <button
+                class="btn btn-square btn-sm btn-ghost hover:text-yellow-300"
+                (click)="editLocation(location)"
+              >
+                <span class="icon-[boxicons--edit-filled]" style="width: 24px; height: 24px"></span>
+              </button>
+              <button
+                class="btn btn-square btn-sm btn-ghost hover:text-red-400"
+                (click)="deleteLocation(location)"
+              >
+                <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (locationResource.hasValue()) {
+  <location-crud-modal
+    [location]="selectedLocation()"
+    [type]="modalType()"
+    [open]="openModal()"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<!-- Paginación -->
+<div class="flex justify-center mt-6">
+  <div class="join">
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">«</button>
+    <button class="join-item btn btn-sm btn-primary text-white border-indigo-600">1</button>
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">2</button>
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">3</button>
+    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">»</button>
+  </div>
+</div>
