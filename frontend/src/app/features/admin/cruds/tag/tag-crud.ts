@@ -9,21 +9,24 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs';
-
 import { ToasterService } from 'src/app/services/toaster.service';
-import { Location } from '@shared/interfaces/location';
-import { LocationService } from 'src/app/services/location.service';
-import { LocationCrudModal } from './location-crud-modal/location-crud-modal';
+
+import { Tag } from '@shared/interfaces/tag';
+import { TagService } from 'src/app/services/tag.service';
+import { TagCrudModal } from './tag-crud-modal/tag-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 
 @Component({
-  selector: 'admin-location-crud',
-  imports: [LocationCrudModal, Pagination, SearchBar],
-  templateUrl: './location-crud.html',
+  selector: 'admin-tag-crud',
+  imports: [TagCrudModal, Pagination, SearchBar],
+  templateUrl: './tag-crud.html',
 })
-export class LocationCrud {
-  locationService = inject(LocationService);
+export class TagCrud {
+  tagService = inject(TagService);
+
+  // ElementRef for resetting the query
+  searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
 
   // API Get parameters (for table)
   query = signal('');
@@ -37,48 +40,49 @@ export class LocationCrud {
   modalType = signal<'add' | 'edit' | 'delete'>('add');
   openModal = signal<boolean>(false);
 
-  selectedLocation = signal<Partial<Location>>({});
+  selectedTag = signal<Partial<Tag>>({});
 
-  locationMeta = signal<ApiResponse<Location[]>['meta']>(undefined);
+  tagMeta = signal<PaginationMeta | undefined>(undefined);
 
-  locationResource = rxResource({
+  tagResource = rxResource({
     params: () => ({ query: this.query(), page: this.page() }),
     stream: ({ params }) => {
-      return this.locationService
-        .getLocationsPaginated(params.query, params.page, this.pageSize)
-        .pipe(
-          tap((response) => this.locationMeta.set(response.meta)),
-          map((response) => response.data),
-        );
+      return this.tagService.getTagsPaginated(params.query, params.page, this.pageSize).pipe(
+        tap((response) => this.tagMeta.set(response.meta)),
+        map((response) => response.data),
+      );
     },
   });
 
+  // Visual actions (pagination)
   pageChangedTo(newPage: number) {
     this.page.set(newPage);
   }
 
-  addLocation() {
+  // CRUD Actions
+  addTag() {
     this.modalType.set('add');
-    this.selectedLocation.set({});
+    this.selectedTag.set({});
     this.openModal.set(true);
   }
-  editLocation(location: Location) {
+  editTag(tag: Tag) {
     this.modalType.set('edit');
-    this.selectedLocation.set(location);
+    this.selectedTag.set(tag);
     this.openModal.set(true);
   }
-  deleteLocation(location: Location) {
+  deleteTag(tag: Tag) {
     this.modalType.set('delete');
-    this.selectedLocation.set(location);
+    this.selectedTag.set(tag);
     this.openModal.set(true);
   }
-  handleCrudAction(location: Location) {
+
+  handleCrudAction(tag: Tag) {
     switch (this.modalType()) {
       case 'add':
-        this.locationService.addLocation(location).subscribe({
+        this.tagService.addTag(tag).subscribe({
           next: () => {
             ToasterService.success('La localidad se agregó correctamente');
-            this.locationResource.reload();
+            this.tagResource.reload();
           },
           error: (err) => {
             ToasterService.error('Ocurrió un error, la acción no se realizó', err);
@@ -87,10 +91,10 @@ export class LocationCrud {
         });
         break;
       case 'edit':
-        this.locationService.updateLocation(location).subscribe({
+        this.tagService.updateTag(tag).subscribe({
           next: () => {
-            ToasterService.success('La localidad se modificó correctamente');
-            this.locationResource.reload();
+            ToasterService.success('La tag se modificó correctamente');
+            this.tagResource.reload();
           },
           error: (err) => {
             ToasterService.error('Ocurrió un error, la acción no se realizó', err);
@@ -99,10 +103,10 @@ export class LocationCrud {
         });
         break;
       case 'delete':
-        this.locationService.deleteLocation(location).subscribe({
+        this.tagService.deleteTag(tag).subscribe({
           next: () => {
-            ToasterService.success('La localidad se eliminó correctamente');
-            this.locationResource.reload();
+            ToasterService.success('La tag se eliminó correctamente');
+            this.tagResource.reload();
           },
           error: (err) => {
             ToasterService.error('Ocurrió un error, la acción no se realizó', err);

@@ -1,22 +1,21 @@
 import { I18nSelectPipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-
-import { Location } from '@shared/interfaces/location';
+import { Tag } from '@shared/interfaces/tag';
 
 @Component({
-  selector: 'location-crud-modal',
+  selector: 'tag-crud-modal',
   imports: [I18nSelectPipe, ReactiveFormsModule],
-  templateUrl: './location-crud-modal.html',
+  templateUrl: './tag-crud-modal.html',
 })
-export class LocationCrudModal {
-  location = input.required<Partial<Location>>();
+export class TagCrudModal {
+  tag = input.required<Partial<Tag>>();
   type = input.required<'add' | 'edit' | 'delete'>();
   open = input.required<boolean>();
   closed = output<void>();
-  confirmAction = output<Location>();
+  confirmAction = output<Tag>();
 
-  locationModal = viewChild.required<ElementRef<HTMLDialogElement>>('locationModal');
+  tagModal = viewChild.required<ElementRef<HTMLDialogElement>>('tagModal');
 
   fb = inject(FormBuilder);
 
@@ -27,30 +26,32 @@ export class LocationCrudModal {
     delete: 'Borrar una localidad',
   };
 
-  locationForm = this.fb.nonNullable.group({
+  tagForm = this.fb.nonNullable.group({
     id: [0, Validators.required],
     name: ['', Validators.required],
+    description: ['', Validators.required],
   });
 
   openEffect = effect(() => {
     if (this.open()) {
-      this.locationModal().nativeElement.showModal();
-      this.locationForm.patchValue({
-        id: this.location().id ?? 0,
-        name: this.location().name ?? '',
+      this.tagModal().nativeElement.showModal();
+      this.tagForm.patchValue({
+        id: this.tag().id ?? 0,
+        name: this.tag().name ?? '',
+        description: this.tag().description ?? '',
       });
     } else {
-      this.locationModal().nativeElement.close();
+      this.tagModal().nativeElement.close();
     }
   });
 
   onDialogClose() {
     this.closed.emit();
   }
-  emitLocation() {
-    if (this.locationForm.valid) {
-      const location = this.locationForm.getRawValue();
-      this.confirmAction.emit(location);
+  emitTag() {
+    if (this.tagForm.valid) {
+      const tag = this.tagForm.getRawValue();
+      this.confirmAction.emit(tag);
     }
   }
 }

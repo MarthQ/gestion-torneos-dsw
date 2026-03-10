@@ -19,15 +19,21 @@ export class LocationService {
     query?: string,
     page: number = 1,
     pageSize: number = 10,
-  ): Observable<PaginatedResponse<Location>> {
+  ): Observable<PaginatedApiResponse<Location>> {
     const params: any = { page, pageSize };
     if (query) params.query = query;
 
     return this.http
-      .get<
-        ApiResponse<Location[]> & { meta: PaginatedResponse<Location>['meta'] }
-      >(`${environment.apiUrl}/locations`, { params })
-      .pipe(map((response) => ({ data: response.data, meta: response.meta })));
+      .get<PaginatedApiResponse<Location>>(`${environment.apiUrl}/locations`, {
+        params,
+      })
+      .pipe(
+        map((response) => ({
+          data: response.data,
+          meta: response.meta,
+          message: response.message,
+        })),
+      );
   }
 
   addLocation(newLocation: Location): Observable<Location> {

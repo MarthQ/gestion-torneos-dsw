@@ -1,0 +1,26 @@
+<!-- Paginación -->
+<div class="flex justify-center mt-6">
+  <div class="join">
+    <button class="join-item btn btn-sm" [disabled]="page() === 1" (click)="moveToPreviousPage()">
+      «
+    </button>
+
+    @for (p of totalPages(); track p) {
+      <button
+        class="join-item btn btn-sm"
+        [class.btn-primary]="page() === p"
+        (click)="moveToPage(p)"
+      >
+        {{ p }}
+      </button>
+    }
+
+    <button
+      class="join-item btn btn-sm"
+      [disabled]="page() === entityMeta()?.totalPages"
+      (click)="moveToNextPage()"
+    >
+      »
+    </button>
+  </div>
+</div>

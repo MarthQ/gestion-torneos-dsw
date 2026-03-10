@@ -52,6 +52,11 @@ export class Sidebar {
       routerPath: 'admin/crud/tournament',
       icon: `icon-[solar--cup-bold]`,
     },
+    {
+      name: 'CRUD Tags',
+      routerPath: 'admin/crud/tag',
+      icon: `icon-[tabler--tag]`,
+    },
   ]);
 
   sidebarButtons = signal([
