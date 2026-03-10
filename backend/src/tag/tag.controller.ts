@@ -13,13 +13,29 @@ const TagSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const tags = await em.find(Tag, {})
+        const page = req.query.page ? Number(req.query.page) : 1
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+        const offset = (page - 1) * pageSize
+
+        const query = req.query.query ? String(req.query.query) : undefined
+
+        // Filter to check the query string in the name or in the description
+        const filter = query
+            ? { $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }] }
+            : {}
+
+        const [tags, total] = await em.findAndCount(Tag, filter, {
+            limit: pageSize,
+            offset,
+        })
+
         res.status(200).json({
             message: 'Found all tags',
             data: tags,
+            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        res.status(404).json({ message: error.message })
     }
 }
 
