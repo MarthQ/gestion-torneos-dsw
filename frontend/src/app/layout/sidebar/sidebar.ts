@@ -57,6 +57,11 @@ export class Sidebar {
       routerPath: 'admin/crud/tag',
       icon: `icon-[tabler--tag]`,
     },
+    {
+      name: 'CRUD Roles',
+      routerPath: 'admin/crud/role',
+      icon: `icon-[eos-icons--role-binding]`,
+    },
   ]);
 
   sidebarButtons = signal([

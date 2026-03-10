@@ -9,7 +9,8 @@
       "@assets/*": ["src/app/assets/*"],
       "@environments/*": ["src/app/environments/*"],
       "@shared/*": ["src/app/shared/*"],
-      "@layout/*": ["src/app/layout/*"]
+      "@layout/*": ["src/app/layout/*"],
+      "@services/*": ["src/app/services/*"]
     },
     "strict": true,
     "noImplicitOverride": true,

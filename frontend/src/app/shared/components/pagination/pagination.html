@@ -17,7 +17,7 @@
 
     <button
       class="join-item btn btn-sm"
-      [disabled]="page() === entityMeta()?.totalPages"
+      [disabled]="page() === entityMeta()?.totalPages || noPages()"
       (click)="moveToNextPage()"
     >
       »

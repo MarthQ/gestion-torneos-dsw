@@ -19,6 +19,11 @@ export class Pagination {
     Array.from({ length: this.entityMeta()?.totalPages ?? 0 }, (_, i) => i + 1),
   );
 
+  // noPages is used when the table has an empty array.
+  noPages() {
+    return this.totalPages().length === 0;
+  }
+
   moveToPreviousPage() {
     this.page.update((current) => current - 1);
     this.currentPage.emit(this.page());

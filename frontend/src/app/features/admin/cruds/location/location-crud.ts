@@ -39,7 +39,7 @@ export class LocationCrud {
 
   selectedLocation = signal<Partial<Location>>({});
 
-  locationMeta = signal<ApiResponse<Location[]>['meta']>(undefined);
+  locationMeta = signal<PaginationMeta | undefined>(undefined);
 
   locationResource = rxResource({
     params: () => ({ query: this.query(), page: this.page() }),
