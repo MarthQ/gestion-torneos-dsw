@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { Role } from './role.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
+import { fromZodError } from 'zod-validation-error'
 
 const em = ORM.em
 
@@ -48,22 +49,33 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
     try {
-        const role = em.create(Role, req.body)
-        await em.flush()
-        res.status(201).json({ message: 'Role created', data: role })
+        const sanitizedRole = RoleSchema.safeParse(req.body)
+
+        if (!sanitizedRole.success) {
+            throw fromZodError(sanitizedRole.error)
+        } else {
+            const role = em.create(Role, sanitizedRole.data)
+            await em.flush()
+            res.status(201).json({ message: 'Role created', data: role })
+        }
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
 }
 async function update(req: Request, res: Response) {
     try {
-        const id = Number.parseInt(req.params.id)
-        const role = em.getReference(Role, id)
-        em.assign(role, req.body)
-        await em.flush()
-        res.status(200).json({ message: 'Role updated' })
+        const sanitizedPartialRole = RoleSchema.partial().safeParse(req.body)
+
+        if (!sanitizedPartialRole.success) {
+        } else {
+            const id = Number.parseInt(req.params.id)
+            const role = em.getReference(Role, id)
+            em.assign(role, sanitizedPartialRole.data)
+            await em.flush()
+            res.status(200).json({ message: 'Role updated' })
+        }
     } catch (error: any) {
-        res.status(500).json(error.message)
+        res.status(404).json(error.message)
     }
 }
 
