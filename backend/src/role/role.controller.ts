@@ -12,13 +12,27 @@ const RoleSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const Roles = await em.find(Role, {})
+        const page = req.query.page ? Number(req.query.page) : 1
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+        const offset = (page - 1) * pageSize
+
+        const query = req.query.query ? String(req.query.query) : undefined
+
+        // Filter to check if the query string is in the name
+        const filter = query ? { name: { $like: `%${query}%` } } : {}
+
+        const [roles, total] = await em.findAndCount(Role, filter, {
+            limit: pageSize,
+            offset,
+        })
+
         res.status(200).json({
-            message: 'Found all roles',
-            data: Roles,
+            message: 'Found selected roles',
+            data: roles,
+            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        res.status(404).json({ message: error.message })
     }
 }
 

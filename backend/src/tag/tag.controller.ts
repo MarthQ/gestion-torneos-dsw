@@ -19,7 +19,7 @@ async function findAll(req: Request, res: Response) {
 
         const query = req.query.query ? String(req.query.query) : undefined
 
-        // Filter to check the query string in the name or in the description
+        // Filter to check if the query string is in the name or in the description
         const filter = query
             ? { $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }] }
             : {}
@@ -30,7 +30,7 @@ async function findAll(req: Request, res: Response) {
         })
 
         res.status(200).json({
-            message: 'Found all tags',
+            message: 'Found selected tags',
             data: tags,
             meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })

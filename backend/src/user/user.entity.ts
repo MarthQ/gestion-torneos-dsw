@@ -20,7 +20,7 @@ export class User extends BaseEntity {
     @OneToMany(() => Inscription, (inscription) => inscription.user)
     inscriptions = new Collection<Inscription>(this)
 
-    // Torneos que el usuario creo
+    // Tournaments that the user created
     @OneToMany(() => Tournament, (Tournament) => Tournament.creator)
     tournament = new Collection<Tournament>(this)
 }
