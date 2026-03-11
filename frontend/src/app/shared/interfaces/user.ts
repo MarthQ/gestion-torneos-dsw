@@ -1,3 +1,4 @@
+import { Location } from './location';
 import { Role } from './role';
 
 export interface User {
@@ -5,5 +6,6 @@ export interface User {
   name: string;
   password: string;
   mail: string;
+  location: Location;
   role: Role;
 }

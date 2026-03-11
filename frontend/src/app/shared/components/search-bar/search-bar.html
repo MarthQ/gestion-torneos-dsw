@@ -14,6 +14,48 @@
       style="width: 24px; height: 24px"
     ></span>
   </div>
+  @if (filters()?.locations?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedLocation()"
+      (ngModelChange)="selectedLocation.set(+$event)"
+    >
+      <option selected value="0">Cualquier Localidad</option>
+      @for (location of filters()?.locations; track location.id) {
+        <option [value]="location.id">
+          {{ location.name }}
+        </option>
+      }
+    </select>
+  }
+  @if (filters()?.roles?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedRole()"
+      (ngModelChange)="selectedRole.set(+$event)"
+    >
+      <option selected value="0">Cualquier Rol</option>
+      @for (role of filters()?.roles; track role.id) {
+        <option [value]="role.id">
+          {{ role.name }}
+        </option>
+      }
+    </select>
+  }
+  @if (filters()?.tags?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedTag()"
+      (ngModelChange)="selectedTag.set(+$event)"
+    >
+      <option selected value="0">Cualquier Etiqueta</option>
+      @for (tag of filters()?.tags; track tag.id) {
+        <option [value]="tag.id">
+          {{ tag.name }}
+        </option>
+      }
+    </select>
+  }
   <button
     class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost"
     (click)="clearQuery()"

@@ -1,1 +1,117 @@
-<p>user-crud works!</p>,
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold text-white">Gestión de Usuarios</h1>
+    <h2 class="text-gray-400">Administra a los usuarios registrados en el sistema.</h2>
+  </div>
+  <button class="btn btn-primary shadow-lg" (click)="addUser()">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nuevo Usuario
+  </button>
+</div>
+
+<app-search-bar
+  [filters]="{ locations: locationResource.value(), roles: roleResource.value() }"
+  (queryChanged)="query.set($event)"
+  (clear)="query.set('')"
+  (queryFiltered)="queryFilters.set($event)"
+/>
+
+<div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
+  @if (userResource.hasValue()) {
+    <table class="table w-full">
+      <!-- head -->
+      <thead class="bg-base-300 text-gray-300">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo Electrónico</th>
+          <th>Localidad</th>
+          <th>Rol</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-300">
+        @for (user of userResource.value(); track user.id) {
+          <tr class="hover:bg-gray-700/30 transition-colors">
+            <td>
+              <div class="font-mono text-sm text-gray-500">{{ user.id }}</div>
+            </td>
+            <td>
+              <div class="font-bold">
+                {{ user.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm font-bold">
+                {{ user.mail }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm font-bold badge badge-info">
+                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
+                {{ user.location.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm font-bold badge badge-dash">
+                <span
+                  class="icon-[eos-icons--role-binding]"
+                  style="width: 18px; height: 18px"
+                ></span>
+                {{ user.role.name }}
+              </div>
+            </td>
+            <td>
+              <div class="flex justify-center gap-2">
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:text-yellow-300"
+                  (click)="editUser(user)"
+                >
+                  <span
+                    class="icon-[boxicons--edit-filled]"
+                    style="width: 24px; height: 24px"
+                  ></span>
+                </button>
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:text-red-400"
+                  (click)="deleteUser(user)"
+                >
+                  <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (userResource.isLoading()) {
+    <div class="p-6 flex justify-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else {
+    <div class="p-6 flex justify-center">
+      <p>
+        Ocurrio un <strong class="text-error">error</strong> con los datos de usuarios. Por favor
+        reinicie la página
+      </p>
+    </div>
+  }
+</div>
+
+@if (userResource.hasValue()) {
+  <user-crud-modal
+    [user]="selectedUser()"
+    [type]="modalType()"
+    [open]="openModal()"
+    [roleResource]="roleResource"
+    [locationResource]="locationResource"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="userMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>
