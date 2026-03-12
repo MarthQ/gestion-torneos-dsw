@@ -22,13 +22,31 @@ const TournamentSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const Tournaments = await em.find(Tournament, {}, { populate: ['game'] })
+        const page = req.query.page ? Number(req.query.page) : 1
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+        const offset = (page - 1) * pageSize
+
+        const query = req.query.query ? String(req.query.query) : undefined
+        const tag = req.query.tag ? Number(req.query.tag) : undefined
+        const location = req.query.location ? Number(req.query.location) : undefined
+        const game = req.query.game ? Number(req.query.game) : undefined
+
+        const filter: any = {}
+
+        if (query) filter.name = { $like: `%${query}%` }
+        if (tag) filter.tags = { $some: { id: tag } }
+        if (location) filter.location = location
+        if (game) filter.location = location
+
+        const Tournaments = await em.find(Tournament, filter, {
+            populate: ['game', 'creator', 'location', 'tags', 'game'],
+        })
         res.status(200).json({
             message: 'Found all tournaments',
             data: Tournaments,
         })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        res.status(404).json({ message: error.message })
     }
 }
 
