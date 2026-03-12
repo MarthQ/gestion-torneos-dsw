@@ -1,4 +1,6 @@
 import { Game } from './game';
+import { Location } from './location';
+import { Tag } from './tag';
 import { User } from './user';
 
 export interface Tournament {
@@ -11,4 +13,5 @@ export interface Tournament {
   game: Game;
   location: Location;
   maxParticipants: number;
+  tags: Tag[];
 }

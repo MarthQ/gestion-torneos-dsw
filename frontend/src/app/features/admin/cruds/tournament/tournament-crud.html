@@ -1,43 +1,27 @@
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
   <div>
     <h1 class="text-3xl font-bold text-white">Gestión de Torneos</h1>
-    <h2 class="text-gray-400">Administra el catálogo de torneos disponibles.</h2>
+    <h2 class="text-gray-400">Administra los torneos registrados en el sistema.</h2>
   </div>
-  <button class="btn btn-primary shadow-lg">
+  <button class="btn btn-primary shadow-lg" (click)="addTournament()">
     <span class="icon-[ic--baseline-plus] mr-2"></span>
     Nuevo Torneo
   </button>
 </div>
 
-<div
-  class="bg-base-300 p-4 rounded-xl border border-gray-700 mb-6 flex flex-wrap gap-4 items-center"
->
-  <div class="relative flex-1">
-    <input
-      type="text"
-      placeholder="Buscar por nombre o ID..."
-      class="input input-bordered w-full pl-10 border-gray-600 focus:border-indigo-500"
-    />
-    <span
-      class="icon-[material-symbols--search] left-2 top-2 text-gray-500 absolute"
-      style="width: 24px; height: 24px"
-    ></span>
-  </div>
-  <select class="select select-bordered bg-primary-900 border-gray-600">
-    <option disabled selected class="text-gray-500">Filtrar por Juego</option>
-    <option>Lucha (Fighting)</option>
-    <option>Shooter (FPS)</option>
-    <option>Deportes</option>
-  </select>
-  <button class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost">
-    <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
-  </button>
-</div>
+<app-search-bar
+  [filters]="{
+    locations: locationResource.value(),
+    games: gameResource.value(),
+    tags: tagResource.value(),
+  }"
+  (queryChanged)="query.set($event)"
+  (clear)="query.set('')"
+  (queryFiltered)="queryFilters.set($event)"
+/>
 
 <div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
-  @if (!tournamentResource.hasValue()) {
-    <h2 class="text-3xl text-center py-5">No se hallaron resultados</h2>
-  } @else {
+  @if (userResource.hasValue()) {
     <table class="table w-full">
       <!-- head -->
       <thead class="bg-base-300 text-gray-300">
@@ -45,12 +29,12 @@
           <th>ID</th>
           <th>Nombre</th>
           <th>Descripción</th>
-          <th>Fecha de Inicio</th>
+          <th>Fecha y Hora de inicio</th>
           <th>Estado</th>
-          <th>Creador</th>
+          <th>Cupo Máximo</th>
+          <th>Localidad</th>
+          <th>Nombre del creador</th>
           <th>Juego</th>
-          <th>Ubicación</th>
-          <th>Cupo máximo</th>
           <th class="text-center">Acciones</th>
         </tr>
       </thead>
@@ -58,43 +42,64 @@
         @for (tournament of tournamentResource.value(); track tournament.id) {
           <tr class="hover:bg-gray-700/30 transition-colors">
             <td>
-              {{ tournament.id }}
+              <div class="font-mono text-sm text-gray-500">{{ tournament.id }}</div>
             </td>
             <td>
-              <div class="font-bold">{{ tournament.name }}</div>
+              <div class="font-bold">
+                {{ tournament.name }}
+              </div>
             </td>
             <td>
-              <div class="line-clamp-2 text-sm text-gray-400">
+              <div class="text-sm">
                 {{ tournament.description }}
               </div>
             </td>
             <td>
-              {{ tournament.datetimeinit | date: 'dd/MM/yyyy' }}
+              <div class="badge">
+                <span
+                  class="icon-[fluent-mdl2--date-time]"
+                  style="width: 18px; height: 18px"
+                ></span>
+                {{ tournament.datetimeinit | date: 'short' }}
+              </div>
             </td>
             <td>
-              <span class="badge badge-outline border-indigo-500 text-indigo-400">{{
-                tournament.status
-              }}</span>
+              <div class="badge">
+                {{ tournament.status }}
+              </div>
             </td>
-            <td class="font-mono text-xs text-gray-500">
-              {{ tournament.creator }}
+            <td>
+              <div class="text-sm font-bold badge badge-info">
+                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
+                {{ tournament.location.name }}
+              </div>
             </td>
-            <td class="text-orange-400">
-              {{ tournament.game.name }}
+            <td>
+              <div class="text font-bold">
+                {{ tournament.maxParticipants }}
+              </div>
             </td>
-            <td class="font-mono text-green-400">
-              {{ tournament.location }}
-            </td>
-            <td class="font-mono text-green-400">
-              {{ tournament.maxParticipants }}
+            <td>
+              <div class="text-sm font-bold badge badge-dash">
+                {{ tournament.creator.name }}
+              </div>
             </td>
             <td>
               <div class="flex justify-center gap-2">
-                <button class="btn btn-square btn-sm btn-ghost hover:text-indigo-400">
-                  <i class="fas fa-edit"></i>
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:text-yellow-300"
+                  (click)="editTournament(tournament)"
+                >
+                  <span
+                    class="icon-[boxicons--edit-filled]"
+                    style="width: 24px; height: 24px"
+                  ></span>
                 </button>
-                <button class="btn btn-square btn-sm btn-ghost hover:text-red-400">
-                  <i class="fas fa-trash"></i>
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:text-red-400"
+                  (click)="deleteTournament(tournament)"
+                >
+                  <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
                 </button>
               </div>
             </td>
@@ -102,15 +107,36 @@
         }
       </tbody>
     </table>
+  } @else if (tournamentResource.isLoading()) {
+    <div class="p-6 flex justify-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else {
+    <div class="p-6 flex justify-center">
+      <p>
+        Ocurrio un <strong class="text-error">error</strong> con los datos de torneos. Por favor
+        reinicie la página
+      </p>
+    </div>
   }
 </div>
-<!-- Paginación -->
-<div class="flex justify-center mt-6">
-  <div class="join">
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">«</button>
-    <button class="join-item btn btn-sm btn-primary text-white border-indigo-600">1</button>
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">2</button>
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">3</button>
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">»</button>
-  </div>
-</div>
+
+@if (tournamentResource.hasValue()) {
+  <tournament-crud-modal
+    [tournament]="selectedTournament()"
+    [type]="modalType()"
+    [open]="openModal()"
+    [gameResource]="gameResource"
+    [locationResource]="locationResource"
+    [userResource]="userResource"
+    [tagResource]="tagResource"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="tournamentMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>

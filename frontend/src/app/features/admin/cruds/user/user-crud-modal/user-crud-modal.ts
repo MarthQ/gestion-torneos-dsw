@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Location } from '@shared/interfaces/location';
+import { Role } from '@shared/interfaces/role';
 import { User } from '@shared/interfaces/user';
 import { FormUtils } from '@shared/utils/form-utils';
 
@@ -27,7 +28,7 @@ export class UserCrudModal {
   confirmAction = output<any>();
 
   locationResource = input.required<ResourceRef<Location[] | undefined>>();
-  roleResource = input.required<ResourceRef<Location[] | undefined>>();
+  roleResource = input.required<ResourceRef<Role[] | undefined>>();
 
   userModal = viewChild.required<ElementRef<HTMLDialogElement>>('userModal');
 
