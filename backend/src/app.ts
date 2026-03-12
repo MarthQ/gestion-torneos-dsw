@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 import express from 'express'
-import { gameTypeRouter } from './game_type/game_type.routes.js'
 import { ORM, syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
 import { gameRouter } from './game/game.routes.js'
@@ -23,7 +22,6 @@ app.use((req, res, next) => {
 })
 // Before routes and business middlewares
 
-app.use('/api/game-types', gameTypeRouter)
 app.use('/api/games', gameRouter)
 app.use('/api/tournaments', tournamentRouter)
 app.use('/api/users', userRouter)

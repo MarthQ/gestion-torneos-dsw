@@ -20,7 +20,7 @@ export class Game extends BaseEntity {
     @Property()
     description!: string
     @Property()
-    imgUrl!: string
+    imgUrl?: string
     @Property()
     igdbId!: number
     @ManyToOne(() => Game_Type, { nullable: false })
