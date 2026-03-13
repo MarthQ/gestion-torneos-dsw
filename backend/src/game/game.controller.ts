@@ -3,6 +3,9 @@ import { Game } from './game.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { env } from '../config/env.js'
+import { GameMapper } from '../shared/mappers/gameMapper.js'
+import { IGDBGame } from '../shared/interfaces/game.js'
 
 const em = ORM.em
 
@@ -14,6 +17,32 @@ const GameSchema = z.object({
     igdbId: z.number({ message: 'Description must be a number referencing IGDB DB' }),
     gametype: z.number({ message: 'Gametype must be a number representing a Gametype id' }),
 })
+
+async function searchIGDB(req: Request, res: Response) {
+    try {
+        const query = req.query.query ? String(req.query.query) : undefined
+
+        if (!query) {
+            return res.status(400).json({ message: 'Query is required' })
+        }
+
+        const response = await fetch('https://api.igdb.com/v4/games', {
+            method: 'POST',
+            headers: {
+                'Client-ID': env.igdbClientId,
+                Authorization: `Bearer ${env.igdbAccessToken}`,
+                'Content-Type': 'text/plain',
+            },
+            body: `search "${query}"; fields name,cover.url,summary,rating; limit 10;`,
+        })
+
+        const igdbGames: IGDBGame[] = await response.json()
+        const data = GameMapper.mapIgdbGameArrayToGameArray(igdbGames)
+        res.status(200).json({ message: 'Found IGDB games', data })
+    } catch (error: any) {
+        res.status(404).json({ message: error.message })
+    }
+}
 
 async function findAll(req: Request, res: Response) {
     try {
@@ -81,4 +110,4 @@ async function remove(req: Request, res: Response) {
     }
 }
 
-export { findAll, findOne, add, update, remove }
+export { findAll, searchIGDB, findOne, add, update, remove }

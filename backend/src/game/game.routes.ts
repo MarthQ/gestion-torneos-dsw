@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { findAll, findOne, add, update, remove } from './game.controller.js'
+import { findAll, searchIGDB, findOne, add, update, remove } from './game.controller.js'
 
 const gameRouter = Router()
 
+gameRouter.get('/search', searchIGDB)
 gameRouter.get('/', findAll)
 gameRouter.get('/:id', findOne)
 gameRouter.post('/', add)

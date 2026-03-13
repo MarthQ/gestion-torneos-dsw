@@ -2,6 +2,10 @@
 
 GET http://localhost:3000/api/games
 
+### Obtener juegos de la base de datos de IGDB
+
+GET http://localhost:3000/api/games/search?query=melty%20blood
+
 
 ### Crear un nuevo game
 
