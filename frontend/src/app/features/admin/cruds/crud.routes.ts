@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { GameTypeCrud } from './game-type/game-type-crud';
 import { GameCrud } from './game/game-crud';
 import { LocationCrud } from './location/location-crud';
 import { TournamentCrud } from './tournament/tournament-crud';
@@ -11,10 +10,6 @@ export const crudRoutes: Routes = [
   {
     path: 'game',
     component: GameCrud,
-  },
-  {
-    path: 'game-type',
-    component: GameTypeCrud,
   },
   {
     path: 'location',

@@ -26,12 +26,12 @@ export class LocationCrud {
   locationService = inject(LocationService);
 
   // API Get parameters (for table)
-  query = signal('');
+  query = signal<string>('');
   page = linkedSignal({
     source: this.query,
     computation: () => 1,
   });
-  pageSize = 10;
+  pageSize = 1;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -54,6 +54,7 @@ export class LocationCrud {
   });
 
   pageChangedTo(newPage: number) {
+    console.log(this.query());
     this.page.set(newPage);
   }
 

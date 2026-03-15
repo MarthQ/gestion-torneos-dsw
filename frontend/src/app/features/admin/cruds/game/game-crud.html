@@ -3,112 +3,111 @@
     <h1 class="text-3xl font-bold text-white">Gestión de Juegos</h1>
     <h2 class="text-gray-400">Administra el catálogo de juegos disponibles para torneos.</h2>
   </div>
-  <button class="btn btn-primary shadow-lg">
-    <span class="icon-[ic--baseline-plus] mr-2"></span>
-    Nuevo Juego
-  </button>
 </div>
 
-<div
-  class="bg-base-300 p-4 rounded-xl border border-gray-700 mb-6 flex flex-wrap gap-4 items-center"
->
-  <div class="relative flex-1">
-    <input
-      type="text"
-      placeholder="Buscar por nombre o ID..."
-      class="input input-bordered w-full pl-10 border-gray-600 focus:border-indigo-500"
-    />
-    <span
-      class="icon-[material-symbols--search] left-2 top-2 text-gray-500 absolute"
-      style="width: 24px; height: 24px"
-    ></span>
-  </div>
-  <select class="select select-bordered bg-primary-900 border-gray-600">
-    <option disabled selected class="text-gray-500">Filtrar por Tipo</option>
-    <option>Lucha (Fighting)</option>
-    <option>Shooter (FPS)</option>
-    <option>Deportes</option>
-  </select>
-  <button class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost">
-    <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
-  </button>
-</div>
+<app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" />
 
 <div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
-  <table class="table w-full">
-    <!-- head -->
-    <thead class="bg-base-300 text-gray-300">
-      <tr>
-        <th class="rounded-tl-xl">Portada</th>
-        <th>Nombre del Juego</th>
-        <th>Tipo / Género</th>
-        <th>ID IGDB</th>
-        <th class="text-center">Acciones</th>
-      </tr>
-    </thead>
-    <tbody class="text-gray-300">
-      <!-- Fila 1 -->
-      <tr class="hover:bg-gray-700/30 transition-colors">
-        <td>
-          <div class="avatar">
-            <div class="mask mask-squircle w-12 h-12">
-              <img src="https://placehold.co/100x140/1e293b/white?text=MK1" alt="Cover" />
-            </div>
-          </div>
-        </td>
-        <td>
-          <div class="font-bold">Mortal Kombat 1</div>
-          <span class="badge badge-sm badge-ghost text-xs">Agregado: 12/10/24</span>
-        </td>
-        <td><span class="badge badge-outline border-indigo-500 text-indigo-400">Lucha</span></td>
-        <td class="font-mono text-xs text-gray-500">#129384</td>
-        <td>
-          <div class="flex justify-center gap-2">
-            <button class="btn btn-square btn-sm btn-ghost hover:text-indigo-400">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-square btn-sm btn-ghost hover:text-red-400">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-      <!-- Fila 2 -->
-      <tr class="hover:bg-gray-700/30 transition-colors">
-        <td>
-          <div class="avatar">
-            <div class="mask mask-squircle w-12 h-12">
-              <img src="https://placehold.co/100x140/1e293b/white?text=SF6" alt="Cover" />
-            </div>
-          </div>
-        </td>
-        <td>
-          <div class="font-bold">Street Fighter 6</div>
-          <span class="badge badge-sm badge-ghost text-xs">Agregado: 15/10/24</span>
-        </td>
-        <td><span class="badge badge-outline border-indigo-500 text-indigo-400">Lucha</span></td>
-        <td class="font-mono text-xs text-gray-500">#882731</td>
-        <td>
-          <div class="flex justify-center gap-2">
-            <button class="btn btn-square btn-sm btn-ghost hover:text-yellow-300">
-              <span class="icon-[boxicons--edit-filled]" style="width: 24px; height: 24px"></span>
-            </button>
-            <button class="btn btn-square btn-sm btn-ghost hover:text-red-400">
-              <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
-            </button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  @if (gameData()) {
+    <table class="table w-full">
+      <thead class="bg-base-300 text-gray-300">
+        <tr>
+          <th>ID</th>
+          <th>IGDB ID</th>
+          <th>Foto</th>
+          <th>Nombre del juego</th>
+          <th>Descripción</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-300">
+        @for (game of gameData(); track game.name) {
+          <tr class="hover:bg-gray-700/30 transition-colors">
+            <td>
+              @if (!game.id) {
+                <span class="text-gray-500 italic">Sin ID</span>
+              } @else {
+                <div class="font-mono text-sm text-gray-500">{{ game.id }}</div>
+              }
+            </td>
+            <td>
+              <div class="font-mono text-sm text-gray-500">{{ game.igdbId }}</div>
+            </td>
+            <td>
+              <div class="avatar">
+                <div class="w-16 rounded">
+                  <img [src]="game.imgUrl" alt="Foto de {{ game.name }}" />
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="font-bold">
+                {{ game.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm">
+                {{ game.description }}
+              </div>
+            </td>
+            <td>
+              <div class="flex justify-center gap-2">
+                @if (isInDatabase(game)) {
+                  <button
+                    class="btn btn-square btn-sm btn-ghost hover:text-yellow-300"
+                    (click)="editGame(game)"
+                  >
+                    <span
+                      class="icon-[boxicons--edit-filled]"
+                      style="width: 24px; height: 24px"
+                    ></span>
+                  </button>
+                  <button
+                    class="btn btn-square btn-sm btn-ghost hover:text-red-400"
+                    (click)="deleteGame(game)"
+                  >
+                    <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+                  </button>
+                } @else {
+                  <button
+                    class="btn btn-square btn-sm btn-ghost hover:btn-primary"
+                    (click)="addGame(game)"
+                  >
+                    <span class="icon-[ic--baseline-plus]" style="width: 24px; height: 24px"></span>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (igdbGameResource.isLoading()) {
+    <div class="p-6 flex justify-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else {
+    <div class="p-6 flex justify-center">
+      <p>
+        Ocurrio un <strong class="text-error">error</strong> con los datos de juegos. Por favor
+        reinicie la página
+      </p>
+    </div>
+  }
 </div>
-<!-- Paginación -->
-<div class="flex justify-center mt-6">
-  <div class="join">
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">«</button>
-    <button class="join-item btn btn-sm btn-primary text-white border-indigo-600">1</button>
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">2</button>
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">3</button>
-    <button class="join-item btn btn-sm bg-primary-800 border-gray-700">»</button>
-  </div>
-</div>
+
+@if (igdbGameResource.hasValue()) {
+  <game-crud-modal
+    [game]="selectedGame()"
+    [type]="modalType()"
+    [open]="openModal()"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="gameMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>

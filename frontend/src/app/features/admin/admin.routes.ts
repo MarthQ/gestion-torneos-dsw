@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { GameCrud } from './cruds/game/game-crud';
-import { GameTypeCrud } from './cruds/game-type/game-type-crud';
 import { LocationCrud } from './cruds/location/location-crud';
 import { TournamentCrud } from './cruds/tournament/tournament-crud';
 import { UserCrud } from './cruds/user/user-crud';

@@ -3,5 +3,5 @@ export interface Game {
   name: string;
   description: string;
   imgUrl: string;
-  igdbId: string;
+  igdbId: number;
 }
