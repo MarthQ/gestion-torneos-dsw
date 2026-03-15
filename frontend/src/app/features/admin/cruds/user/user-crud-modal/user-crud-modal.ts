@@ -36,9 +36,9 @@ export class UserCrudModal {
 
   // Mapper for the modal's title using i18nSelectPipe
   titleMap: any = {
-    add: 'Agrega una localidad',
-    edit: 'Modifica una localidad.',
-    delete: 'Borrar una localidad',
+    add: 'Agrega un usuario',
+    edit: 'Modifica un usuario.',
+    delete: 'Borrar un usuario',
   };
 
   userForm = this.fb.group({

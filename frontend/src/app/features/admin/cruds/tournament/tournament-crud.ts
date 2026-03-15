@@ -81,14 +81,14 @@ export class TournamentCrud {
     this.selectedTournament.set({});
     this.openModal.set(true);
   }
-  editTournament(user: Tournament) {
+  editTournament(tournament: Tournament) {
     this.modalType.set('edit');
-    this.selectedTournament.set(user);
+    this.selectedTournament.set(tournament);
     this.openModal.set(true);
   }
-  deleteTournament(user: Tournament) {
+  deleteTournament(tournament: Tournament) {
     this.modalType.set('delete');
-    this.selectedTournament.set(user);
+    this.selectedTournament.set(tournament);
     this.openModal.set(true);
   }
 

@@ -33,11 +33,6 @@ export class Sidebar {
       icon: `icon-[bx--joystick]`,
     },
     {
-      name: 'CRUD Tipo de juegos',
-      routerPath: 'admin/crud/game-type',
-      icon: `icon-[ri--game-line]`,
-    },
-    {
       name: 'CRUD Localidades',
       routerPath: 'admin/crud/location',
       icon: `icon-[mdi--location]`,

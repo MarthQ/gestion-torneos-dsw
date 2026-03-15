@@ -40,9 +40,9 @@ export class TournamentCrudModal {
 
   // Mapper for the modal's title using i18nSelectPipe
   titleMap: any = {
-    add: 'Agrega una localidad',
-    edit: 'Modifica una localidad.',
-    delete: 'Borrar una localidad',
+    add: 'Agrega un torneo',
+    edit: 'Modifica un torneo.',
+    delete: 'Borrar un torneo',
   };
 
   tournamentForm = this.fb.group({

@@ -34,8 +34,8 @@ export class GameCrudModal {
 
   // Mapper for the modal's title using i18nSelectPipe
   titleMap: any = {
-    edit: 'Modifica una localidad.',
-    delete: 'Borrar una localidad',
+    edit: 'Modifica un juego.',
+    delete: 'Borrar un juego',
   };
 
   gameForm = this.fb.nonNullable.group({

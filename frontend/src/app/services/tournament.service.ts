@@ -47,6 +47,8 @@ export class TournamentService {
     const { id, ...rest } = newTournament;
     const body = id ? { id, ...rest } : rest;
 
+    console.log(body);
+
     return this.http.post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments`, body).pipe(
       map((response) => response.data),
       catchError((error) => {

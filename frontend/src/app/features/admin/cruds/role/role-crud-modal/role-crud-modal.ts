@@ -22,8 +22,8 @@ export class RoleCrudModal {
   // Mapper for the modal's title using i18nSelectPipe
   titleMap: any = {
     add: 'Agrega una localidad',
-    edit: 'Modifica una localidad.',
-    delete: 'Borrar una localidad',
+    edit: 'Modifica un rol.',
+    delete: 'Borrar un rol',
   };
 
   roleForm = this.fb.nonNullable.group({
