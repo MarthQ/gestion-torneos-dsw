@@ -16,7 +16,8 @@ import { Tournament } from '../tournament/tournament.entity.js'
 export class Game extends BaseEntity {
     @Property({ nullable: false, unique: true })
     name!: string
-    @Property()
+    // To permit longer than 255 characters texts we set the column type as text.
+    @Property({ columnType: 'text' })
     description!: string
     @Property()
     imgUrl?: string

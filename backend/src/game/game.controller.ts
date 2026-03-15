@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { env } from '../config/env.js'
 import { GameMapper } from '../shared/mappers/gameMapper.js'
-import { IGDBGame } from '../shared/interfaces/game.js'
+import { GameDTO, IGDBGame } from '../shared/interfaces/game.js'
 
 const em = ORM.em
 
@@ -48,26 +48,29 @@ async function searchIGDB(req: Request, res: Response) {
     }
 }
 
+//TODO: Discuss whether findAll should have or no pagination.
 async function findAll(req: Request, res: Response) {
     try {
-        const page = req.query.page ? Number(req.query.page) : 1
-        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-        const offset = (page - 1) * pageSize
+        // const page = req.query.page ? Number(req.query.page) : 1
+        // const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+        // const offset = (page - 1) * pageSize
 
-        const query = req.query.query ? String(req.query.query) : undefined
+        // const query = req.query.query ? String(req.query.query) : undefined
 
-        const filter: any = {}
+        // const filter: any = {}
 
-        if (query) filter.name = { $like: `%${query}%` }
+        // if (query) filter.name = { $like: `%${query}%` }
 
-        const [games, total] = await em.findAndCount(Game, filter, {
-            limit: pageSize,
-            offset,
-        })
+        // const [games, total] = await em.findAndCount(Game, filter, {
+        //     limit: pageSize,
+        //     offset,
+        // })
+
+        const games = await em.findAll(Game)
         res.status(200).json({
             message: 'Found all games',
             data: games,
-            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+            // meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
@@ -86,19 +89,48 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
     try {
-        const sanitizedGame = GameSchema.safeParse(req.body)
+        const igdbId = req.body.igdbId ? Number(req.body.igdbId) : null
 
-        if (!sanitizedGame.success) {
-            throw fromZodError(sanitizedGame.error)
-        } else {
-            const game = em.create(Game, sanitizedGame.data)
-            await em.flush()
-            res.status(201).json({ message: 'Game created', data: game })
+        // Checkear usando el findOne que el juego no existe ya en la DB.
+
+        if (!igdbId) {
+            return res.status(400).json({ message: 'An IGDB ID is required' })
         }
+
+        const existingGame = await em.findOne(Game, { igdbId })
+        if (existingGame) {
+            return res.status(409).json({ message: 'Game already is registered in the database.' })
+        }
+
+        const response = await fetch('https://api.igdb.com/v4/games', {
+            method: 'POST',
+            headers: {
+                'Client-ID': env.igdbClientId,
+                Authorization: `Bearer ${env.igdbAccessToken}`,
+                'Content-Type': 'text/plain',
+            },
+            body: `fields name,cover.url,summary,rating; where id = ${igdbId};`,
+        })
+
+        if (!response.ok) {
+            return res.status(502).json({ message: 'IGDB API error' })
+        }
+
+        const igdbResponse: IGDBGame[] = await response.json()
+        const igdbGame: IGDBGame = igdbResponse[0]
+        console.log('igdbGame:', igdbGame)
+        const { tournament, ...newGame } = GameMapper.mapIgdbGameItemToGame(igdbGame)
+        console.log('newGame:', newGame)
+        const game = em.create(Game, newGame)
+
+        await em.flush()
+        res.status(201).json({ message: 'Game added to database', data: game })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        console.log(error)
+        res.status(500).json({ message: error })
     }
 }
+
 async function update(req: Request, res: Response) {
     try {
         const sanitizedGame = GameSchema.partial().safeParse(req.body)
