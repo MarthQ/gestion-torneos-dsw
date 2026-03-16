@@ -9,10 +9,10 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs';
-import { ToasterService } from 'src/app/services/toaster.service';
+import { Toaster } from '@shared/utils/toaster';
 
 import { Tag } from '@shared/interfaces/tag';
-import { TagService } from 'src/app/services/tag.service';
+import { TagService } from '@services/tag.service';
 import { TagCrudModal } from './tag-crud-modal/tag-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
@@ -81,11 +81,11 @@ export class TagCrud {
       case 'add':
         this.tagService.addTag(tag).subscribe({
           next: () => {
-            ToasterService.success('La etiqueta se agregó correctamente');
+            Toaster.success('La etiqueta se agregó correctamente');
             this.tagResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -93,11 +93,11 @@ export class TagCrud {
       case 'edit':
         this.tagService.updateTag(tag).subscribe({
           next: () => {
-            ToasterService.success('La etiqueta se modificó correctamente');
+            Toaster.success('La etiqueta se modificó correctamente');
             this.tagResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -105,11 +105,11 @@ export class TagCrud {
       case 'delete':
         this.tagService.deleteTag(tag).subscribe({
           next: () => {
-            ToasterService.success('La etiqueta se eliminó correctamente');
+            Toaster.success('La etiqueta se eliminó correctamente');
             this.tagResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });

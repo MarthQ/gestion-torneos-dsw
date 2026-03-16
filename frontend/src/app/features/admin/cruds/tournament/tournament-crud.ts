@@ -1,9 +1,9 @@
 import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { Tournament } from '@shared/interfaces/tournament';
-import { TournamentService } from 'src/app/services/tournament.service';
+import { TournamentService } from '@services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
-import { ToasterService } from '@services/toaster.service';
+import { Toaster } from '@shared/utils/toaster';
 import { LocationService } from '@services/location.service';
 import { TagService } from '@services/tag.service';
 import { UserService } from '@services/user.service';
@@ -97,33 +97,33 @@ export class TournamentCrud {
       case 'add':
         this.tournamentService.addTournament(tournament).subscribe({
           next: () => {
-            ToasterService.success('El torneo se agregó correctamente');
+            Toaster.success('El torneo se agregó correctamente');
             this.tournamentResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
           },
         });
         break;
       case 'edit':
         this.tournamentService.updateTournament(tournament).subscribe({
           next: () => {
-            ToasterService.success('El torneo se modificó correctamente');
+            Toaster.success('El torneo se modificó correctamente');
             this.tournamentResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
           },
         });
         break;
       case 'delete':
         this.tournamentService.deleteTournament(tournament).subscribe({
           next: () => {
-            ToasterService.success('El torneo se eliminó correctamente');
+            Toaster.success('El torneo se eliminó correctamente');
             this.tournamentResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
           },
         });
     }

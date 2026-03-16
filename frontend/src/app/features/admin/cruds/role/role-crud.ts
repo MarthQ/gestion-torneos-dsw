@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { Role } from '@shared/interfaces/role';
 import { map, tap } from 'rxjs';
 import { RoleService } from '@services/role.service';
-import { ToasterService } from '@services/toaster.service';
+import { Toaster } from '@shared/utils/toaster';
 import { Tag } from '@shared/interfaces/tag';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
@@ -67,11 +67,11 @@ export class RoleCrud {
       case 'add':
         this.roleService.addRole(role).subscribe({
           next: () => {
-            ToasterService.success('El rol se agregó correctamente');
+            Toaster.success('El rol se agregó correctamente');
             this.roleResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó');
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -79,11 +79,11 @@ export class RoleCrud {
       case 'edit':
         this.roleService.updateRole(role).subscribe({
           next: () => {
-            ToasterService.success('El rol se modificó correctamente');
+            Toaster.success('El rol se modificó correctamente');
             this.roleResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó');
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -91,11 +91,11 @@ export class RoleCrud {
       case 'delete':
         this.roleService.deleteRole(role).subscribe({
           next: () => {
-            ToasterService.success('El rol se eliminó correctamente');
+            Toaster.success('El rol se eliminó correctamente');
             this.roleResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó');
+            Toaster.error(err);
             console.error(err);
           },
         });

@@ -1,6 +1,6 @@
 import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { ToasterService } from '@services/toaster.service';
+import { Toaster } from '@shared/utils/toaster';
 import { map, tap } from 'rxjs';
 
 import { UserService } from '@services/user.service';
@@ -86,11 +86,11 @@ export class UserCrud {
       case 'add':
         this.userService.addUser(user).subscribe({
           next: () => {
-            ToasterService.success('El usuario se agregó correctamente');
+            Toaster.success('El usuario se agregó correctamente');
             this.userResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -98,11 +98,11 @@ export class UserCrud {
       case 'edit':
         this.userService.updateUser(user).subscribe({
           next: () => {
-            ToasterService.success('El usuario se modificó correctamente');
+            Toaster.success('El usuario se modificó correctamente');
             this.userResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -110,11 +110,11 @@ export class UserCrud {
       case 'delete':
         this.userService.deleteUser(user).subscribe({
           next: () => {
-            ToasterService.success('El usuario se eliminó correctamente');
+            Toaster.success('El usuario se eliminó correctamente');
             this.userResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });

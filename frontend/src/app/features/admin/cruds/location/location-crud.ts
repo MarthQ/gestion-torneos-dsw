@@ -10,9 +10,9 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs';
 
-import { ToasterService } from 'src/app/services/toaster.service';
+import { Toaster } from '@shared/utils/toaster';
 import { Location } from '@shared/interfaces/location';
-import { LocationService } from 'src/app/services/location.service';
+import { LocationService } from '@services/location.service';
 import { LocationCrudModal } from './location-crud-modal/location-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
@@ -78,11 +78,11 @@ export class LocationCrud {
       case 'add':
         this.locationService.addLocation(location).subscribe({
           next: () => {
-            ToasterService.success('La localidad se agregó correctamente');
+            Toaster.success('La localidad se agregó correctamente');
             this.locationResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -90,11 +90,11 @@ export class LocationCrud {
       case 'edit':
         this.locationService.updateLocation(location).subscribe({
           next: () => {
-            ToasterService.success('La localidad se modificó correctamente');
+            Toaster.success('La localidad se modificó correctamente');
             this.locationResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -102,11 +102,11 @@ export class LocationCrud {
       case 'delete':
         this.locationService.deleteLocation(location).subscribe({
           next: () => {
-            ToasterService.success('La localidad se eliminó correctamente');
+            Toaster.success('La localidad se eliminó correctamente');
             this.locationResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });

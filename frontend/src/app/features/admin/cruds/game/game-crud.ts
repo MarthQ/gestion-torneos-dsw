@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { GameService } from '@services/game.service';
-import { ToasterService } from '@services/toaster.service';
+import { Toaster } from '@shared/utils/toaster';
 import { Game } from '@shared/interfaces/game';
 import { map, of, tap } from 'rxjs';
 
@@ -107,12 +107,12 @@ export class GameCrud {
       case 'add':
         this.gameService.addGame(game).subscribe({
           next: () => {
-            ToasterService.success('El juego se agregó correctamente');
+            Toaster.success('El juego se agregó correctamente');
             this.gameResource.reload();
             this.igdbGameResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -120,11 +120,11 @@ export class GameCrud {
       case 'edit':
         this.gameService.updateGame(game).subscribe({
           next: () => {
-            ToasterService.success('El juego se modificó correctamente');
+            Toaster.success('El juego se modificó correctamente');
             this.gameResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });
@@ -132,12 +132,12 @@ export class GameCrud {
       case 'delete':
         this.gameService.deleteGame(game).subscribe({
           next: () => {
-            ToasterService.success('El juego se eliminó correctamente');
+            Toaster.success('El juego se eliminó correctamente');
             this.gameResource.reload();
             this.igdbGameResource.reload();
           },
           error: (err) => {
-            ToasterService.error(err);
+            Toaster.error(err);
             console.error(err);
           },
         });

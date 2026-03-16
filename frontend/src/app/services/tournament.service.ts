@@ -4,7 +4,6 @@ import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament } from '@shared/interfaces/tournament';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ToasterService } from './toaster.service';
 
 @Injectable({
   providedIn: 'root',

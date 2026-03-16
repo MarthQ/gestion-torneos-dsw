@@ -1,28 +1,31 @@
-<div class="flex flex-row justify-center">
-  <label class="input">
-    <span class="h-[1em] opacity-50 icon-[material-symbols--search]"></span>
-    <input type="search" required placeholder="Search" />
-  </label>
-</div>
+<h1 class="font-bold opacity-75 lg:text-3xl">Torneos que te pueden interesar:</h1>
+<h2 class="ml-5 mt-0.5">Encontra tu próximo desafio</h2>
 
 <br />
 <hr class="opacity-25" stroke="currentColor" />
 <br />
 
-<h1 class="font-bold opacity-75 lg:text-3xl">Torneos que te pueden interesar:</h1>
-<h2 class="ml-5 mt-0.5">Encontra tu próximo desafio</h2>
+<app-search-bar
+  [filters]="{
+    games: gameResource.value(),
+    tags: tagResource.value(),
+  }"
+  (queryChanged)="query.set($event)"
+  (clear)="query.set('')"
+  (queryFiltered)="queryFilters.set($event)"
+/>
 
 <!-- Grid de torneos -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
   <!-- Card 1 -->
 
-  @for (tournament of tournaments; track tournament.id) {
+  @for (tournament of tournamentResource.value(); track tournament.id) {
     <div class="tournament-card bg-base-800 rounded-xl overflow-hidden border border-gray-700">
       <div class="h-40 bg-cover bg-center" [style]="getBackgroundImageStyle(tournament)">
         <div class="p-4 flex justify-between">
           <span
             class="text-xs font-bold px-2 py-1 rounded"
-            [class]="statusBadgeColorMap(tournament.status)"
+            [class]="tournament.status | i18nSelect: tournamentStatusMap"
             >{{ tournament.status }}</span
           >
           <span class="bg-black/50 text-xs px-2 py-1 rounded flex"
@@ -38,106 +41,47 @@
                 d="M14.754 10c.966 0 1.75.784 1.75 1.75v4.749a4.501 4.501 0 0 1-9.002 0V11.75c0-.966.783-1.75 1.75-1.75zm-7.623 0a2.7 2.7 0 0 0-.62 1.53l-.01.22v4.749c0 .847.192 1.649.534 2.365Q6.539 18.999 6 19a4 4 0 0 1-4-4.001V11.75a1.75 1.75 0 0 1 1.606-1.744L3.75 10zm9.744 0h3.375c.966 0 1.75.784 1.75 1.75V15a4 4 0 0 1-5.03 3.866c.3-.628.484-1.32.525-2.052l.009-.315V11.75c0-.665-.236-1.275-.63-1.75M12 3a3 3 0 1 1 0 6a3 3 0 0 1 0-6m6.5 1a2.5 2.5 0 1 1 0 5a2.5 2.5 0 0 1 0-5m-13 0a2.5 2.5 0 1 1 0 5a2.5 2.5 0 0 1 0-5"
               />
             </svg>
-            {{ tournament.participants }} / {{ tournament.maxParticipants }}</span
+            ... / {{ tournament.maxParticipants }}</span
           >
         </div>
       </div>
       <div class="p-5">
         <h3 class="text-lg font-bold">{{ tournament.name }}</h3>
-        <p class="text-gray-400 text-sm mb-4 flex flex-row items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            class="text-indigo-400 mr-2"
-          >
-            <path
-              fill="currentColor"
-              d="M12 11.5A2.5 2.5 0 0 1 9.5 9A2.5 2.5 0 0 1 12 6.5A2.5 2.5 0 0 1 14.5 9a2.5 2.5 0 0 1-2.5 2.5M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7"
-            /></svg
-          >{{ tournament.location }}
+        <p class="text-gray-400 text-sm mb-2 flex flex-row items-center">
+          <span
+            class="icon-[mdi--location] text-indigo-400 mr-2"
+            style="width: 18px; height: 18px"
+          ></span
+          >{{ tournament.location.name }}
         </p>
-        <div class="flex justify-between items-center pt-4 border-t border-gray-700">
-          <span class="text-xs text-gray-500">{{ tournament.datetime }}</span>
+        <p class="text-gray-400 text-sm mb-4 flex flex-row items-center">
+          <span
+            class="icon-[boxicons--joystick-filled] text-indigo-400 mr-2"
+            style="width: 18px; height: 18px"
+          ></span
+          >{{ tournament.game.name }}
+        </p>
+        <div class="flex justify-between pt-4 border-t border-gray-700">
+          <div class="flex items-center">
+            <span class="icon-[formkit--datetime] text-gray-500 mr-2"></span>
+            <span class="text-xs text-gray-500">{{
+              tournament.datetimeinit | date: 'dd MMMM, HH:mm'
+            }}</span>
+          </div>
           <button class="font-bold hover:underline text-sm btn btn-primary">
-            {{ buttonActionMap(tournament.status) }}
+            {{ tournament.status | i18nSelect: tournamentActionMap }}
           </button>
         </div>
       </div>
     </div>
   }
-
-  <div class="tournament-card bg-base-800 rounded-xl overflow-hidden border border-gray-700">
-    <div class="h-40 bg-cover bg-center">
-      <div class="p-4 flex justify-between">
-        <span class="bg-green-500 text-xs font-bold px-2 py-1 rounded">ABIERTO</span>
-        <span class="bg-black/50 text-xs px-2 py-1 rounded"
-          ><i class="fas fa-users mr-1"></i> 12/16</span
-        >
-      </div>
-    </div>
-    <div class="p-5">
-      <h3 class="text-lg font-bold">Kombate Mortal Rosario</h3>
-      <p class="text-gray-400 text-sm mb-4">
-        <i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>Rosario, Santa Fe
-      </p>
-      <div class="flex justify-between items-center pt-4 border-t border-gray-700">
-        <span class="text-xs text-gray-500">24 Oct, 18:00hs</span>
-        <button class="text-indigo-400 font-bold hover:underline text-sm">Inscribirme</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Card 2 -->
-  <div class="tournament-card bg-base-800 rounded-xl overflow-hidden border border-gray-700">
-    <div
-      class="h-40 bg-cover bg-center"
-      style="background-image: url('https://placehold.co/600x400/1e293b/white?text=Smash+Ultimate')"
-    >
-      <div class="p-4 flex justify-between">
-        <span class="bg-yellow-500 text-xs font-bold px-2 py-1 rounded">EN CURSO</span>
-        <span class="bg-black/50 text-xs px-2 py-1 rounded"
-          ><i class="fas fa-users mr-1"></i> 32/32</span
-        >
-      </div>
-    </div>
-    <div class="p-5">
-      <h3 class="text-lg font-bold">Torneo Nacional Smash</h3>
-      <p class="text-gray-400 text-sm mb-4">
-        <i class="fas fa-globe mr-2 text-indigo-400"></i>Virtual
-      </p>
-      <div class="flex justify-between items-center pt-4 border-t border-gray-700">
-        <span class="text-xs text-gray-500">22 Oct, 20:00hs</span>
-        <button class="text-indigo-400 font-bold hover:underline text-sm">Ver Llaves</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Card 3 -->
-  <div class="tournament-card bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
-    <div
-      class="h-40 bg-cover bg-center"
-      style="
-        background-image: url('https://placehold.co/600x400/1e293b/white?text=Street+Fighter+6');
-      "
-    >
-      <div class="p-4 flex justify-between">
-        <span class="bg-red-500 text-xs font-bold px-2 py-1 rounded">FINALIZADO</span>
-        <span class="bg-black/50 text-xs px-2 py-1 rounded"
-          ><i class="fas fa-check mr-1"></i> Terminado</span
-        >
-      </div>
-    </div>
-    <div class="p-5">
-      <h3 class="text-lg font-bold">SF6 Master League</h3>
-      <p class="text-gray-400 text-sm mb-4">
-        <i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>CABA
-      </p>
-      <div class="flex justify-between items-center pt-4 border-t border-gray-700">
-        <span class="text-xs text-gray-500">20 Oct, 15:00hs</span>
-        <button class="text-indigo-400 font-bold hover:underline text-sm">Ver Podio</button>
-      </div>
-    </div>
-  </div>
 </div>
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="tournamentMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>
+<br />
+<hr class="opacity-25" stroke="currentColor" />
+<br />
