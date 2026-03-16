@@ -101,8 +101,7 @@ export class TournamentCrud {
             this.tournamentResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
-            console.error(err);
+            ToasterService.error(err);
           },
         });
         break;
@@ -113,8 +112,7 @@ export class TournamentCrud {
             this.tournamentResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
-            console.error(err);
+            ToasterService.error(err);
           },
         });
         break;
@@ -125,8 +123,7 @@ export class TournamentCrud {
             this.tournamentResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
-            console.error(err);
+            ToasterService.error(err);
           },
         });
     }

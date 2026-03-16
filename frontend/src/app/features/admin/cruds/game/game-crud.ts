@@ -112,7 +112,7 @@ export class GameCrud {
             this.igdbGameResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error(err);
             console.error(err);
           },
         });
@@ -124,7 +124,7 @@ export class GameCrud {
             this.gameResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error(err);
             console.error(err);
           },
         });
@@ -137,7 +137,7 @@ export class GameCrud {
             this.igdbGameResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error(err);
             console.error(err);
           },
         });

@@ -71,7 +71,7 @@ export class RoleCrud {
             this.roleResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error('Ocurrió un error, la acción no se realizó');
             console.error(err);
           },
         });
@@ -83,7 +83,7 @@ export class RoleCrud {
             this.roleResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error('Ocurrió un error, la acción no se realizó');
             console.error(err);
           },
         });
@@ -95,7 +95,7 @@ export class RoleCrud {
             this.roleResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error('Ocurrió un error, la acción no se realizó');
             console.error(err);
           },
         });

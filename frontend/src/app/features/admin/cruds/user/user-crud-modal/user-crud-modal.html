@@ -52,7 +52,7 @@
             <select class="select" formControlName="location">
               <option disabled selected>Seleccione la localidad del usuario</option>
               @for (location of locationResource().value(); track location.id) {
-                <option [value]="location.id">
+                <option [ngValue]="location.id">
                   {{ location.name }}
                 </option>
               }
@@ -64,7 +64,7 @@
             <select class="select" formControlName="role">
               <option disabled selected>Seleccione el rol del usuario</option>
               @for (role of roleResource().value(); track role.id) {
-                <option [value]="role.id">{{ role.name }}</option>
+                <option [ngValue]="role.id">{{ role.name }}</option>
               }
             </select>
             <span class="label">Obligatorio</span>

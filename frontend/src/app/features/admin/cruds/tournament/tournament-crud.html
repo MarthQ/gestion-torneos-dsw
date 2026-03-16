@@ -35,6 +35,7 @@
           <th>Localidad</th>
           <th>Nombre del creador</th>
           <th>Juego</th>
+          <th>Etiquetas</th>
           <th class="text-center">Acciones</th>
         </tr>
       </thead>
@@ -45,17 +46,17 @@
               <div class="font-mono text-sm text-gray-500">{{ tournament.id }}</div>
             </td>
             <td>
-              <div class="font-bold">
+              <div class="font-bold text-white">
                 {{ tournament.name }}
               </div>
             </td>
             <td>
-              <div class="text-sm">
+              <div class="text-xs text-gray-500 truncate max-w-xs">
                 {{ tournament.description }}
               </div>
             </td>
             <td>
-              <div class="badge">
+              <div class="flex items-center gap-1 text-gray-400">
                 <span
                   class="icon-[fluent-mdl2--date-time]"
                   style="width: 18px; height: 18px"
@@ -69,19 +70,29 @@
               </div>
             </td>
             <td>
+              <div class="text-center font-semibold">
+                {{ tournament.maxParticipants }}
+              </div>
+            </td>
+            <td>
               <div class="text-sm font-bold badge badge-info">
                 <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
                 {{ tournament.location.name }}
               </div>
             </td>
             <td>
-              <div class="text font-bold">
-                {{ tournament.maxParticipants }}
+              <div class="text-sm text-gray-400 text-center">
+                {{ tournament.creator.name }}
               </div>
             </td>
             <td>
-              <div class="text-sm font-bold badge badge-dash">
-                {{ tournament.creator.name }}
+              <div class="text-sm font-medium text-secondary">
+                {{ tournament.game.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-xs text-gray-500 truncate max-w-xs">
+                {{ tournament.tags.map(tag => tag.name).join(', ') }}
               </div>
             </td>
             <td>

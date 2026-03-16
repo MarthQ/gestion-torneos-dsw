@@ -51,10 +51,10 @@ export class TournamentCrudModal {
     description: ['', Validators.required],
     datetimeinit: [new Date(), Validators.required],
     status: ['', Validators.required],
-    maxParticipants: [0, [Validators.required, Validators.min(0)]],
-    creator: [0, Validators.required],
-    location: [0, Validators.required],
-    game: [0, Validators.required],
+    maxParticipants: [0, [Validators.required, Validators.min(2)]],
+    creator: [0, [Validators.required, Validators.min(1)]],
+    location: [0, [Validators.required, Validators.min(1)]],
+    game: [0, [Validators.required, Validators.min(1)]],
   });
 
   openEffect = effect(() => {
@@ -77,8 +77,6 @@ export class TournamentCrudModal {
 
   onDialogClose() {
     this.closed.emit();
-    console.log(this.tournamentForm.getRawValue());
-    console.log(this.tournamentForm.errors);
   }
   emitTournament() {
     if (this.tournamentForm.valid) {

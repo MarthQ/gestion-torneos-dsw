@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core';
 import { toast } from 'ngx-sonner';
 
-@Injectable({
-  providedIn: 'root',
-})
+// Not injectable since I wanted to do it a singleton.
 export class ToasterService {
   static success(message: string) {
     toast.success(message);
   }
-  static error(message: string, description?: string) {
-    toast.error(message, {
-      description: description,
-    });
+  static error(message: string) {
+    toast.error(message);
   }
 }

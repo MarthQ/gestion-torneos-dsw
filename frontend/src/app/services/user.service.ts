@@ -44,6 +44,8 @@ export class UserService {
   }
 
   addUser(newUser: User): Observable<User> {
+    console.log(newUser);
+
     const { id, ...rest } = newUser;
     const body = id ? { id, ...rest } : rest;
 

@@ -82,7 +82,7 @@ export class LocationCrud {
             this.locationResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error(err);
             console.error(err);
           },
         });
@@ -94,7 +94,7 @@ export class LocationCrud {
             this.locationResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error(err);
             console.error(err);
           },
         });
@@ -106,7 +106,7 @@ export class LocationCrud {
             this.locationResource.reload();
           },
           error: (err) => {
-            ToasterService.error('Ocurrió un error, la acción no se realizó', err);
+            ToasterService.error(err);
             console.error(err);
           },
         });

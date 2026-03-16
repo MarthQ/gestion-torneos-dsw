@@ -46,8 +46,8 @@ export class UserCrudModal {
     name: ['', Validators.required],
     mail: ['', [Validators.required, Validators.pattern(FormUtils.emailPattern)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
-    location: [0, Validators.required],
-    role: [0, Validators.required],
+    location: [0, [Validators.required, Validators.min(1)]],
+    role: [0, [Validators.required, Validators.min(1)]],
   });
 
   openEffect = effect(() => {
@@ -67,8 +67,6 @@ export class UserCrudModal {
 
   onDialogClose() {
     this.closed.emit();
-    console.log(this.userForm.getRawValue());
-    console.log(this.userForm.errors);
   }
   emitUser() {
     if (this.userForm.valid) {

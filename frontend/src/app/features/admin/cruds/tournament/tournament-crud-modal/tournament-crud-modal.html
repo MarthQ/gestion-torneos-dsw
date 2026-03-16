@@ -61,7 +61,7 @@
             <select class="select" formControlName="creator">
               <option disabled selected>Seleccione el creador del torneo</option>
               @for (user of userResource().value(); track user.id) {
-                <option [value]="user.id">
+                <option [ngValue]="user.id">
                   {{ user.name }}
                 </option>
               }
@@ -73,7 +73,7 @@
             <select class="select" formControlName="location">
               <option disabled selected>Seleccione la localidad del torneo</option>
               @for (location of locationResource().value(); track location.id) {
-                <option [value]="location.id">
+                <option [ngValue]="location.id">
                   {{ location.name }}
                 </option>
               }
@@ -85,7 +85,7 @@
             <select class="select" formControlName="game">
               <option disabled selected>Seleccione el juego del torneo</option>
               @for (game of gameResource().value(); track game.id) {
-                <option [value]="game.id">
+                <option [ngValue]="game.id">
                   {{ game.name }}
                 </option>
               }
