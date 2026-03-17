@@ -21,21 +21,21 @@
             <legend class="fieldset-legend">Nombre del Torneo</legend>
             <input
               type="text"
-              class="input focus:input-primary"
+              class="input focus:input-primary w-full"
               placeholder="Ingrese el nombre del torneo"
               formControlName="name"
             />
             <p class="label">Obligatorio</p>
           </fieldset>
           <fieldset class="fieldset">
-            <legend class="fieldset-legend">Descripción del torneo</legend>
-            <input
-              type="text"
-              class="input focus:input-primary"
-              placeholder="Ingrese la descripción del torneo"
+            <legend class="fieldset-legend">Descripción del juego</legend>
+            <textarea
+              type="textarea"
+              class="textarea textarea-bordered focus:textarea-primary w-full"
+              placeholder="Ingrese la descripción del juego"
               formControlName="description"
-            />
-            <p class="label">Obligatorio</p>
+            ></textarea>
+            <span class="label">Obligatorio</span>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Fecha y Hora del torneo</legend>
@@ -91,6 +91,22 @@
               }
             </select>
             <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-4">
+            <legend class="fieldset-legend">Etiquetas del torneo</legend>
+            <div class="flex flex-col gap-3">
+              @for (tag of tagResource().value(); track tag.id) {
+                <div>
+                  <input
+                    type="checkbox"
+                    class="checkbox checked:checkbox-primary mr-2"
+                    (click)="toggleTag(tag.id)"
+                    [checked]="tournamentForm.get('tags')?.value?.includes(tag.id)"
+                  />
+                  {{ tag.name }}
+                </div>
+              }
+            </div>
           </fieldset>
         </div>
       } @else {

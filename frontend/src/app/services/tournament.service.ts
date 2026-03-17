@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { QueryFilter } from '@shared/interfaces/filters';
-import { Tournament } from '@shared/interfaces/tournament';
+import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -43,7 +43,7 @@ export class TournamentService {
       );
   }
 
-  addTournament(newTournament: Tournament): Observable<Tournament> {
+  addTournament(newTournament: TournamentFormDTO): Observable<Tournament> {
     const { id, ...rest } = newTournament;
     const body = id ? { id, ...rest } : rest;
 
@@ -58,8 +58,10 @@ export class TournamentService {
     );
   }
 
-  updateTournament(updatedTournament: Tournament): Observable<Tournament> {
+  updateTournament(updatedTournament: TournamentFormDTO): Observable<Tournament> {
     const { id, ...body } = updatedTournament;
+
+    console.log(body);
 
     return this.http
       .patch<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${id}`, body)
@@ -72,7 +74,7 @@ export class TournamentService {
       );
   }
 
-  deleteTournament(toBeDeletedTournament: Tournament): Observable<Tournament> {
+  deleteTournament(toBeDeletedTournament: TournamentFormDTO): Observable<Tournament> {
     const { id, ...rest } = toBeDeletedTournament;
 
     return this.http

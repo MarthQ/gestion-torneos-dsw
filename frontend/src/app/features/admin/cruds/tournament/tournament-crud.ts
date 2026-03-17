@@ -1,5 +1,5 @@
 import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
-import { Tournament } from '@shared/interfaces/tournament';
+import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { TournamentService } from '@services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
@@ -92,7 +92,7 @@ export class TournamentCrud {
     this.openModal.set(true);
   }
 
-  handleCrudAction(tournament: Tournament) {
+  handleCrudAction(tournament: TournamentFormDTO) {
     switch (this.modalType()) {
       case 'add':
         this.tournamentService.addTournament(tournament).subscribe({
