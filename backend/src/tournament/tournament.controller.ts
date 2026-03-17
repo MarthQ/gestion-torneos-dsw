@@ -36,6 +36,8 @@ async function findAll(req: Request, res: Response) {
 
         const filter: any = {}
 
+        console.log('Eh wacho el tag es:', tag)
+
         if (query) filter.name = { $like: `%${query}%` }
         if (tag) filter.tags = { $some: { id: tag } }
         if (location) filter.location = location

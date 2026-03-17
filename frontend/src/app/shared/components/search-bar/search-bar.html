@@ -23,6 +23,7 @@
       <option selected value="0">Cualquier Localidad</option>
       @for (location of filters()?.locations; track location.id) {
         <option [value]="location.id">
+          <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
           {{ location.name }}
         </option>
       }
@@ -37,6 +38,7 @@
       <option selected value="0">Cualquier Rol</option>
       @for (role of filters()?.roles; track role.id) {
         <option [value]="role.id">
+          <span class="icon-[eos-icons--role-binding]"></span>
           {{ role.name }}
         </option>
       }
@@ -51,6 +53,7 @@
       <option selected value="0">Cualquier Etiqueta</option>
       @for (tag of filters()?.tags; track tag.id) {
         <option [value]="tag.id">
+          <span class="icon-[tabler--tag]" style="width: 18px; height: 18px"></span>
           {{ tag.name }}
         </option>
       }
@@ -65,6 +68,7 @@
       <option selected value="0">Cualquier Juego</option>
       @for (game of filters()?.games; track game.id) {
         <option [value]="game.id">
+          <img [src]="[game.imgUrl]" alt="{{ game.name }}" class="w-6 h-6 mr-2" />
           {{ game.name }}
         </option>
       }

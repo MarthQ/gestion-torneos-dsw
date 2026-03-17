@@ -29,7 +29,10 @@ export class TournamentService {
     if (query) params.query = query;
     if (queryFilters?.location) params.location = queryFilters.location.id;
     if (queryFilters?.role) params.role = queryFilters.role.id;
+    if (queryFilters?.tag) params.tag = queryFilters.tag.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
+
+    console.log('queryFilters', queryFilters);
 
     return this.http
       .get<PaginatedApiResponse<Tournament>>(`${environment.apiUrl}/tournaments`, {
