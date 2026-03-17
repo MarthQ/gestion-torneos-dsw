@@ -17,3 +17,9 @@ export interface UserFormDTO {
   location: number;
   role: number;
 }
+
+export interface UserFormLogin{
+  mail:string;
+  password: string;
+}
+
