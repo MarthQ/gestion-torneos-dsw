@@ -1,0 +1,79 @@
+<div
+  class="bg-base-300 p-4 rounded-xl border border-gray-700 mb-6 flex flex-wrap gap-4 items-center"
+>
+  <div class="relative flex-1">
+    <input
+      type="text"
+      placeholder="Buscar por nombre o ID..."
+      class="input input-bordered w-full pl-10 border-gray-600 focus:border-indigo-500"
+      #searchInput
+      (keyup)="query.set(searchInput.value)"
+    />
+    <span
+      class="icon-[material-symbols--search] left-2 top-2 text-gray-500 absolute"
+      style="width: 24px; height: 24px"
+    ></span>
+  </div>
+  @if (filters()?.locations?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedLocation()"
+      (ngModelChange)="selectedLocation.set(+$event)"
+    >
+      <option selected value="0">Cualquier Localidad</option>
+      @for (location of filters()?.locations; track location.id) {
+        <option [value]="location.id">
+          {{ location.name }}
+        </option>
+      }
+    </select>
+  }
+  @if (filters()?.roles?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedRole()"
+      (ngModelChange)="selectedRole.set(+$event)"
+    >
+      <option selected value="0">Cualquier Rol</option>
+      @for (role of filters()?.roles; track role.id) {
+        <option [value]="role.id">
+          {{ role.name }}
+        </option>
+      }
+    </select>
+  }
+  @if (filters()?.tags?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedTag()"
+      (ngModelChange)="selectedTag.set(+$event)"
+    >
+      <option selected value="0">Cualquier Etiqueta</option>
+      @for (tag of filters()?.tags; track tag.id) {
+        <option [value]="tag.id">
+          {{ tag.name }}
+        </option>
+      }
+    </select>
+  }
+  @if (filters()?.games?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedGame()"
+      (ngModelChange)="selectedGame.set(+$event)"
+    >
+      <option selected value="0">Cualquier Juego</option>
+      @for (game of filters()?.games; track game.id) {
+        <option [value]="game.id">
+          {{ game.name }}
+        </option>
+      }
+    </select>
+  }
+  <button
+    class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost"
+    (click)="clearQuery()"
+  >
+    <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
+  </button>
+</div>
