@@ -11,6 +11,7 @@ import { roleRouter } from './role/role.routes.js'
 import cors from 'cors'
 import { matchupRouter } from './matchup/matchup.routes.js'
 import { tagRouter } from './tag/tag.routes.js'
+import { registerRouter } from './register/register.routes.js'
 
 const app = express()
 app.use(express.json())
@@ -30,6 +31,7 @@ app.use('/api/inscriptions', inscriptionRouter)
 app.use('/api/roles', roleRouter)
 app.use('/api/matchups', matchupRouter)
 app.use('/api/tags', tagRouter)
+app.use('/api/register', registerRouter)
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
