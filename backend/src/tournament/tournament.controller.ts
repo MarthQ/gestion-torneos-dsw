@@ -39,7 +39,7 @@ async function findAll(req: Request, res: Response) {
         if (query) filter.name = { $like: `%${query}%` }
         if (tag) filter.tags = { $some: { id: tag } }
         if (location) filter.location = location
-        if (game) filter.location = location
+        if (game) filter.game = game
 
         const Tournaments = await em.find(Tournament, filter, {
             populate: ['game', 'creator', 'location', 'tags', 'game'],

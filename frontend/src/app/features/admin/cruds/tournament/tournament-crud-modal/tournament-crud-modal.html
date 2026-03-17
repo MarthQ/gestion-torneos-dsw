@@ -1,0 +1,139 @@
+<dialog #tournamentModal class="modal py-2" (close)="onDialogClose()">
+  <div class="modal-box h-11/12">
+    <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
+    <form [formGroup]="tournamentForm">
+      @if (type() === 'add' || type() === 'edit') {
+        <div class="py-4">
+          @if (type() === 'add') {
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend">ID del torneo</legend>
+              <input
+                type="number"
+                class="input focus:input-primary"
+                placeholder="Ingrese un número"
+                formControlName="id"
+              />
+
+              <p class="label">Obligatorio</p>
+            </fieldset>
+          }
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Nombre del Torneo</legend>
+            <input
+              type="text"
+              class="input focus:input-primary w-full"
+              placeholder="Ingrese el nombre del torneo"
+              formControlName="name"
+            />
+            <p class="label">Obligatorio</p>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Descripción del juego</legend>
+            <textarea
+              type="textarea"
+              class="textarea textarea-bordered focus:textarea-primary w-full"
+              placeholder="Ingrese la descripción del juego"
+              formControlName="description"
+            ></textarea>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Fecha y Hora del torneo</legend>
+            <input
+              type="datetime-local"
+              class="input focus:input-primary"
+              formControlName="datetimeinit"
+            />
+            <p class="label">Obligatorio</p>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Cupo Máximo</legend>
+            <input
+              type="number"
+              class="input focus:input-primary"
+              placeholder="Ingrese el cupo máximo"
+              formControlName="maxParticipants"
+            />
+            <p class="label">Obligatorio.</p>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Creador del torneo</legend>
+            <select class="select" formControlName="creator">
+              <option disabled selected>Seleccione el creador del torneo</option>
+              @for (user of userResource().value(); track user.id) {
+                <option [ngValue]="user.id">
+                  {{ user.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Localidad del torneo</legend>
+            <select class="select" formControlName="location">
+              <option disabled selected>Seleccione la localidad del torneo</option>
+              @for (location of locationResource().value(); track location.id) {
+                <option [ngValue]="location.id">
+                  {{ location.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Juego del torneo</legend>
+            <select class="select" formControlName="game">
+              <option disabled selected>Seleccione el juego del torneo</option>
+              @for (game of gameResource().value(); track game.id) {
+                <option [ngValue]="game.id">
+                  {{ game.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-4">
+            <legend class="fieldset-legend">Etiquetas del torneo</legend>
+            <div class="flex flex-col gap-3">
+              @for (tag of tagResource().value(); track tag.id) {
+                <div>
+                  <input
+                    type="checkbox"
+                    class="checkbox checked:checkbox-primary mr-2"
+                    (click)="toggleTag(tag.id)"
+                    [checked]="tournamentForm.get('tags')?.value?.includes(tag.id)"
+                  />
+                  {{ tag.name }}
+                </div>
+              }
+            </div>
+          </fieldset>
+        </div>
+      } @else {
+        <p>
+          ¿Está seguro de que desea eliminar al torneo
+          <strong>{{ tournamentForm.get('name')?.value }}</strong
+          >?
+        </p>
+      }
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2">
+          @if (type() === 'add' || type() === 'edit') {
+            <button
+              class="btn btn-primary hover:btn-success"
+              [disabled]="!tournamentForm.valid"
+              (click)="emitTournament()"
+            >
+              Guardar cambios
+            </button>
+          } @else {
+            <button class="btn btn-primary hover:btn-warning" (click)="emitTournament()">
+              Borrar Torneo
+            </button>
+          }
+          <button class="btn">Cancelar</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>
