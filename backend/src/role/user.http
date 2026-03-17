@@ -1,0 +1,49 @@
+### Obtener todos los roles
+
+GET http://localhost:3000/api/roles
+
+
+### Crear un nuevo rol
+
+# @name createUser
+POST http://localhost:3000/api/roles
+Content-Type: application/json
+
+{
+  "name": "Admin",
+}
+### {
+###   "name": "User",
+### }
+
+
+### ID
+@id = {{createUser.response.body.data.id}}
+
+
+### Obtener un solo tipo de rol
+
+GET http://localhost:3000/api/roles/{{id}}
+
+### Modificar un rol (PUT - Modificar recurso completo e idempotente)
+
+PUT http://localhost:3000/api/roles/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Moderator"
+}
+
+
+### Modificar un rol (PATCH - Modificar recurso parcial)
+
+PATCH http://localhost:3000/api/roles/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Overseer",
+}
+
+### Borrar un rol (DELETE)
+
+DELETE http://localhost:3000/api/roles/{{id}}

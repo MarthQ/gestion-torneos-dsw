@@ -10,9 +10,9 @@ POST http://localhost:3000/api/inscriptions
 Content-Type: application/json
 
 {
-  "score": 0,
-  "ranking": 0,
+  "nickname": "Juan Grabois",
   "inscriptionDate": "2024-13-09T00:00:00.000Z",
+  "points": 0,
   "tournament": 1,
   "user": 1,
 }
@@ -32,8 +32,8 @@ PUT http://localhost:3000/api/inscriptions/{{id}}
 Content-Type: application/json
 
 {
-  "score": 10,
-  "ranking": 5,
+  "nickname": "Schiaretti",
+  "points": 10,
   "inscriptionDate": "2024-13-09T00:00:00.000Z",
   "tournament": 1,
   "user": 1,

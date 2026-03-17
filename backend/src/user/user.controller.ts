@@ -10,26 +10,50 @@ const UserSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
     password: z.string({ message: 'Password must be a string' }),
-    Mail: z.string({ message: 'Mail must be a string' }),
+    mail: z.string({ message: 'Mail must be a string' }),
     location: z.number({ message: 'Location must be a number representing a location id' }),
+    role: z.number({ message: 'Role must be a number representing a role id' }),
 })
 
 async function findAll(req: Request, res: Response) {
     try {
-        const Users = await em.find(User, {}, { populate: ['location'] })
+        const page = req.query.page ? Number(req.query.page) : 1
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+        const offset = (page - 1) * pageSize
+
+        const query = req.query.query ? String(req.query.query) : undefined
+        const role = req.query.role ? Number(req.query.role) : undefined
+        const location = req.query.location ? Number(req.query.location) : undefined
+
+        const filter: any = {}
+
+        if (query) filter.name = { $like: `%${query}%` }
+        if (role) filter.role = role
+        if (location) filter.location = location
+
+        const [users, total] = await em.findAndCount(User, filter, {
+            limit: pageSize,
+            offset,
+            populate: ['location', 'role'],
+        })
         res.status(200).json({
-            message: 'Found all users',
-            data: Users,
+            message: 'Found all locations',
+            data: users,
+            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        res.status(404).json({ message: error.message })
     }
 }
 
 async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const user = await em.findOneOrFail(User, { id }, { populate: ['location', 'inscriptions'] })
+        const user = await em.findOneOrFail(
+            User,
+            { id },
+            { populate: ['location', 'inscriptions', 'role', 'tournament'] },
+        )
         res.status(200).json({ message: 'Found user', data: user })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
@@ -38,20 +62,31 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
     try {
-        const user = em.create(User, req.body)
-        await em.flush()
-        res.status(201).json({ message: 'User created', data: user })
+        const sanitizedUser = UserSchema.safeParse(req.body)
+
+        if (!sanitizedUser.success) {
+            throw fromZodError(sanitizedUser.error)
+        } else {
+            const user = em.create(User, sanitizedUser.data)
+            await em.flush()
+            res.status(201).json({ message: 'User created', data: user })
+        }
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
 }
 async function update(req: Request, res: Response) {
     try {
-        const id = Number.parseInt(req.params.id)
-        const user = em.getReference(User, id)
-        em.assign(user, req.body)
-        await em.flush()
-        res.status(200).json({ message: 'User updated' })
+        const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
+        if (!sanitizedPartialUser.success) {
+            throw fromZodError(sanitizedPartialUser.error)
+        } else {
+            const id = Number.parseInt(req.params.id)
+            const user = em.getReference(User, id)
+            em.assign(user, req.body)
+            await em.flush()
+            res.status(200).json({ message: 'User updated' })
+        }
     } catch (error: any) {
         res.status(500).json(error.message)
     }

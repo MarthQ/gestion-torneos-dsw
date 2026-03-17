@@ -2,6 +2,8 @@ import { Entity, ManyToOne, PrimaryKey, Property, Rel, Collection, OneToMany } f
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Location } from '../location/location.entity.js'
 import { Inscription } from '../inscription/inscription.entity.js'
+import { Role } from '../role/role.entity.js'
+import { Tournament } from '../tournament/tournament.entity.js'
 
 @Entity()
 export class User extends BaseEntity {
@@ -13,6 +15,12 @@ export class User extends BaseEntity {
     mail!: string
     @ManyToOne(() => Location, { nullable: false })
     location!: Rel<Location>
+    @ManyToOne(() => Role, { nullable: false })
+    role!: Rel<Location>
     @OneToMany(() => Inscription, (inscription) => inscription.user)
     inscriptions = new Collection<Inscription>(this)
+
+    // Tournaments that the user created
+    @OneToMany(() => Tournament, (Tournament) => Tournament.creator)
+    tournament = new Collection<Tournament>(this)
 }

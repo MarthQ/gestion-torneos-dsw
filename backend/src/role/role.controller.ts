@@ -1,12 +1,12 @@
 import { Request, Response } from 'express'
-import { Location } from './location.entity.js'
+import { Role } from './role.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
 const em = ORM.em
 
-const LocationSchema = z.object({
+const RoleSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
 })
@@ -19,15 +19,17 @@ async function findAll(req: Request, res: Response) {
 
         const query = req.query.query ? String(req.query.query) : undefined
 
+        // Filter to check if the query string is in the name
         const filter = query ? { name: { $like: `%${query}%` } } : {}
 
-        const [locations, total] = await em.findAndCount(Location, filter, {
+        const [roles, total] = await em.findAndCount(Role, filter, {
             limit: pageSize,
             offset,
         })
+
         res.status(200).json({
-            message: 'Found all locations',
-            data: locations,
+            message: 'Found selected roles',
+            data: roles,
             meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
@@ -38,8 +40,8 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const location = await em.findOneOrFail(Location, { id })
-        res.status(200).json({ message: 'Found location', data: location })
+        const role = await em.findOneOrFail(Role, { id })
+        res.status(200).json({ message: 'Found role', data: role })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
@@ -47,14 +49,14 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
     try {
-        const sanitizedLocation = LocationSchema.safeParse(req.body)
+        const sanitizedRole = RoleSchema.safeParse(req.body)
 
-        if (!sanitizedLocation.success) {
-            throw fromZodError(sanitizedLocation.error)
+        if (!sanitizedRole.success) {
+            throw fromZodError(sanitizedRole.error)
         } else {
-            const location = em.create(Location, sanitizedLocation.data)
+            const role = em.create(Role, sanitizedRole.data)
             await em.flush()
-            res.status(201).json({ message: 'Location created', data: location })
+            res.status(201).json({ message: 'Role created', data: role })
         }
     } catch (error: any) {
         res.status(500).json({ message: error.message })
@@ -62,28 +64,27 @@ async function add(req: Request, res: Response) {
 }
 async function update(req: Request, res: Response) {
     try {
-        const sanitizedLocation = LocationSchema.partial().safeParse(req.body)
+        const sanitizedPartialRole = RoleSchema.partial().safeParse(req.body)
 
-        if (!sanitizedLocation.success) {
-            throw fromZodError(sanitizedLocation.error)
+        if (!sanitizedPartialRole.success) {
         } else {
             const id = Number.parseInt(req.params.id)
-            const location = em.getReference(Location, id)
-            em.assign(location, sanitizedLocation.data)
+            const role = em.getReference(Role, id)
+            em.assign(role, sanitizedPartialRole.data)
             await em.flush()
+            res.status(200).json({ message: 'Role updated' })
         }
-        res.status(200).json({ message: 'Location updated' })
     } catch (error: any) {
-        res.status(500).json(error.message)
+        res.status(404).json(error.message)
     }
 }
 
 async function remove(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const location = em.getReference(Location, id)
-        await em.removeAndFlush(location)
-        res.status(200).send({ message: 'Location deleted' })
+        const role = em.getReference(Role, id)
+        await em.removeAndFlush(role)
+        res.status(200).send({ message: 'Role deleted' })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }

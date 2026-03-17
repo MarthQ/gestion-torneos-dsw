@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import { Tag } from './tag.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
-import { fromZodError } from 'zod-validation-error'
 
 const em = ORM.em
 
@@ -14,13 +13,29 @@ const TagSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const tags = await em.find(Tag, {})
+        const page = req.query.page ? Number(req.query.page) : 1
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+        const offset = (page - 1) * pageSize
+
+        const query = req.query.query ? String(req.query.query) : undefined
+
+        // Filter to check if the query string is in the name or in the description
+        const filter = query
+            ? { $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }] }
+            : {}
+
+        const [tags, total] = await em.findAndCount(Tag, filter, {
+            limit: pageSize,
+            offset,
+        })
+
         res.status(200).json({
-            message: 'Found all tags',
+            message: 'Found selected tags',
             data: tags,
+            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        res.status(404).json({ message: error.message })
     }
 }
 
@@ -28,7 +43,7 @@ async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
         const tags = await em.findOneOrFail(Tag, { id })
-        res.status(200).json({ message: 'Found the tag', data: tags })
+        res.status(200).json({ message: 'Found tag', data: tags })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
@@ -36,47 +51,31 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
     try {
-        const sanitizedTag = TagSchema.safeParse(req.body)
-
-        if (!sanitizedTag.success) {
-            throw fromZodError(sanitizedTag.error)
-        } else {
-            const tag = em.create(Tag, sanitizedTag.data)
-            await em.flush()
-            res.status(201).json({
-                message: 'Successfully created a new tag',
-                data: tag,
-            })
-        }
+        const tags = em.create(Tag, req.body)
+        await em.flush()
+        res.status(201).json({ message: 'Tag created', data: tags })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
 }
-
 async function update(req: Request, res: Response) {
     try {
-        const sanitizedTag = TagSchema.partial().safeParse(req.body)
-
-        if (!sanitizedTag.success) {
-            throw fromZodError(sanitizedTag.error)
-        } else {
-            const id = Number.parseInt(req.params.id)
-            const tagReference = em.getReference(Tag, id)
-            em.assign(tagReference, sanitizedTag.data)
-            await em.flush()
-            res.status(200).json({ message: 'Successfully updated the tag' })
-        }
+        const id = Number.parseInt(req.params.id)
+        const tags = em.getReference(Tag, id)
+        em.assign(tags, req.body)
+        await em.flush()
+        res.status(200).json({ message: 'Tag updated' })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json(error.message)
     }
 }
 
 async function remove(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const tagReference = em.getReference(Tag, id)
-        await em.removeAndFlush(tagReference)
-        res.status(200).send({ message: 'Successfully deleted the tag' })
+        const tags = em.getReference(Tag, id)
+        await em.removeAndFlush(tags)
+        res.status(200).send({ message: 'Tag deleted' })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }

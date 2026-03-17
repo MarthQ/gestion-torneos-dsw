@@ -1,49 +1,49 @@
-### Obtener todos los tags!
+### Obtener todos los roles
 
 GET http://localhost:3000/api/tags
 
 
-### Crear un nuevo tag
+### Crear un nuevo rol
 
-# @name createTag
+# @name createUser
 POST http://localhost:3000/api/tags
 Content-Type: application/json
 
 {
-  "name": "Street Fighter",
-  "description": "The first franchine to popularize the fighting game genre."
+  "name": "Has Reward",
+  "description": "Indicates that the tournament has a reward available."
 }
 
 
 ### ID
-@id = {{createTag.response.body.data.id}}
+@id = {{createUser.response.body.data.id}}
 
 
-### Obtener un solo tag usando un id
+### Obtener un solo tipo de rol
 
 GET http://localhost:3000/api/tags/{{id}}
 
-### Modificar un tag (PUT - Modificar recurso completo e idempotente)
+### Modificar un rol (PUT - Modificar recurso completo e idempotente)
 
 PUT http://localhost:3000/api/tags/{{id}}
 Content-Type: application/json
 
 {
-  "name": "Mortal Kombat",
-  "description": "An overrated franchise that has been milked to death and fell off a cliff after MK9."
+  "name": "Doesn't have reward",
+  "description": "Indicates that the tournament does not have a reward available."
 }
 
-### Modificar un tag (PATCH - Modificar recurso parcial)
+
+### Modificar un rol (PATCH - Modificar recurso parcial)
 
 PATCH http://localhost:3000/api/tags/{{id}}
 Content-Type: application/json
 
 {
-  "name": "Melty Blood",
-  "description": "A niche fighting game that has impressive mechanics and a dedicated fanbase."
+  "name": "Virtual",
+  "description": "Indicates that the tournament is virtual."
 }
 
-
-### Borrar un tag (DELETE)
+### Borrar un rol (DELETE)
 
 DELETE http://localhost:3000/api/tags/{{id}}

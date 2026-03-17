@@ -6,13 +6,11 @@ import { User } from '../user/user.entity.js'
 @Entity()
 export class Inscription extends BaseEntity {
     @Property()
-    victories!: number
-    @Property()
-    loses!: number
-    @Property()
     nickname!: string
     @Property()
     inscriptionDate!: Date
+    @Property()
+    points!: number
     @ManyToOne(() => Tournament, { nullable: false })
     tournament!: Rel<Tournament>
     @ManyToOne(() => User, { nullable: false })

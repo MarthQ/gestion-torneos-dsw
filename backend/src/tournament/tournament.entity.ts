@@ -10,8 +10,10 @@ import {
 } from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Game } from '../game/game.entity.js'
-import { Tag } from '../tag/tag.entity.js'
 import { Inscription } from '../inscription/inscription.entity.js'
+import { User } from '../user/user.entity.js'
+import { Location } from '../location/location.entity.js'
+import { Tag } from '../tag/tag.entity.js'
 
 @Entity()
 export class Tournament extends BaseEntity {
@@ -23,10 +25,17 @@ export class Tournament extends BaseEntity {
     datetimeinit!: Date
     @Property()
     status!: string
+    @Property()
+    maxParticipants!: number
+    @ManyToOne(() => User, { nullable: false })
+    creator!: Rel<User>
+    @ManyToOne(() => Location, { nullable: false })
+    location!: Rel<Location>
     @ManyToOne(() => Game, { nullable: false })
     game!: Rel<Game>
-    @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
-    tags = new Collection<Tag>(this)
     @OneToMany(() => Inscription, (inscription) => inscription.tournament)
     inscriptions = new Collection<Inscription>(this)
+
+    @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
+    tags = new Collection<Tag>(this)
 }
