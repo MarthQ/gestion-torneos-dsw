@@ -2,7 +2,7 @@ import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { TournamentService } from '@services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
+import { DatePipe, I18nSelectPipe } from '@angular/common';
 import { Toaster } from '@shared/utils/toaster';
 import { LocationService } from '@services/location.service';
 import { TagService } from '@services/tag.service';
@@ -13,14 +13,16 @@ import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
 import { GameService } from '@services/game.service';
+import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 
 @Component({
   selector: 'app-tournament-crud',
-  imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe],
+  imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe, I18nSelectPipe],
   templateUrl: './tournament-crud.html',
 })
 export class TournamentCrud {
   tournamentService = inject(TournamentService);
+  tournamentStatusMap = tournamentStatusMap;
 
   userService = inject(UserService);
   locationService = inject(LocationService);

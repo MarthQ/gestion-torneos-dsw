@@ -56,6 +56,20 @@
       }
     </select>
   }
+  @if (filters()?.games?.length) {
+    <select
+      class="select focus:select-primary"
+      [ngModel]="selectedGame()"
+      (ngModelChange)="selectedGame.set(+$event)"
+    >
+      <option selected value="0">Cualquier Juego</option>
+      @for (game of filters()?.games; track game.id) {
+        <option [value]="game.id">
+          {{ game.name }}
+        </option>
+      }
+    </select>
+  }
   <button
     class="btn btn-ghost btn-square opacity-50 hover:opacity-100 hover:btn-ghost"
     (click)="clearQuery()"

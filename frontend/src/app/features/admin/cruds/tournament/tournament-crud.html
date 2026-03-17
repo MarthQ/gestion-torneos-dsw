@@ -65,7 +65,7 @@
               </div>
             </td>
             <td>
-              <div class="badge">
+              <div class="badge" [class]="tournament.status | i18nSelect: tournamentStatusMap">
                 {{ tournament.status }}
               </div>
             </td>
@@ -75,7 +75,7 @@
               </div>
             </td>
             <td>
-              <div class="text-sm font-bold badge badge-info">
+              <div class="font-bold badge badge-info h-max">
                 <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
                 {{ tournament.location.name }}
               </div>

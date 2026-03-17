@@ -12,7 +12,7 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Location } from '@shared/interfaces/location';
 import { Role } from '@shared/interfaces/role';
-import { User } from '@shared/interfaces/user';
+import { User, UserFormDTO } from '@shared/interfaces/user';
 import { FormUtils } from '@shared/utils/form-utils';
 
 @Component({
@@ -25,7 +25,7 @@ export class UserCrudModal {
   type = input.required<'add' | 'edit' | 'delete'>();
   open = input.required<boolean>();
   closed = output<void>();
-  confirmAction = output<any>();
+  confirmAction = output<UserFormDTO>();
 
   locationResource = input.required<ResourceRef<Location[] | undefined>>();
   roleResource = input.required<ResourceRef<Role[] | undefined>>();
@@ -41,7 +41,7 @@ export class UserCrudModal {
     delete: 'Borrar un usuario',
   };
 
-  userForm = this.fb.group({
+  userForm = this.fb.nonNullable.group({
     id: [0, Validators.required],
     name: ['', Validators.required],
     mail: ['', [Validators.required, Validators.pattern(FormUtils.emailPattern)]],

@@ -9,3 +9,11 @@ export interface User {
   location: Location;
   role: Role;
 }
+export interface UserFormDTO {
+  id: number;
+  name: string;
+  password: string;
+  mail: string;
+  location: number;
+  role: number;
+}

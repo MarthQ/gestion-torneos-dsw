@@ -31,7 +31,7 @@ export class LocationCrud {
     source: this.query,
     computation: () => 1,
   });
-  pageSize = 1;
+  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');

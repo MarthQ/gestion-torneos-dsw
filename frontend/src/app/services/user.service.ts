@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { QueryFilter } from '@shared/interfaces/filters';
-import { User } from '@shared/interfaces/user';
+import { User, UserFormDTO } from '@shared/interfaces/user';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -43,13 +43,13 @@ export class UserService {
       );
   }
 
-  addUser(newUser: User): Observable<User> {
+  addUser(newUser: UserFormDTO): Observable<UserFormDTO> {
     console.log(newUser);
 
     const { id, ...rest } = newUser;
     const body = id ? { id, ...rest } : rest;
 
-    return this.http.post<ApiResponse<User>>(`${environment.apiUrl}/users`, body).pipe(
+    return this.http.post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, body).pipe(
       map((response) => response.data),
       catchError((error) => {
         console.log('Error adding user: ', error);
@@ -58,22 +58,24 @@ export class UserService {
     );
   }
 
-  updateUser(updatedUser: User): Observable<User> {
+  updateUser(updatedUser: UserFormDTO): Observable<UserFormDTO> {
     const { id, ...body } = updatedUser;
 
-    return this.http.patch<ApiResponse<User>>(`${environment.apiUrl}/users/${id}`, body).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error updating user: ', error);
-        return throwError(() => new Error(`No se pudo modificar el usuario`));
-      }),
-    );
+    return this.http
+      .patch<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users/${id}`, body)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error updating user: ', error);
+          return throwError(() => new Error(`No se pudo modificar el usuario`));
+        }),
+      );
   }
 
-  deleteUser(toBeDeletedUser: User): Observable<User> {
+  deleteUser(toBeDeletedUser: UserFormDTO): Observable<UserFormDTO> {
     const { id, ...rest } = toBeDeletedUser;
 
-    return this.http.delete<ApiResponse<User>>(`${environment.apiUrl}/users/${id}`).pipe(
+    return this.http.delete<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users/${id}`).pipe(
       map((response) => response.data),
       catchError((error) => {
         console.log('Error removing user: ', error);

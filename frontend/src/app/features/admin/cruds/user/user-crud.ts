@@ -6,7 +6,7 @@ import { map, tap } from 'rxjs';
 import { UserService } from '@services/user.service';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
-import { User } from '@shared/interfaces/user';
+import { User, UserFormDTO } from '@shared/interfaces/user';
 import { UserCrudModal } from './user-crud-modal/user-crud-modal';
 import { LocationService } from '@services/location.service';
 import { RoleService } from '@services/role.service';
@@ -81,7 +81,7 @@ export class UserCrud {
     this.openModal.set(true);
   }
 
-  handleCrudAction(user: User) {
+  handleCrudAction(user: UserFormDTO) {
     switch (this.modalType()) {
       case 'add':
         this.userService.addUser(user).subscribe({

@@ -24,6 +24,7 @@ export class SearchBar {
   selectedLocation = signal<number>(0);
   selectedRole = signal<number>(0);
   selectedTag = signal<number>(0);
+  selectedGame = signal<number>(0);
 
   queryChanged = output<string>();
 
@@ -40,6 +41,7 @@ export class SearchBar {
       location: this.filters()?.locations?.find((l) => l.id === this.selectedLocation()),
       role: this.filters()?.roles?.find((r) => r.id === this.selectedRole()),
       tag: this.filters()?.tags?.find((t) => t.id === this.selectedTag()),
+      game: this.filters()?.games?.find((t) => t.id === this.selectedGame()),
     });
   });
 

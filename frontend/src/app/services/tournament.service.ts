@@ -29,6 +29,7 @@ export class TournamentService {
     if (query) params.query = query;
     if (queryFilters?.location) params.location = queryFilters.location.id;
     if (queryFilters?.role) params.role = queryFilters.role.id;
+    if (queryFilters?.game) params.game = queryFilters.game.id;
 
     return this.http
       .get<PaginatedApiResponse<Tournament>>(`${environment.apiUrl}/tournaments`, {
@@ -43,28 +44,30 @@ export class TournamentService {
       );
   }
 
-  addTournament(newTournament: TournamentFormDTO): Observable<Tournament> {
+  addTournament(newTournament: TournamentFormDTO): Observable<TournamentFormDTO> {
     const { id, ...rest } = newTournament;
     const body = id ? { id, ...rest } : rest;
 
     console.log(body);
 
-    return this.http.post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments`, body).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.error(error);
-        return throwError(() => new Error(`No se pudo agregar el usuario`));
-      }),
-    );
+    return this.http
+      .post<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments`, body)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => new Error(`No se pudo agregar el usuario`));
+        }),
+      );
   }
 
-  updateTournament(updatedTournament: TournamentFormDTO): Observable<Tournament> {
+  updateTournament(updatedTournament: TournamentFormDTO): Observable<TournamentFormDTO> {
     const { id, ...body } = updatedTournament;
 
     console.log(body);
 
     return this.http
-      .patch<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${id}`, body)
+      .patch<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`, body)
       .pipe(
         map((response) => response.data),
         catchError((error) => {
@@ -74,11 +77,11 @@ export class TournamentService {
       );
   }
 
-  deleteTournament(toBeDeletedTournament: TournamentFormDTO): Observable<Tournament> {
+  deleteTournament(toBeDeletedTournament: TournamentFormDTO): Observable<TournamentFormDTO> {
     const { id, ...rest } = toBeDeletedTournament;
 
     return this.http
-      .delete<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${id}`)
+      .delete<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`)
       .pipe(
         map((response) => response.data),
         catchError((error) => {
