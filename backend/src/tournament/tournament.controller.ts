@@ -6,6 +6,8 @@ import { fromZodError } from 'zod-validation-error'
 
 const em = ORM.em
 
+// TODO: Declare zod status literals
+
 const TournamentSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
@@ -18,6 +20,7 @@ const TournamentSchema = z.object({
     game: z.number({ message: 'Game must be a number representing a game id' }),
     location: z.number({ message: 'Location must be a number representing a location id' }),
     creator: z.number({ message: 'Creator must be a number representing a user id' }),
+    tags: z.array(z.number()),
 })
 
 async function findAll(req: Request, res: Response) {
