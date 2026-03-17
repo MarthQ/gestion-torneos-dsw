@@ -5,12 +5,12 @@ GET http://localhost:3000/api/roles
 
 ### Crear un nuevo rol
 
-# @name createUser
+# @name createRole
 POST http://localhost:3000/api/roles
 Content-Type: application/json
 
 {
-  "name": "Admin",
+  "name": "Admin"
 }
 ### {
 ###   "name": "User",
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 
 ### ID
-@id = {{createUser.response.body.data.id}}
+@id = {{createRole.response.body.data.id}}
 
 
 ### Obtener un solo tipo de rol

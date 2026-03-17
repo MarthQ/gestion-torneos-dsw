@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
-import { compare, hash } from 'bcrypt'
+import { hashSync } from 'bcrypt'
 import { fromZodError } from 'zod-validation-error'
 import { User } from '../user/user.entity.js'
 import { Role } from '../role/role.entity.js'
@@ -10,7 +10,7 @@ import { env } from 'process'
 const em = ORM.em
 
 const registerSchema = z.object({
-    username: z.string({ message: 'Username must be a string' }),
+    name: z.string({ message: 'Username must be a string' }),
     password: z.string({ message: 'Password must be a string.' }),
     mail: z
         .string({ message: 'Mail must be a string' })
@@ -19,7 +19,7 @@ const registerSchema = z.object({
 })
 
 async function register(req: Request, res: Response) {
-    const newUser = req.body.data
+    const newUser = req.body
 
     const sanitizedRegister = registerSchema.safeParse(newUser)
 
@@ -27,11 +27,14 @@ async function register(req: Request, res: Response) {
         throw fromZodError(sanitizedRegister.error)
     }
 
-    const role = em.findOneOrFail(Role, { name: { $like: 'User' } })
-
-    newUser.role = (await role).id
-
-    newUser.password = hash(newUser.password, Number(env.defaultSaltRounds))
+    try {
+        const role = em.findOneOrFail(Role, { name: { $like: 'User' } })
+        newUser.role = (await role).id
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
+    // todo: rewrite as asynchronous
+    newUser.password = hashSync(newUser.password, Number(env.defaultSaltRounds))
 
     try {
         em.create(User, newUser)
