@@ -23,17 +23,15 @@
             ></textarea>
             <span class="label">Obligatorio</span>
           </fieldset>
-          <fieldset class="fieldset">
-            @if (gameForm.get('imgUrl')?.value) {
+          <fieldset class="flex flex-col justify-center">
+            <legend class="fieldset-legend">Foto del juego</legend>
+            @if (gameForm.get('imgId')?.value) {
               <img
-                [src]="gameForm.get('imgUrl')?.value"
+                [src]="gameCover(this.gameForm.getRawValue(), 'medium')"
                 alt="Portada de {{ gameForm.get('name')?.value }}"
-                class="w-8 h-8 object-cover rounded"
+                class="object-cover rounded border-2 border-gray-700"
               />
             }
-            <legend class="fieldset-legend">Pick a file</legend>
-            <input type="file" class="file-input" />
-            <label class="label">Max size 2MB</label>
           </fieldset>
         </div>
       } @else if (type() === 'add') {

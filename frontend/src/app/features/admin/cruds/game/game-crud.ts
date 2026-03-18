@@ -16,6 +16,7 @@ import { map, of, tap } from 'rxjs';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { GameCrudModal } from './game-crud-modal/game-crud-modal';
+import { GetGameImage } from '@shared/utils/tournament-styles';
 
 @Component({
   selector: 'app-game-crud',
@@ -24,6 +25,7 @@ import { GameCrudModal } from './game-crud-modal/game-crud-modal';
 })
 export class GameCrud {
   gameService = inject(GameService);
+  getGameImage = GetGameImage;
 
   // ElementRef for resetting the query
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');

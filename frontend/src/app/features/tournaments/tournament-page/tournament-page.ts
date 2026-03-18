@@ -1,9 +1,10 @@
 import { DatePipe, I18nSelectPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TournamentService } from '@services/tournament.service';
-import { getTournamentBackgroundStyle, TournamentStatusMap } from '@shared/utils/tournament-styles';
+import { GetGameImage, TournamentStatusMap } from '@shared/utils/tournament-styles';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'tournament-page',
@@ -12,7 +13,7 @@ import { getTournamentBackgroundStyle, TournamentStatusMap } from '@shared/utils
 })
 export class Tournament {
   tournamentStatusMap = TournamentStatusMap;
-  getBackgroundStyle = getTournamentBackgroundStyle;
+  getBackgroundStyle = GetGameImage;
 
   activatedRoute = inject(ActivatedRoute);
   router = inject(Router);
@@ -20,6 +21,7 @@ export class Tournament {
   tournamentService = inject(TournamentService);
 
   tournamentId = this.activatedRoute.snapshot.queryParamMap.get('id') ?? '';
+  tournamentCover = signal('');
 
   tournamentResource = rxResource({
     params: () => ({ id: this.tournamentId }),
@@ -30,7 +32,9 @@ export class Tournament {
 
       const tournamentId = Number(params.id);
 
-      return this.tournamentService.getTournament(tournamentId);
+      return this.tournamentService
+        .getTournament(tournamentId)
+        .pipe(tap((data) => this.tournamentCover.set(this.getBackgroundStyle(data.game, 'big'))));
     },
   });
 }

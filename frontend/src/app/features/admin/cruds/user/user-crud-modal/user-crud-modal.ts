@@ -58,6 +58,7 @@ export class UserCrudModal {
         name: this.user().name ?? '',
         mail: this.user().mail ?? '',
         location: this.user().location?.id ?? 0,
+        password: '',
         role: this.user().role?.id ?? 0,
       });
     } else {

@@ -1,8 +1,10 @@
-<main class="flex-1 overflow-y-auto">
+<main class="flex-1 overflow-y-auto lol">
   <!-- Hero Header -->
   <div
-    class="relative h-80 w-full bg-cover bg-center"
-    [style]="getBackgroundStyle(tournamentResource.value()!)"
+    class="relative h-100 w-full bg-cover bg-center rounded-lg cover-gradient"
+    [style.background-image]="
+      'url(' + getBackgroundStyle(tournamentResource.value()?.game!, 'big') + ')'
+    "
   >
     <div class="absolute inset-0 hero-gradient flex flex-col justify-end p-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -18,10 +20,14 @@
               >{{ tournamentResource.value()?.datetimeinit | date: 'dd MMMM, HH:mm' }}</span
             >
           </div>
-          <h1 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">
+          <h1
+            class="text-4xl md:text-5xl font-black text-white tracking-tighter text-shadow-lg text-shadow-black"
+          >
             {{ tournamentResource.value()?.name || 'Cargando...' }}
           </h1>
-          <p class="flex items-center gap-1 text-primary font-bold text-lg mt-1">
+          <p
+            class="flex items-center gap-1 text-primary font-bold text-lg mt-1 text-shadow-xs text-shadow-primary"
+          >
             <span class="icon-[mdi--location]" style="width: 24px; height: 24px"></span
             >{{ tournamentResource.value()?.location?.name || 'Cargando...' }}
           </p>

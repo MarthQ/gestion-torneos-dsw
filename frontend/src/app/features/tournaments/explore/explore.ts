@@ -8,7 +8,7 @@ import { TagService } from '@services/tag.service';
 import { TournamentService } from '@services/tournament.service';
 
 import {
-  getTournamentBackgroundStyle,
+  GetGameImage,
   TournamentActionMap,
   TournamentStatusMap,
 } from '@shared/utils/tournament-styles';
@@ -26,7 +26,7 @@ import { Router } from '@angular/router';
 export class Explore {
   tournamentActionMap = TournamentActionMap;
   tournamentStatusMap = TournamentStatusMap;
-  getBackgroundStyle = getTournamentBackgroundStyle;
+  getGameImage = GetGameImage;
   tournamentService = inject(TournamentService);
   tagService = inject(TagService);
   gameService = inject(GameService);

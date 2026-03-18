@@ -1,3 +1,4 @@
+import { Game } from '@shared/interfaces/game';
 import { Tournament } from '@shared/interfaces/tournament';
 
 export const TournamentStatusMap: Record<string, string> = {
@@ -14,8 +15,17 @@ export const TournamentActionMap: Record<string, string> = {
   'En curso': 'Ver Llaves',
 };
 
-export function getTournamentBackgroundStyle(tournament: Tournament): string {
-  const fallback = `https://placehold.co/600x400/1e293b/white?text=${tournament.name.replace(' ', '+')}`;
-  const url = tournament.game.imgUrl ?? fallback;
-  return `background-image: url('${url}');`;
+export function GetGameImage(game: Game, size = 'thumb'): string {
+  if (game.imgId) {
+    switch (size) {
+      case 'medium':
+        return `//images.igdb.com/igdb/image/upload/t_screenshot_big/${game.imgId}.jpg`;
+      case 'big':
+        return `//images.igdb.com/igdb/image/upload/t_1080p/${game.imgId}.jpg`;
+      case 'thumb':
+      default:
+        return `//images.igdb.com/igdb/image/upload/t_thumb/${game.imgId}.jpg`;
+    }
+  }
+  return `https://placehold.co/600x400/1e293b/white?text=${game.name.replace(' ', '+')}`;
 }

@@ -1,20 +1,8 @@
 import { I18nSelectPipe } from '@angular/common';
-import {
-  Component,
-  effect,
-  ElementRef,
-  inject,
-  input,
-  linkedSignal,
-  output,
-  signal,
-  viewChild,
-} from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GameService } from '@services/game.service';
 import { Game } from '@shared/interfaces/game';
-import { debounceTime, switchMap, tap } from 'rxjs';
+import { GetGameImage } from '@shared/utils/tournament-styles';
 
 @Component({
   selector: 'game-crud-modal',
@@ -27,6 +15,8 @@ export class GameCrudModal {
   open = input.required<boolean>();
   closed = output<void>();
   confirmAction = output<Game>();
+
+  gameCover = GetGameImage;
 
   gameModal = viewChild.required<ElementRef<HTMLDialogElement>>('gameModal');
 
@@ -43,7 +33,7 @@ export class GameCrudModal {
     name: ['', Validators.required],
     description: ['', Validators.required],
     igdbId: [0, [Validators.required, Validators.min(1)]],
-    imgUrl: ['', Validators.required],
+    imgId: ['', Validators.required],
   });
   openEffect = effect(() => {
     if (this.open()) {
@@ -53,7 +43,7 @@ export class GameCrudModal {
         name: this.game().name ?? '',
         description: this.game().description ?? '',
         igdbId: this.game().igdbId ?? 0,
-        imgUrl: this.game().imgUrl ?? '',
+        imgId: this.game().imgId ?? '',
       });
     } else {
       this.gameModal().nativeElement.close();

@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Filters, QueryFilter } from '@shared/interfaces/filters';
+import { GetGameImage } from '@shared/utils/tournament-styles';
 
 @Component({
   selector: 'app-search-bar',
@@ -21,6 +22,7 @@ import { Filters, QueryFilter } from '@shared/interfaces/filters';
 })
 export class SearchBar {
   activatedRoute = inject(ActivatedRoute);
+  getGameImage = GetGameImage;
 
   // Query parameter that comes in the url.
   queryParam = this.activatedRoute.snapshot.queryParamMap.get('query') ?? '';
