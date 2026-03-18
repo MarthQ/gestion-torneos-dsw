@@ -26,8 +26,9 @@ export class AuthService {
     const { mail, ...rest } = userData;
     const body = mail? { mail, ...rest } : rest;
     return this.http.post<authResponse>(`${environment.apiUrl}/login`, body).pipe(
-      tap(res => {
-        localStorage.setItem('access_token', res.token);
+      tap((res: authResponse) => {
+        if (res && res.data) {
+        localStorage.setItem('access_token', res.data)};
       }),
       catchError((error: HttpErrorResponse) => {
         let errorMsg = 'Error desconocido';
