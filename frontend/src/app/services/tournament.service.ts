@@ -32,8 +32,6 @@ export class TournamentService {
     if (queryFilters?.tag) params.tag = queryFilters.tag.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
 
-    console.log('queryFilters', queryFilters);
-
     return this.http
       .get<PaginatedApiResponse<Tournament>>(`${environment.apiUrl}/tournaments`, {
         params,
@@ -44,6 +42,18 @@ export class TournamentService {
           meta: response.meta,
           message: response.message,
         })),
+      );
+  }
+
+  getTournament(tournamentId: number): Observable<Tournament> {
+    return this.http
+      .get<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => new Error(`No se encontró el torneo de id ${tournamentId}`));
+        }),
       );
   }
 
@@ -59,7 +69,7 @@ export class TournamentService {
         map((response) => response.data),
         catchError((error) => {
           console.error(error);
-          return throwError(() => new Error(`No se pudo agregar el usuario`));
+          return throwError(() => new Error(`No se pudo agregar el torneo`));
         }),
       );
   }

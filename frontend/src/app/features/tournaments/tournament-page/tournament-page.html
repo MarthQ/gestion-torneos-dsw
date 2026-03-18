@@ -1,0 +1,189 @@
+<main class="flex-1 overflow-y-auto">
+  <!-- Hero Header -->
+  <div
+    class="relative h-80 w-full bg-cover bg-center"
+    [style]="getBackgroundStyle(tournamentResource.value()!)"
+  >
+    <div class="absolute inset-0 hero-gradient flex flex-col justify-end p-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <span
+              class="badge font-bold px-3 py-3"
+              [class]="tournamentResource.value()?.status | i18nSelect: tournamentStatusMap"
+              >{{ tournamentResource.value()?.status || 'Cargando...' }}</span
+            >
+            <span class="text-gray-300 font-medium"
+              ><i class="fas fa-calendar-alt mr-2"></i
+              >{{ tournamentResource.value()?.datetimeinit | date: 'dd MMMM, HH:mm' }}</span
+            >
+          </div>
+          <h1 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">
+            {{ tournamentResource.value()?.name || 'Cargando...' }}
+          </h1>
+          <p class="flex items-center gap-1 text-primary font-bold text-lg mt-1">
+            <span class="icon-[mdi--location]" style="width: 24px; height: 24px"></span
+            >{{ tournamentResource.value()?.location?.name || 'Cargando...' }}
+          </p>
+          <p class="text-gray-400 mt-4 max-w-2xl"></p>
+        </div>
+        <div class="flex gap-3 items-center">
+          <button
+            class="btn btn-outline btn-white border-white text-white hover:bg-white hover:text-black"
+          >
+            <span class="icon-[material-symbols--share]"></span> Compartir
+          </button>
+          <button class="btn btn-primary btn-lg px-10 shadow-indigo-500/20 shadow-xl">
+            <span class="icon-[line-md--edit]" style="width: 24px; height: 24px"></span> Inscribirse
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido Detallado -->
+  <div class="p-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Columna Izquierda: Información y Reglas -->
+    <div class="lg:col-span-2 space-y-8">
+      <!-- Stats Rápidas -->
+      <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center">
+          <p class="text-gray-500 text-xs uppercase font-bold mb-1">Inscriptos</p>
+          <p class="text-2xl font-black text-white">
+            {{ tournamentResource.value()?.inscriptions?.length || 0 }} /
+            {{ tournamentResource.value()?.maxParticipants || 'N/A' }}
+          </p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center">
+          <p class="text-gray-500 text-xs uppercase font-bold mb-1">Formato</p>
+          <p class="text-2xl font-black text-white">Single Elimination</p>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6">
+        <h3 class="text-xl font-bold mb-4 text-white">Descripción del Torneo</h3>
+        <p class="text-gray-400 leading-relaxed">
+          {{ tournamentResource.value()?.description }}
+        </p>
+        <div class="divider border-gray-700"></div>
+        <h4 class="font-bold text-gray-300 mb-2">Reglas Principales:</h4>
+        <ul class="list-disc list-inside text-gray-400 space-y-1">
+          <li>Sets al mejor de 3 partidas (BO3).</li>
+          <li>Finales al mejor de 5 partidas (BO5).</li>
+          <li>No se permiten controles con macros o turbo.</li>
+          <li>Puntualidad obligatoria: 10 minutos de tolerancia.</li>
+        </ul>
+      </div>
+
+      <!-- Pestañas de Vista -->
+      <div class="tabs tabs-boxed bg-gray-800 p-1 rounded-xl border border-gray-700 inline-flex">
+        <a class="tab tab-active bg-indigo-600 text-white">Participantes</a>
+        <a class="tab text-gray-400 opacity-50 cursor-not-allowed">Llaves (Bracket)</a>
+        <a class="tab text-gray-400">Resultados Finales</a>
+      </div>
+
+      <!-- Tabla de Inscriptos -->
+      <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden shadow-xl">
+        <table class="table w-full">
+          <thead class="bg-gray-700/30 text-gray-400 border-b border-gray-700">
+            <tr>
+              <th class="w-16">#</th>
+              <th>Nickname</th>
+              <th>Nombre</th>
+              <th>Fecha Registro</th>
+              <th class="text-right">Ranking</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-300">
+            @for (
+              inscription of tournamentResource.value()?.inscriptions;
+              track inscription.id;
+              let $i = $index
+            ) {
+              <tr class="hover:bg-gray-700/20 border-gray-700">
+                <th class="text-indigo-400 font-black">{{ $i + 1 }}</th>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="avatar placeholder">
+                      <div class="bg-indigo-500 text-white rounded-full w-8">
+                        <span>X</span>
+                      </div>
+                    </div>
+                    <span class="font-bold">{{ inscription.nickname }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="text-gray-500">{{ inscription.user!.name }}</span>
+                </td>
+                <td class="text-xs text-gray-500">
+                  {{ inscription.inscriptionDate | date: 'medium' }}
+                </td>
+                <td class="text-right font-mono">{{ inscription.points }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <div class="p-4 text-center border-t border-gray-700">
+          <button class="btn btn-ghost btn-sm text-indigo-400">
+            Ver todos los inscriptos ({{ tournamentResource.value()?.inscriptions?.length || 0 }})
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Sidebar de Torneo -->
+    <div class="space-y-6">
+      <!-- Dueño del Torneo Card -->
+      <div class="card bg-gray-800 border border-gray-700 shadow-xl">
+        <div class="card-body p-5">
+          <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+            Organizado por
+          </h4>
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center font-black text-xl"
+            >
+              R
+            </div>
+            <div>
+              <p class="text-white font-bold">{{ tournamentResource.value()?.creator?.name }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notificaciones rápidas -->
+      <div class="alert bg-indigo-900/20 border border-indigo-500/30 text-indigo-200 text-sm">
+        <i class="fas fa-info-circle"></i>
+        <span
+          >¡Quedan solo
+          {{
+            (tournamentResource.value()?.maxParticipants || 0) -
+              (tournamentResource.value()?.inscriptions?.length || 0)
+          }}
+          cupos disponibles! Inscríbete ahora para asegurar tu lugar.</span
+        >
+      </div>
+
+      <!-- Timeline del Torneo -->
+      <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
+        <h4 class="text-sm font-bold text-gray-500 uppercase mb-4">Cronograma</h4>
+        <ul class="steps steps-vertical space-y-4">
+          <li class="step step-primary text-sm text-left pl-4" data-content="✓">
+            <span class="font-bold text-white">Inscripciones</span>
+            <p class="text-xs text-gray-500">Abiertas hasta el 23 Oct</p>
+          </li>
+          <li class="step text-sm text-left pl-4" data-content="●">
+            <span class="font-bold text-gray-300">Generación de Llaves</span>
+            <p class="text-xs text-gray-500">24 Oct, 17:00hs</p>
+          </li>
+          <li class="step text-sm text-left pl-4" data-content="●">
+            <span class="font-bold text-gray-300">Inicio de Partidas</span>
+            <p class="text-xs text-gray-500">24 Oct, 18:00hs</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>

@@ -61,7 +61,7 @@ async function findOne(req: Request, res: Response) {
         const tournament = await em.findOneOrFail(
             Tournament,
             { id },
-            { populate: ['game', 'location', 'creator'] },
+            { populate: ['game', 'location', 'creator', 'inscriptions', 'inscriptions.user'] },
         )
         res.status(200).json({ message: 'Found tournament', data: tournament })
     } catch (error: any) {

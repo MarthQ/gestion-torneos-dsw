@@ -13,7 +13,7 @@ import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
 import { GameService } from '@services/game.service';
-import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
+import { TournamentStatusMap } from '@shared/utils/tournament-styles';
 
 @Component({
   selector: 'app-tournament-crud',
@@ -22,7 +22,7 @@ import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 })
 export class TournamentCrud {
   tournamentService = inject(TournamentService);
-  tournamentStatusMap = tournamentStatusMap;
+  tournamentStatusMap = TournamentStatusMap;
 
   userService = inject(UserService);
   locationService = inject(LocationService);

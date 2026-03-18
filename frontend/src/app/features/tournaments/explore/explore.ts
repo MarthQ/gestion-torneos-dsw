@@ -7,11 +7,16 @@ import { GameService } from '@services/game.service';
 import { TagService } from '@services/tag.service';
 import { TournamentService } from '@services/tournament.service';
 
-import { TournamentActionMap, tournamentStatusMap } from '@shared/utils/tournament-map-styles';
+import {
+  getTournamentBackgroundStyle,
+  TournamentActionMap,
+  TournamentStatusMap,
+} from '@shared/utils/tournament-styles';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament } from '@shared/interfaces/tournament';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-explore',
@@ -20,10 +25,13 @@ import { Pagination } from '@shared/components/pagination/pagination';
 })
 export class Explore {
   tournamentActionMap = TournamentActionMap;
-  tournamentStatusMap = tournamentStatusMap;
+  tournamentStatusMap = TournamentStatusMap;
+  getBackgroundStyle = getTournamentBackgroundStyle;
   tournamentService = inject(TournamentService);
   tagService = inject(TagService);
   gameService = inject(GameService);
+
+  router = inject(Router);
 
   // API Get parameters (for table)
   query = signal('');
@@ -60,74 +68,7 @@ export class Explore {
     this.page.set(newPage);
   }
 
-  // tournaments: Tournament[] = [
-  //   {
-  //     id: 1,
-  //     imgUrl: '',
-  //     status: 'Abierto',
-  //     participants: 5,
-  //     maxParticipants: 16,
-  //     name: 'Mortal Kombat',
-  //     location: 'San Nicolás',
-  //     datetime: '29 de octubre 15:00hs',
-  //   },
-  //   {
-  //     id: 2,
-  //     imgUrl: 'https://example.com/fifa.jpg',
-  //     status: 'Cerrado',
-  //     participants: 16,
-  //     maxParticipants: 16,
-  //     name: 'FIFA 24',
-  //     location: 'Rosario',
-  //     datetime: '5 de noviembre 18:30hs',
-  //   },
-  //   {
-  //     id: 3,
-  //     imgUrl: 'https://example.com/cod.jpg',
-  //     status: 'En curso',
-  //     participants: 12,
-  //     maxParticipants: 12,
-  //     name: 'Call of Duty Warzone',
-  //     location: 'Buenos Aires',
-  //     datetime: '12 de noviembre 20:00hs',
-  //   },
-  //   {
-  //     id: 4,
-  //     imgUrl: 'https://example.com/lol.jpg',
-  //     status: 'Abierto',
-  //     participants: 8,
-  //     maxParticipants: 10,
-  //     name: 'League of Legends',
-  //     location: 'Córdoba',
-  //     datetime: '18 de noviembre 14:00hs',
-  //   },
-  //   {
-  //     id: 5,
-  //     imgUrl: '',
-  //     status: 'Abierto',
-  //     participants: 3,
-  //     maxParticipants: 8,
-  //     name: 'Valorant',
-  //     location: 'La Plata',
-  //     datetime: '25 de noviembre 19:00hs',
-  //   },
-  //   {
-  //     id: 6,
-  //     imgUrl: 'https://example.com/smash.jpg',
-  //     status: 'Finalizado',
-  //     participants: 16,
-  //     maxParticipants: 16,
-  //     name: 'Super Smash Bros Ultimate',
-  //     location: 'Mendoza',
-  //     datetime: '2 de octubre 16:00hs',
-  //   },
-  // ];
-
-  getBackgroundImageStyle(tournament: Tournament) {
-    if (tournament.game.imgUrl) {
-      return `background-image: url('${tournament.game.imgUrl}');`;
-    } else {
-      return `background-image: url(https://placehold.co/600x400/1e293b/white?text=${tournament.name.replace(' ', '+')});`;
-    }
+  viewTournament(tournament: Tournament) {
+    this.router.navigate(['/tournaments/tournament'], { queryParams: { id: tournament.id } });
   }
 }

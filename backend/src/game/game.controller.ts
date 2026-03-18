@@ -33,7 +33,7 @@ async function searchIGDB(req: Request, res: Response) {
                 Authorization: `Bearer ${env.igdbAccessToken}`,
                 'Content-Type': 'text/plain',
             },
-            body: `search "${query}"; fields name,cover.url,summary,rating; limit 10;`,
+            body: `search "${query}"; fields name,cover.image_id,summary,rating; limit 10;`,
         })
 
         if (!response.ok) {
