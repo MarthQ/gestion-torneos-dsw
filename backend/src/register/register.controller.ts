@@ -5,7 +5,7 @@ import { hashSync } from 'bcrypt'
 import { fromZodError } from 'zod-validation-error'
 import { User } from '../user/user.entity.js'
 import { Role } from '../role/role.entity.js'
-import { env } from 'process'
+import { env } from '../config/env.js'
 
 const em = ORM.em
 
@@ -34,7 +34,7 @@ async function register(req: Request, res: Response) {
         res.status(500).json({ message: error.message })
     }
     // todo: rewrite as asynchronous
-    newUser.password = hashSync(newUser.password, Number(env.defaultSaltRounds))
+    newUser.password = hashSync(newUser.password, env.defaultSaltRounds)
 
     try {
         em.create(User, newUser)

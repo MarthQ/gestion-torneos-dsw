@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { compareSync } from 'bcrypt'
 import { fromZodError } from 'zod-validation-error'
 import { User } from '../user/user.entity.js'
-import { env } from 'process'
+import { env } from '../config/env.js'
 import jwt from 'jsonwebtoken'
 
 const em = ORM.em
@@ -29,19 +29,24 @@ async function login(req: Request, res: Response) {
         if (compareSync(req.body.password, loginuser.password) == true) {
             const newPayload = {
                 userID: loginuser.id,
-                roleID: loginuser.role,
+                roleID: loginuser.role.id,
             }
 
-            jwt.sign(newPayload, String(env.jwtSecret), function (err, token) {
-                const userToken = token
-                res.status(201).json({
-                    message: 'User login successful',
-                    data: userToken,
-                })
-                if (err) {
-                    throw err
-                }
-            })
+            jwt.sign(
+                newPayload,
+                env.jwtSecret,
+                { algorithm: 'HS256', expiresIn: '24h' },
+                function (err, token) {
+                    const userToken = token
+                    res.status(201).json({
+                        message: 'User login successful',
+                        data: userToken,
+                    })
+                    if (err) {
+                        throw err
+                    }
+                },
+            )
         } else throw new Error()
     } catch (error: any) {
         res.status(401).json({ message: 'Invalid Login data.' })
