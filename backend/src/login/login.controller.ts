@@ -5,7 +5,8 @@ import { compareSync } from 'bcrypt'
 import { fromZodError } from 'zod-validation-error'
 import { User } from '../user/user.entity.js'
 import { env } from '../config/env.js'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import { Role } from '../role/role.entity.js'
 
 const em = ORM.em
 
@@ -53,4 +54,41 @@ async function login(req: Request, res: Response) {
     }
 }
 
-export { login }
+async function verifyTokenUser(userToken: string) {
+    try {
+        const decoded = jwt.verify(userToken, env.jwtSecret, {
+            algorithms: ['HS256'],
+        }) as JwtPayload & { userID: string; roleID: string }
+        const id = Number(decoded.userID)
+        const roleid = Number(decoded.roleID)
+        const user = em.findOneOrFail(User, { id })
+        if (Number((await user).role) != roleid) {
+            throw Error('Invalid role.')
+        } else {
+            return true
+        }
+    } catch (error: any) {
+        return error
+    }
+}
+
+async function verifyTokenAdmin(userToken: string) {
+    try {
+        const decoded = jwt.verify(userToken, env.jwtSecret, {
+            algorithms: ['HS256'],
+        }) as JwtPayload & { userID: string; roleID: string }
+        const id = Number(decoded.userID)
+        const user = em.findOneOrFail(User, { id })
+        const adminRole = em.findOneOrFail(Role, { name: { $like: 'Admin' } })
+
+        if (Number((await user).role) != (await adminRole).id) {
+            throw Error('Invalid role.')
+        } else {
+            return true
+        }
+    } catch (error: any) {
+        return error
+    }
+}
+
+export { login, verifyTokenUser, verifyTokenAdmin }
