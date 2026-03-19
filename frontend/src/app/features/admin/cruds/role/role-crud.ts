@@ -8,6 +8,7 @@ import { Tag } from '@shared/interfaces/tag';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { RoleCrudModal } from './role-crud-modal/role-crud-modal';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'app-role-crud',

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { Location } from '@shared/interfaces/location';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';

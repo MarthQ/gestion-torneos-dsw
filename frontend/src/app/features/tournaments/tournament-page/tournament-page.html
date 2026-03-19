@@ -84,58 +84,16 @@
 
       <!-- Pestañas de Vista -->
       <div class="tabs tabs-boxed bg-gray-800 p-1 rounded-xl border border-gray-700 inline-flex">
-        <a class="tab tab-active bg-indigo-600 text-white">Participantes</a>
-        <a class="tab text-gray-400 opacity-50 cursor-not-allowed">Llaves (Bracket)</a>
-        <a class="tab text-gray-400">Resultados Finales</a>
+        <a class="tab tab-active bg-indigo-600 text-white rounded-xl" routerLink="participants"
+          >Participantes</a
+        >
+        <a class="tab text-gray-400 opacity-50 cursor-not-allowed" routerLink="brackets"
+          >Llaves (Bracket)</a
+        >
+        <a class="tab text-gray-400" routerLink="results">Resultados Finales</a>
       </div>
 
-      <!-- Tabla de Inscriptos -->
-      <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden shadow-xl">
-        <table class="table w-full">
-          <thead class="bg-gray-700/30 text-gray-400 border-b border-gray-700">
-            <tr>
-              <th class="w-16">#</th>
-              <th>Nickname</th>
-              <th>Nombre</th>
-              <th>Fecha Registro</th>
-              <th class="text-right">Ranking</th>
-            </tr>
-          </thead>
-          <tbody class="text-gray-300">
-            @for (
-              inscription of tournamentResource.value()?.inscriptions;
-              track inscription.id;
-              let $i = $index
-            ) {
-              <tr class="hover:bg-gray-700/20 border-gray-700">
-                <th class="text-indigo-400 font-black">{{ $i + 1 }}</th>
-                <td>
-                  <div class="flex items-center gap-3">
-                    <div class="avatar placeholder">
-                      <div class="bg-indigo-500 text-white rounded-full w-8">
-                        <span>X</span>
-                      </div>
-                    </div>
-                    <span class="font-bold">{{ inscription.nickname }}</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="text-gray-500">{{ inscription.user!.name }}</span>
-                </td>
-                <td class="text-xs text-gray-500">
-                  {{ inscription.inscriptionDate | date: 'medium' }}
-                </td>
-                <td class="text-right font-mono">{{ inscription.points }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        <div class="p-4 text-center border-t border-gray-700">
-          <button class="btn btn-ghost btn-sm text-indigo-400">
-            Ver todos los inscriptos ({{ tournamentResource.value()?.inscriptions?.length || 0 }})
-          </button>
-        </div>
-      </div>
+      <router-outlet />
     </div>
 
     <!-- Columna Derecha: Sidebar de Torneo -->

@@ -14,6 +14,7 @@ import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
 import { GameService } from '@services/game.service';
 import { TournamentStatusMap } from '@shared/utils/tournament-styles';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'app-tournament-crud',

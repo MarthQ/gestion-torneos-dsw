@@ -17,6 +17,7 @@ import { Tournament } from '@shared/interfaces/tournament';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { Router } from '@angular/router';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'app-explore',

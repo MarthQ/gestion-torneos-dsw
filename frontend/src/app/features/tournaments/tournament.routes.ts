@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { Explore } from './explore/explore';
 import { MyInscriptions } from './my-inscriptions/my-inscriptions';
-import { Tournament } from './tournament-page/tournament-page';
 
 export const tournamentsRoutes: Routes = [
   {
@@ -14,7 +13,10 @@ export const tournamentsRoutes: Routes = [
   },
   {
     path: 'tournament',
-    component: Tournament,
+    loadChildren: () =>
+      import('@features/tournaments/tournament-page/tournament-page.routes').then(
+        (m) => m.tournamentsPageRoutes,
+      ),
   },
   {
     path: '**',

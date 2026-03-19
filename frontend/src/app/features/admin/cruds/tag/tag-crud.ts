@@ -16,6 +16,7 @@ import { TagService } from '@services/tag.service';
 import { TagCrudModal } from './tag-crud-modal/tag-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'admin-tag-crud',

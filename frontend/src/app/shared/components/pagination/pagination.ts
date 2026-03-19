@@ -1,4 +1,5 @@
 import { Component, computed, input, linkedSignal, output, signal } from '@angular/core';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'app-pagination',

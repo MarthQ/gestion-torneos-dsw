@@ -1,17 +1,24 @@
 import { DatePipe, I18nSelectPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+  RouterOutlet,
+  RouterLinkWithHref,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { TournamentService } from '@services/tournament.service';
 import { GetGameImage, TournamentStatusMap } from '@shared/utils/tournament-styles';
 import { tap } from 'rxjs';
 
 @Component({
   selector: 'tournament-page',
-  imports: [I18nSelectPipe, DatePipe],
+  imports: [I18nSelectPipe, DatePipe, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './tournament-page.html',
 })
-export class Tournament {
+export class TournamentPage {
   tournamentStatusMap = TournamentStatusMap;
   getBackgroundStyle = GetGameImage;
 

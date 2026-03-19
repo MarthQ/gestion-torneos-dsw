@@ -16,6 +16,7 @@ import { LocationService } from '@services/location.service';
 import { LocationCrudModal } from './location-crud-modal/location-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'admin-location-crud',

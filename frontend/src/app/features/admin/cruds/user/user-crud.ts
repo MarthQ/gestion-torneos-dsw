@@ -11,6 +11,7 @@ import { UserCrudModal } from './user-crud-modal/user-crud-modal';
 import { LocationService } from '@services/location.service';
 import { RoleService } from '@services/role.service';
 import { QueryFilter } from '@shared/interfaces/filters';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'app-user-crud',
