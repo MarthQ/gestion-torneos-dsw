@@ -19,7 +19,7 @@ export class Game extends BaseEntity {
     // To permit longer than 255 characters texts we set the column type as text.
     @Property({ columnType: 'text' })
     description!: string
-    @Property()
+    @Property({ nullable: true })
     imgId?: string
     @Property({ unique: true })
     igdbId!: number

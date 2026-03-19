@@ -13,7 +13,7 @@ const GameSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
     description: z.string({ message: 'Description must be a string' }),
-    imgUrl: z.string({ message: 'Description must be a string' }),
+    imgId: z.string({ message: 'Description must be a string' }).optional(),
     igdbId: z.number({ message: 'Description must be a number referencing IGDB DB' }),
     gametype: z.number({ message: 'Gametype must be a number representing a Gametype id' }),
 })
@@ -109,7 +109,7 @@ async function add(req: Request, res: Response) {
                 Authorization: `Bearer ${env.igdbAccessToken}`,
                 'Content-Type': 'text/plain',
             },
-            body: `fields name,cover.url,summary,rating; where id = ${igdbId};`,
+            body: `fields name,cover.image_id,summary,rating; where id = ${igdbId};`,
         })
 
         if (!response.ok) {

@@ -17,7 +17,13 @@ const InscriptionSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const Inscriptions = await em.find(Inscription, {}, { populate: ['user', 'tournament'] })
+        const tournamentId = req.query.id ? Number(req.query.id) : undefined
+
+        const filter: any = {}
+
+        if (tournamentId) filter.tournament = tournamentId
+
+        const Inscriptions = await em.find(Inscription, filter, { populate: ['user', 'tournament'] })
         res.status(200).json({
             message: 'Found all inscriptions',
             data: Inscriptions,

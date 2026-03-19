@@ -6,7 +6,7 @@ export class GameMapper {
             igdbId: igdbGame.id,
             name: igdbGame.name,
             description: igdbGame.summary ?? '',
-            imgUrl: igdbGame.cover?.url,
+            imgId: igdbGame.cover?.image_id,
             tournament: [],
         }
     }
