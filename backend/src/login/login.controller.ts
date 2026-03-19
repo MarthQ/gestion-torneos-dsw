@@ -54,6 +54,34 @@ async function login(req: Request, res: Response) {
     }
 }
 
+async function loginCheck(req: Request, res: Response) {
+    const header = req.headers.authorization
+    const token = header?.startsWith('Bearer ')
+        ? header.slice(7).trim()
+        : undefined
+
+    if (!token) return res.status(401).json({ message: 'Missing auth token' })
+
+    try {
+        const decoded = jwt.verify(token, env.jwtSecret, {
+            algorithms: ['HS256'],
+        }) as JwtPayload & { userID: string; roleID: string }
+
+        const id = Number(decoded.userID)
+        const user = await em.findOneOrFail(User, { id })
+        const adminRole = await em.findOneOrFail(Role, {
+            name: { $like: 'Admin' },
+        })
+
+        if (Number(user.role) != adminRole.id) {
+            throw Error('Invalid role.')
+        }
+        return res.status(200).json({ message: 'User is an admin' })
+    } catch (err) {
+        return res.status(401).json({ message: 'Invalid token' })
+    }
+}
+
 async function verifyTokenUser(userToken: string) {
     try {
         const decoded = jwt.verify(userToken, env.jwtSecret, {
@@ -91,4 +119,4 @@ async function verifyTokenAdmin(userToken: string) {
     }
 }
 
-export { login, verifyTokenUser, verifyTokenAdmin }
+export { login, loginCheck, verifyTokenUser, verifyTokenAdmin }

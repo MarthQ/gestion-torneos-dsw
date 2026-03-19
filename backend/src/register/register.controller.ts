@@ -34,7 +34,7 @@ async function register(req: Request, res: Response) {
         res.status(500).json({ message: error.message })
     }
     // todo: rewrite as asynchronous
-    newUser.password = hashSync(newUser.password, env.defaultSaltRounds)
+    newUser.password = hashSync(newUser.password, Number(env.defaultSaltRounds))
 
     try {
         em.create(User, newUser)
