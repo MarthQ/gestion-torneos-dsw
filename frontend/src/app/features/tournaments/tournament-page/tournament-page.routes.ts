@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { TournamentParticipants } from './participants/participants';
 import { TournamentPage } from './tournament-page';
+import { Brackets } from './brackets/brackets';
 
 export const tournamentsPageRoutes: Routes = [
   {
@@ -18,7 +19,7 @@ export const tournamentsPageRoutes: Routes = [
       },
       {
         path: 'brackets',
-        component: TournamentParticipants,
+        component: Brackets,
       },
       {
         path: 'results',

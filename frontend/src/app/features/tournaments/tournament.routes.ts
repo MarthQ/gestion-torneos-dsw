@@ -12,7 +12,7 @@ export const tournamentsRoutes: Routes = [
     component: MyInscriptions,
   },
   {
-    path: 'tournament',
+    path: 'tournament/:id',
     loadChildren: () =>
       import('@features/tournaments/tournament-page/tournament-page.routes').then(
         (m) => m.tournamentsPageRoutes,

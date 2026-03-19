@@ -27,14 +27,14 @@ export class TournamentPage {
 
   tournamentService = inject(TournamentService);
 
-  tournamentId = this.activatedRoute.snapshot.queryParamMap.get('id') ?? '';
+  tournamentId = this.activatedRoute.parent?.snapshot.paramMap.get('id') ?? '';
   tournamentCover = signal('');
 
   tournamentResource = rxResource({
     params: () => ({ id: this.tournamentId }),
     stream: ({ params }) => {
       if (!params.id) {
-        this.router.navigate(['tournaments/explore']);
+        this.router.navigate(['/tournaments/explore']);
       }
 
       const tournamentId = Number(params.id);
@@ -44,4 +44,12 @@ export class TournamentPage {
         .pipe(tap((data) => this.tournamentCover.set(this.getBackgroundStyle(data.game, 'big'))));
     },
   });
+
+  // Participants left to reach the maximum
+  participantsLeft(): number {
+    return (
+      (this.tournamentResource.value()?.maxParticipants || 0) -
+      (this.tournamentResource.value()?.inscriptions?.length || 0)
+    );
+  }
 }

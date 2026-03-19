@@ -70,6 +70,6 @@ export class Explore {
   }
 
   viewTournament(tournament: Tournament) {
-    this.router.navigate(['/tournaments/tournament'], { queryParams: { id: tournament.id } });
+    this.router.navigate(['/tournaments/tournament', tournament.id]);
   }
 }
