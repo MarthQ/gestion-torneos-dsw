@@ -2,6 +2,7 @@ import { JsonPipe } from '@angular/common';
 import { Component, inject, output, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { LocationService } from '@services/location.service';
 import { UserFormDTO, UserRegisterDTO } from '@shared/interfaces/user';
@@ -18,6 +19,7 @@ export class registerComponent {
   private authService = inject(AuthService);
   private locationService = inject(LocationService)
   private submissionData = signal<UserRegisterDTO | null>(null);
+  private router = inject(Router);
 
   confirmAction = output<any>();
   
@@ -56,6 +58,8 @@ export class registerComponent {
       location: rawuser.location!,
     };
       this.submissionData.set(dto);
+      console.log("Registro realizado con éxito.")
+      this.router.navigate(['/tournaments']);
     }
   }
 }

@@ -55,25 +55,33 @@ async function login(req: Request, res: Response) {
 }
 
 async function loginCheck(req: Request, res: Response) {
-    const header = req.headers.authorization
+    const header = req.headers.authorization;
+    console.log(header);
+    console.log(req.headers);
+    console.log("__________________")
     const token = header?.startsWith('Bearer ')
         ? header.slice(7).trim()
         : undefined
-
+    
     if (!token) return res.status(401).json({ message: 'Missing auth token' })
 
     try {
+        console.log(token);
         const decoded = jwt.verify(token, env.jwtSecret, {
             algorithms: ['HS256'],
         }) as JwtPayload & { userID: string; roleID: string }
-
+        console.log(decoded);
         const id = Number(decoded.userID)
+        console.log(id);
         const user = await em.findOneOrFail(User, { id })
+        console.log(user);
         const adminRole = await em.findOneOrFail(Role, {
             name: { $like: 'Admin' },
         })
+        console.log(adminRole);
 
-        if (Number(user.role) != adminRole.id) {
+        if (Number(user.role.id) != adminRole.id) {
+            console.log("FALSO");
             throw Error('Invalid role.')
         }
         return res.status(200).json({ message: 'User is an admin' })

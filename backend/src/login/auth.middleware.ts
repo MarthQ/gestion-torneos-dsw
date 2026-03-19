@@ -31,7 +31,7 @@ async function authAdminMiddleware(
             name: { $like: 'Admin' },
         })
 
-        if (Number(user.role) != adminRole.id) {
+        if (Number(user.role.id) != adminRole.id) {
             throw Error('Invalid role.')
         }
         next()

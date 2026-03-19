@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
+import { number, z } from 'zod'
 import { hashSync } from 'bcrypt'
 import { fromZodError } from 'zod-validation-error'
 import { User } from '../user/user.entity.js'
