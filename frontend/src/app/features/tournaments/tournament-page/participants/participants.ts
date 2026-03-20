@@ -1,9 +1,10 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InscriptionService } from '@services/inscription.service';
 import { Pagination } from '@shared/components/pagination/pagination';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   selector: 'app-participants',
@@ -14,6 +15,9 @@ export class TournamentParticipants {
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
   inscriptionService = inject(InscriptionService);
+
+  page = signal(1);
+  inscriptionsMeta = signal<PaginationMeta | undefined>(undefined);
 
   private getTournamentIdFromRoute(): string {
     let route: ActivatedRoute | null = this.activatedRoute;
@@ -36,4 +40,9 @@ export class TournamentParticipants {
       return this.inscriptionService.getInscriptions(tournamentId);
     },
   });
+
+  // Visual actions (pagination)
+  pageChangedTo(newPage: number) {
+    this.page.set(newPage);
+  }
 }

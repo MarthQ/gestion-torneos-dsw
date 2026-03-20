@@ -48,5 +48,13 @@
       Ver todos los inscriptos ({{ inscriptionResource.value()?.length || 0 }})
     </button>
   </div> -->
+
+    <div class="py-2">
+      <app-pagination
+        [inputPage]="page()"
+        [entityMeta]="inscriptionsMeta()"
+        (currentPage)="pageChangedTo($event)"
+      />
+    </div>
   </div>
 }
