@@ -74,6 +74,11 @@ export class Sidebar {
       icon: `icon-[material-symbols--joystick]`,
     },
     {
+      name: 'Mi Perfil',
+      routerPath: 'user-profile/profile',
+      icon: `icon-[gg--profile]`,
+    },
+    {
       name: 'Configuraciones',
       routerPath: 'user-profile/settings',
       icon: `icon-[material-symbols--settings]`,
