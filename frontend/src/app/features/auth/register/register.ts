@@ -21,6 +21,10 @@ export class registerComponent {
   private submissionData = signal<UserRegisterDTO | null>(null);
   private router = inject(Router);
 
+  ngOnInit(){
+  if(localStorage.getItem('access_token')==null){}else{this.router.navigate(['/tournaments'])}
+  }
+  
   confirmAction = output<any>();
   
   name = signal('');

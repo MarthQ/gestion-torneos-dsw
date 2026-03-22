@@ -15,6 +15,11 @@ import { UserFormLogin } from '@shared/interfaces/user';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+
+  ngOnInit(){
+  if(localStorage.getItem('access_token')==null){}else{this.router.navigate(['/tournaments'])}
+  }
+
   confirmAction = output<any>();
   email = signal('');
   password = signal('');
@@ -24,7 +29,7 @@ export class LoginComponent {
   mail: ['', {validators: [Validators.required,Validators.pattern(FormUtils.emailPattern)],nonNullable:true}],
   password: ['', {validators:[Validators.required, Validators.minLength(8)], nonNullable:true}],
   });
-
+  
   login() {
     if (this.loginForm.valid) {
       const userCredentials = this.loginForm.getRawValue() as UserFormLogin;
