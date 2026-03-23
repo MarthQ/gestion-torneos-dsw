@@ -25,8 +25,12 @@
             <td>
               <div class="flex items-center gap-3">
                 <div class="avatar placeholder">
-                  <div class="bg-indigo-500 text-white rounded-full w-8">
-                    <span>X</span>
+                  <div
+                    class="flex items-center justify-center bg-indigo-500 text-white rounded-full w-8"
+                  >
+                    {{
+                      inscription.user?.name ? inscription.user!.name!.charAt(0).toUpperCase() : '?'
+                    }}
                   </div>
                 </div>
                 <span class="font-bold">{{ inscription.nickname }}</span>

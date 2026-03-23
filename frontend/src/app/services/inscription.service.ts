@@ -17,10 +17,7 @@ export class InscriptionService {
 
     return this.http
       .get<ApiResponse<Inscription[]>>(`${environment.apiUrl}/inscriptions`, { params })
-      .pipe(
-        tap((response) => console.log(response)),
-        map((response) => response.data),
-      );
+      .pipe(map((response) => response.data));
   }
   getInscriptionsPaginated(
     tournamentId?: number,

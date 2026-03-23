@@ -10,6 +10,7 @@ import {
   RouterLinkActive,
 } from '@angular/router';
 import { TournamentService } from '@services/tournament.service';
+import { User } from '@shared/interfaces/user';
 import { GetGameImage, TournamentStatusMap } from '@shared/utils/tournament-styles';
 import { tap } from 'rxjs';
 
@@ -19,6 +20,9 @@ import { tap } from 'rxjs';
   templateUrl: './tournament-page.html',
 })
 export class TournamentPage {
+  //TODO: Changed this when auth gets implemented
+  userLoggedId = signal<number>(1);
+
   tournamentStatusMap = TournamentStatusMap;
   getBackgroundStyle = GetGameImage;
 
@@ -51,5 +55,14 @@ export class TournamentPage {
       (this.tournamentResource.value()?.maxParticipants || 0) -
       (this.tournamentResource.value()?.inscriptions?.length || 0)
     );
+  }
+
+  userIsCreator() {
+    return this.userLoggedId() === this.tournamentResource.value()?.creator.id;
+  }
+  userIsInscribed() {
+    return this.tournamentResource
+      .value()!
+      .inscriptions?.find((inscription) => inscription.user?.id === this.userLoggedId());
   }
 }
