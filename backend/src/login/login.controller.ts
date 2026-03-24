@@ -39,9 +39,12 @@ async function login(req: Request, res: Response) {
                 { algorithm: 'HS256', expiresIn: '24h' },
                 function (err, token) {
                     const userToken = token
+                    res.cookie('token', userToken, {
+                        httpOnly: true,
+                        secure: true,
+                    })
                     res.status(201).json({
                         message: 'User login successful',
-                        data: userToken,
                     })
                     if (err) {
                         throw err
@@ -55,33 +58,22 @@ async function login(req: Request, res: Response) {
 }
 
 async function loginCheck(req: Request, res: Response) {
-    const header = req.headers.authorization;
-    console.log(header);
-    console.log(req.headers);
-    console.log("__________________")
-    const token = header?.startsWith('Bearer ')
-        ? header.slice(7).trim()
-        : undefined
-    
-    if (!token) return res.status(401).json({ message: 'Missing auth token' })
-
+    const header = req.headers.authorization
+    console.log(header)
+    console.log(req.headers)
+    console.log('__________________')
+    const token = req.cookies.token
     try {
-        console.log(token);
         const decoded = jwt.verify(token, env.jwtSecret, {
             algorithms: ['HS256'],
         }) as JwtPayload & { userID: string; roleID: string }
-        console.log(decoded);
         const id = Number(decoded.userID)
-        console.log(id);
         const user = await em.findOneOrFail(User, { id })
-        console.log(user);
         const adminRole = await em.findOneOrFail(Role, {
             name: { $like: 'Admin' },
         })
-        console.log(adminRole);
 
         if (Number(user.role.id) != adminRole.id) {
-            console.log("FALSO");
             throw Error('Invalid role.')
         }
         return res.status(200).json({ message: 'User is an admin' })
@@ -90,41 +82,4 @@ async function loginCheck(req: Request, res: Response) {
     }
 }
 
-async function verifyTokenUser(userToken: string) {
-    try {
-        const decoded = jwt.verify(userToken, env.jwtSecret, {
-            algorithms: ['HS256'],
-        }) as JwtPayload & { userID: string; roleID: string }
-        const id = Number(decoded.userID)
-        const roleid = Number(decoded.roleID)
-        const user = em.findOneOrFail(User, { id })
-        if (Number((await user).role) != roleid) {
-            throw Error('Invalid role.')
-        } else {
-            return true
-        }
-    } catch (error: any) {
-        return error
-    }
-}
-
-async function verifyTokenAdmin(userToken: string) {
-    try {
-        const decoded = jwt.verify(userToken, env.jwtSecret, {
-            algorithms: ['HS256'],
-        }) as JwtPayload & { userID: string; roleID: string }
-        const id = Number(decoded.userID)
-        const user = em.findOneOrFail(User, { id })
-        const adminRole = em.findOneOrFail(Role, { name: { $like: 'Admin' } })
-
-        if (Number((await user).role) != (await adminRole).id) {
-            throw Error('Invalid role.')
-        } else {
-            return true
-        }
-    } catch (error: any) {
-        return error
-    }
-}
-
-export { login, loginCheck, verifyTokenUser, verifyTokenAdmin }
+export { login, loginCheck }

@@ -14,11 +14,7 @@ async function authAdminMiddleware(
     next: NextFunction,
 ) {
     const header = req.headers.authorization
-    const token = header?.startsWith('Bearer ')
-        ? header.slice(7).trim()
-        : undefined
-
-    if (!token) return res.status(401).json({ message: 'Missing auth token' })
+    const token = req.cookies.token
 
     try {
         const decoded = jwt.verify(token, env.jwtSecret, {
