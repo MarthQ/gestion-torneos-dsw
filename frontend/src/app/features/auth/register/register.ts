@@ -22,7 +22,7 @@ export class registerComponent {
   private router = inject(Router);
 
   ngOnInit(){
-  if(localStorage.getItem('access_token')==null){}else{this.router.navigate(['/tournaments'])}
+  this.authService.checkLogin();
   }
   
   confirmAction = output<any>();

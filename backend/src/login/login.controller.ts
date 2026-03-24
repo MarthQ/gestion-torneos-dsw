@@ -93,14 +93,14 @@ async function loginCheck(req: Request, res: Response) {
 }
 
 async function logout(req: Request, res: Response) {
-    if (req.cookies.token) {
-        try {
-            res.clearCookie('token')
+    if (req.cookies.token){
+    try {
+            res.clearCookie('token', {httpOnly: true, secure: true})
             res.status(200).json({ message: 'Succesfully logged out.' })
         } catch (err) {
             return res.status(500).json({ message: 'Error in logout.' })
         }
     }
-}
+    }
 
 export { login, loginAdminCheck, loginCheck, logout }

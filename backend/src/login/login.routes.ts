@@ -9,8 +9,8 @@ import {
 const loginRouter = Router()
 
 loginRouter.post('/', login)
-loginRouter.get('/check/', loginCheck)
-loginRouter.get('/admincheck/', loginAdminCheck)
-loginRouter.post('/logout/', logout)
+loginRouter.get('/check', loginCheck)
+loginRouter.get('/admincheck', loginAdminCheck)
+loginRouter.get('/logout', logout)
 
 export { loginRouter }

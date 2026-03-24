@@ -1,6 +1,9 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
+import { catchError, tap, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-user-profile',
@@ -10,14 +13,15 @@ import { AuthService } from '@services/auth.service';
 export class UserProfile {
 private authService = inject(AuthService)
 private router = inject(Router);
+private http = inject(HttpClient);
 
 ngOnInit(){
-  if(localStorage.getItem('access_token')==null){this.router.navigate(['/tournaments'])}else{}
+  this.authService.checkLogged()
 }
 
-logout(){
-  localStorage.removeItem('access_token')
-  this.router.navigate(['/tournaments'])
-};
+logout() {
+  this.http.get(`${environment.apiUrl}/login/logout/`,{withCredentials: true}).subscribe();
+  this.router.navigate(['/tournaments']);
+}
 
 }

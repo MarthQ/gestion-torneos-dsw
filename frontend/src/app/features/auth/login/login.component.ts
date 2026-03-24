@@ -16,6 +16,10 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  ngOnInit(){
+  this.authService.checkLogin();
+  }
+
   confirmAction = output<any>();
   email = signal('');
   password = signal('');
