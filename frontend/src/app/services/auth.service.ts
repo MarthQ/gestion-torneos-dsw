@@ -27,23 +27,17 @@ export class AuthService {
     const { mail, ...rest } = userData;
     const body = mail? { mail, ...rest } : rest;
     console.log(userData);
-    return this.http.post<authResponse>(`${environment.apiUrl}/login`,body).pipe(
-      tap((res: authResponse) => {
-        if (res && res.data) {
-        localStorage.setItem('access_token', res.data)};
-      }),
-      catchError((error: HttpErrorResponse) => {
-        let errorMsg = 'Error desconocido';
-      if (error.status === 401 || error.status === 404) {
-        errorMsg = 'Usuario no registrado o datos incorrectos';
-        }
-        return throwError(() => new Error(errorMsg));
+    return this.http.post<authResponse>(`${environment.apiUrl}/login`,body, {withCredentials: true}).pipe(
+      tap(),catchError(error => {
+        console.error('Error en el inicio de sesión', error);
+        return throwError(()=>new Error('No se pudo iniciar sesión'));
       })
     );
   };
+  
   checkStatus() {
-  const headers = new HttpHeaders({authorization: 'Bearer ' + String(localStorage.getItem('access_token')) })
-  this.http.get(`${environment.apiUrl}/login/check/`, {headers, observe: 'response'}).subscribe({
+  const headers = new HttpHeaders()
+  this.http.get(`${environment.apiUrl}/login/check/`, {headers, observe: 'response', withCredentials: true}).subscribe({
     next: (data) => {
       console.log(data.status);
       this.isAdminSignal.set(data.status===200);

@@ -10,7 +10,7 @@ POST http://localhost:3000/api/roles
 Content-Type: application/json
 
 {
-  "name": "Admin"
+  "name": "User"
 }
 ### {
 ###   "name": "User",

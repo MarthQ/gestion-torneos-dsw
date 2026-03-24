@@ -1,4 +1,3 @@
 export interface authResponse {
-  message: string;
-  data: string;
+    data:string;
 }

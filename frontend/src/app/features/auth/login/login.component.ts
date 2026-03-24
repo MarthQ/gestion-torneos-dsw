@@ -16,10 +16,6 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  ngOnInit(){
-  if(localStorage.getItem('access_token')==null){}else{this.router.navigate(['/tournaments'])}
-  }
-
   confirmAction = output<any>();
   email = signal('');
   password = signal('');

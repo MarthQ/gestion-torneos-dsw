@@ -13,10 +13,16 @@ import { matchupRouter } from './matchup/matchup.routes.js'
 import { tagRouter } from './tag/tag.routes.js'
 import { registerRouter } from './register/register.routes.js'
 import { loginRouter } from './login/login.routes.js'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin:'http://localhost:4200',
+    credentials: true,
+}))
+
+app.use(cookieParser())
 
 // After base middlewares like express
 app.use((req, res, next) => {
