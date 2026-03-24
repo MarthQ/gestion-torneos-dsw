@@ -57,11 +57,7 @@ async function login(req: Request, res: Response) {
     }
 }
 
-async function loginCheck(req: Request, res: Response) {
-    const header = req.headers.authorization
-    console.log(header)
-    console.log(req.headers)
-    console.log('__________________')
+async function loginAdminCheck(req: Request, res: Response) {
     const token = req.cookies.token
     try {
         const decoded = jwt.verify(token, env.jwtSecret, {
@@ -82,4 +78,29 @@ async function loginCheck(req: Request, res: Response) {
     }
 }
 
-export { login, loginCheck }
+async function loginCheck(req: Request, res: Response) {
+    const token = req.cookies.token
+    try {
+        const decoded = jwt.verify(token, env.jwtSecret, {
+            algorithms: ['HS256'],
+        }) as JwtPayload & { userID: string; roleID: string }
+        const id = Number(decoded.userID)
+        const user = await em.findOneOrFail(User, { id })
+        return res.status(200).json({ message: 'User is logged in.' })
+    } catch (err) {
+        return res.status(401).json({ message: 'Invalid token' })
+    }
+}
+
+async function logout(req: Request, res: Response) {
+    if (req.cookies.token) {
+        try {
+            res.clearCookie('token')
+            res.status(200).json({ message: 'Succesfully logged out.' })
+        } catch (err) {
+            return res.status(500).json({ message: 'Error in logout.' })
+        }
+    }
+}
+
+export { login, loginAdminCheck, loginCheck, logout }

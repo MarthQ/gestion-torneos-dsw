@@ -13,7 +13,6 @@ async function authAdminMiddleware(
     res: Response,
     next: NextFunction,
 ) {
-    const header = req.headers.authorization
     const token = req.cookies.token
 
     try {
