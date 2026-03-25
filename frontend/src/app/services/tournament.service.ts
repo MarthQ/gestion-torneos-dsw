@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { QueryFilter } from '@shared/interfaces/filters';
@@ -101,6 +101,19 @@ export class TournamentService {
         catchError((error) => {
           console.error(error);
           return throwError(() => new Error(`No se pudo borrar el torneo`));
+        }),
+      );
+  }
+
+  startTournament(tournament: Tournament): Observable<ApiResponse<Tournament>> {
+    return this.http
+      .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournament.id}/start`, {})
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error(error);
+          return throwError(
+            () => new Error(`No se pudo comenzar el torneo. Razón: ${error.error.message}`),
+          );
         }),
       );
   }

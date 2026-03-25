@@ -32,9 +32,12 @@ export class TournamentParticipants {
   tournamentId = this.getTournamentIdFromRoute();
 
   inscriptionResource = rxResource({
-    params: () => ({ id: this.tournamentId }),
+    params: () => ({
+      id: this.tournamentId,
+      // refresh lets this component know if there was an inscription in tournament's inscriptions
+      refresh: this.inscriptionService.inscriptionsVersionReadonly(),
+    }),
     stream: ({ params }) => {
-      console.log(params.id);
       const tournamentId = Number(params.id);
 
       return this.inscriptionService.getInscriptions(tournamentId);

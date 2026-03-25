@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { findAll, findOne, add, update, remove } from './tournament.controller.js'
+import { findAll, findOne, add, update, remove, startTournament } from './tournament.controller.js'
 
 const tournamentRouter = Router()
 
@@ -9,5 +9,8 @@ tournamentRouter.post('/', add)
 tournamentRouter.put('/:id', update)
 tournamentRouter.patch('/:id', update)
 tournamentRouter.delete('/:id', remove)
+
+// Custom routes for custom methods
+tournamentRouter.post('/:id/start', startTournament)
 
 export { tournamentRouter }

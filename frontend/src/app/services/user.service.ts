@@ -44,6 +44,16 @@ export class UserService {
       );
   }
 
+  getUserById(userId: number): Observable<User> {
+    return this.http.get<ApiResponse<User>>(`${environment.apiUrl}/users/${userId}`).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        console.log('Error fetching user: ', error);
+        return throwError(() => new Error(`No se pudo obtener el usuario`));
+      }),
+    );
+  }
+
   addUser(newUser: UserFormDTO): Observable<UserFormDTO> {
     console.log(newUser);
 

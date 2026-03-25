@@ -1,0 +1,11 @@
+:host ::ng-deep #bracketContainer {
+  display: flex;
+  justify-content: center;
+  min-width: fit-content;
+}
+
+:host ::ng-deep .g_round_label {
+  background: var(--color-indigo-600);
+  border-bottom: 2px solid var(--color-indigo-700);
+  border-radius: 0.25rem;
+}

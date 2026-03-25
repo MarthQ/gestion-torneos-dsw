@@ -33,21 +33,24 @@
           </p>
           <p class="text-gray-400 mt-4 max-w-2xl"></p>
         </div>
-        <div class="flex gap-3 items-center">
+        <div class="flex gap-3 justify-center items-center md:flex-row flex-col">
           <button
             class="btn btn-outline btn-white border-white text-white hover:bg-white hover:text-black"
           >
-            <span class="icon-[material-symbols--share]"></span> Compartir
+            <span class="icon-[material-symbols--share]" style="width: 18px; height: 18px"></span>
+            Compartir
           </button>
           @if (userIsCreator()) {
             <button
               class="btn btn-secondary btn-lg px-10 shadow-pink-500/20 shadow-xl"
-              [attr.disabled]="tournamentResource.value()?.status !== 'Abierto' ? '' : null"
+              [attr.disabled]="tournamentResource.value()?.status !== 'Abierto' ? 'disabled' : null"
+              (click)="startTournament()"
             >
               <span class="icon-[vaadin--start-cog]" style="width: 24px; height: 24px"></span>
               Comenzar Torneo
             </button>
-          } @else if (tournamentResource.value()?.status !== 'Abierto' && !userIsInscribed()) {
+          }
+          @if (tournamentResource.value()?.status !== 'Abierto' && !userIsInscribed()) {
             <button class="btn btn-primary btn-lg px-10" disabled>
               <span
                 class="icon-[icon-park-outline--error]"
@@ -56,12 +59,18 @@
               El torneo no está abierto
             </button>
           } @else if (userIsInscribed()) {
-            <button class="btn btn-warning btn-lg px-10 shadow-yellow-500/20 shadow-xl">
+            <button
+              class="btn btn-warning btn-lg px-10 shadow-yellow-500/20 shadow-xl"
+              (click)="removeInscription()"
+            >
               <span class="icon-[line-md--edit]" style="width: 24px; height: 24px"></span>
-              Quieres borrar la inscripción?
+              Borrar inscripción
             </button>
           } @else {
-            <button class="btn btn-primary btn-lg px-10 shadow-indigo-500/20 shadow-xl">
+            <button
+              class="btn btn-primary btn-lg px-10 shadow-indigo-500/20 shadow-xl"
+              (click)="this.openModal.set(true)"
+            >
               <span class="icon-[line-md--edit]" style="width: 24px; height: 24px"></span>
               Inscribirse
             </button>
@@ -117,7 +126,7 @@
         <a
           class="tab rounded-xl hover:bg-primary transition-all ease-in-out duration-200"
           [class]="tournamentResource.value()?.status === 'Abierto' ? 'opacity-50' : 'text-white'"
-          [attr.disabled]="tournamentResource.value()?.status === 'Abierto' ? '' : null"
+          [attr.disabled]="tournamentResource.value()?.status === 'Abierto' ? 'disabled' : null"
           routerLink="brackets"
           routerLinkActive="tab-active bg-indigo-600 font-bold"
           >Llaves (Bracket)</a
@@ -125,13 +134,13 @@
         <a
           class="tab rounded-xl hover:bg-primary transition-all ease-in-out duration-200"
           [class]="tournamentResource.value()?.status === 'Terminado' ? 'text-white' : 'opacity-50'"
-          [attr.disabled]="tournamentResource.value()?.status === 'Terminado' ? '' : null"
+          [attr.disabled]="tournamentResource.value()?.status === 'Terminado' ? null : 'disabled'"
           routerLink="results"
           routerLinkActive="tab-active bg-indigo-600 font-bold"
           >Resultados Finales</a
         >
       </div>
-      <section class="flex justify-center">
+      <section>
         <router-outlet />
       </section>
     </div>
@@ -201,4 +210,10 @@
       </div>
     </div>
   </div>
+
+  <inscription-modal
+    [open]="this.openModal()"
+    (closed)="openModal.set(false)"
+    (confirmInscription)="completeInscription($event)"
+  />
 </main>

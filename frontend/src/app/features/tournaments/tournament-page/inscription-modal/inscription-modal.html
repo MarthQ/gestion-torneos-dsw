@@ -1,0 +1,33 @@
+<dialog #inscriptionModal class="modal" (close)="onDialogClose()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Inscripción al Torneo</h3>
+    <form [formGroup]="inscriptionForm">
+      <div class="py-4">
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">
+            Escriba el nickname que le gustaría usar en el torneo
+          </legend>
+          <input
+            type="text"
+            class="input focus:input-primary"
+            placeholder="Ingrese el nickname"
+            formControlName="nickname"
+          />
+          <p class="label">Obligatorio</p>
+        </fieldset>
+      </div>
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2">
+          <button
+            class="btn btn-primary hover:btn-success"
+            [disabled]="!inscriptionForm.valid"
+            (click)="emitInscription()"
+          >
+            Inscribirse
+          </button>
+          <button class="btn">Cancelar</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>

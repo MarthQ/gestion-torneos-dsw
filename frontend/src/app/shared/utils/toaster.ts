@@ -5,7 +5,13 @@ export class Toaster {
   static success(message: string) {
     toast.success(message);
   }
-  static error(message: string) {
-    toast.error(message);
+  static error(message: unknown) {
+    toast.error(
+      message instanceof Error
+        ? message.message
+        : typeof message === 'string'
+          ? message
+          : 'Error inesperado',
+    );
   }
 }

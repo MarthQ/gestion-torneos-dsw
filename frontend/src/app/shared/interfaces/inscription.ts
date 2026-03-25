@@ -9,3 +9,12 @@ export interface Inscription {
   tournament?: Tournament;
   user?: User;
 }
+
+export interface InscriptionDTO {
+  id: number;
+  nickname: string;
+  inscriptionDate: Date;
+  points: number;
+  tournament: number;
+  user: number;
+}
