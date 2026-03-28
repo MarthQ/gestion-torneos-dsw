@@ -16,7 +16,7 @@ export class User extends BaseEntity {
     @ManyToOne(() => Location, { nullable: false })
     location!: Rel<Location>
     @ManyToOne(() => Role, { nullable: false })
-    role!: Rel<Location>
+    role!: Rel<Role>
     @OneToMany(() => Inscription, (inscription) => inscription.user)
     inscriptions = new Collection<Inscription>(this)
 
