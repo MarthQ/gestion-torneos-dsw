@@ -17,3 +17,18 @@ export interface UserFormDTO {
   location: number;
   role: number;
 }
+
+export interface UserRegisterDTO {
+  id?: number;
+  name: string;
+  password: string;
+  mail: string;
+  location: number;
+  role?: string;
+}
+
+export interface UserFormLogin{
+  mail:string;
+  password: string;
+}
+

@@ -1,0 +1,62 @@
+<h3 class="text-lg font-bold">Registro de usuario</h3>
+
+<!-- Formulario principal -->
+<form [formGroup]="userRegisterForm">
+  
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Nombre del usuario</legend>
+    <input
+      type="text"
+      class="input focus:input-primary"
+      placeholder="Ingrese el nombre del usuario"
+      formControlName="name"
+    />
+    <p class="label">Obligatorio</p>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Mail del usuario</legend>
+    <input
+      type="email" 
+      class="input focus:input-primary"
+      placeholder="Ingrese el mail del usuario"
+      formControlName="mail"
+    />
+    <p class="label">Obligatorio</p>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Contraseña del usuario</legend>
+    <input
+      type="password"
+      class="input focus:input-primary"
+      placeholder="Ingrese la contraseña del usuario"
+      formControlName="password"
+    />
+    <p class="label">Obligatorio. Debe tener 8 caracteres o más</p>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Localidad del usuario</legend>
+    <select class="select" formControlName="location">
+      <option disabled selected>Seleccione la localidad del usuario</option>
+            @for (location of locationResource.value(); track location.id) {
+            <option [ngValue]="location.id">
+                {{ location.name }}
+            </option>
+      }
+    </select> <!-- Faltaba cerrar el select -->
+    <p class="label">Obligatorio</p>
+  </fieldset>
+
+  <!-- Botones de acción (sacamos el form method="dialog") -->
+  <div class="flex gap-2 mt-4">
+    <button class="btn btn-primary hover:btn-success" [disabled]="!userRegisterForm.valid" (click)="register()">
+    Guardar cambios
+    </button>
+    <button class="btn">Cancelar</button>
+  </div>
+</form>
+
+<p>{{userRegisterForm.value | json}}</p>
+<p>{{userRegisterForm.errors | json}}</p>

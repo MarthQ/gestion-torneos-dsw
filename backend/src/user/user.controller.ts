@@ -3,6 +3,8 @@ import { User } from './user.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { hashSync } from 'bcrypt'
+import { env } from '../config/env.js'
 
 const em = ORM.em
 
@@ -11,7 +13,9 @@ const UserSchema = z.object({
     name: z.string({ message: 'Name must be a string' }),
     password: z.string({ message: 'Password must be a string' }),
     mail: z.string({ message: 'Mail must be a string' }),
-    location: z.number({ message: 'Location must be a number representing a location id' }),
+    location: z.number({
+        message: 'Location must be a number representing a location id',
+    }),
     role: z.number({ message: 'Role must be a number representing a role id' }),
 })
 
@@ -39,7 +43,12 @@ async function findAll(req: Request, res: Response) {
         res.status(200).json({
             message: 'Found all locations',
             data: users,
-            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+            meta: {
+                total,
+                page,
+                pageSize,
+                totalPages: Math.ceil(total / pageSize),
+            },
         })
     } catch (error: any) {
         res.status(404).json({ message: error.message })
@@ -54,7 +63,8 @@ async function findOne(req: Request, res: Response) {
             { id },
             { populate: ['location', 'inscriptions', 'role', 'tournament'] },
         )
-        res.status(200).json({ message: 'Found user', data: user })
+        const { password, ...userData } = user
+        res.status(200).json({ message: 'Found user', data: userData })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
@@ -67,6 +77,7 @@ async function add(req: Request, res: Response) {
         if (!sanitizedUser.success) {
             throw fromZodError(sanitizedUser.error)
         } else {
+            sanitizedUser.data.password = hashSync(sanitizedUser.data.password, Number(env.defaultSaltRounds))
             const user = em.create(User, sanitizedUser.data)
             await em.flush()
             res.status(201).json({ message: 'User created', data: user })
@@ -82,6 +93,7 @@ async function update(req: Request, res: Response) {
             throw fromZodError(sanitizedPartialUser.error)
         } else {
             const id = Number.parseInt(req.params.id)
+            req.body.password = hashSync(req.body.password, Number(env.defaultSaltRounds))
             const user = em.getReference(User, id)
             em.assign(user, req.body)
             await em.flush()

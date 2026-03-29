@@ -1,0 +1,34 @@
+<h3 class="text-lg font-bold">Iniciar sesión</h3>
+
+<!-- Formulario principal -->
+<form [formGroup]="loginForm">
+  
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Mail del usuario</legend>
+    <input
+      type="email"
+      class="input focus:input-primary"
+      placeholder="Ingrese el mail del usuario"
+      formControlName="mail"
+    />
+    <p class="label">Obligatorio</p>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Contraseña del usuario</legend>
+    <input
+      type="password"
+      class="input focus:input-primary"
+      placeholder="Ingrese la contraseña del usuario"
+      formControlName="password"
+    />
+    <p class="label">Obligatorio. Debe tener 8 caracteres o más</p>
+  </fieldset>
+
+  <div class="flex gap-2 mt-4">
+    <button class="btn btn-primary hover:btn-success" [disabled]="!loginForm.valid" (click)="login()">
+    Iniciar sesión
+    </button>
+    <button class="btn">Cancelar</button>
+  </div>
+</form>
