@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { fromError, fromZodError, ValidationError } from 'zod-validation-error'
 import { compareSync, hashSync } from 'bcrypt'
@@ -7,6 +7,10 @@ import { compareSync, hashSync } from 'bcrypt'
 import { env } from '../config/env.js'
 import { ORM } from '../shared/db/orm.js'
 import { User } from '../user/user.entity.js'
+import { Role } from '../role/role.entity.js'
+import { USER_ROLE } from './interfaces/user-role.const.js'
+import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
+import { JwtPayload } from './interfaces/jwt-payload.interface.js'
 
 const em = ORM.em
 
@@ -36,30 +40,30 @@ async function login(req: Request, res: Response) {
         const { password, mail } = sanitizedLogin.data
 
         //* Searchs for the user
-        const user = await em.findOneOrFail(User, { mail: mail }, { populate: ['role'] })
+        const user = await em.findOneOrFail(User, { mail: mail }, { populate: ['role', 'location'] })
 
-        //* Passwords doesn't match
+        //* if Passwords doesn't match
         if (!compareSync(password, user.password)) {
             const error = new Error('Credential is not valid (password)')
             ;(error as any).statusCode = 401
             throw error
         }
 
-        res.status(201).json({
+        res.status(200).json({
             message: 'User logged successfully',
             data: {
-                user: user,
-                token: getJWT({ id: user.id }),
+                user: getUserResponse(user),
+                token: getJWT({ userId: user.id! }),
             },
         })
     } catch (error: any) {
+        console.log(error)
         // Custom error handling
         if (error.statusCode) {
             return res.status(error.statusCode).json({
                 message: error.message,
             })
         }
-
         // Zod Validation Error
         if (error.name === 'ZodValidationError' || error.details) {
             return res.status(400).json({
@@ -67,11 +71,10 @@ async function login(req: Request, res: Response) {
                 errors: error.details, // Array de errores de Zod
             })
         }
-
         // MikroORM Error
-        if (error.name === 'EntityNotFoundError') {
+        if (error.name === 'NotFoundError') {
             return res.status(401).json({
-                message: 'Credential is not valid',
+                message: 'Credentials are not valid (email)',
             })
         }
         // 4. Error genérico
@@ -86,7 +89,7 @@ async function register(req: Request, res: Response) {
     try {
         const newUser = req.body
 
-        const sanitizedRegister = loginSchema.safeParse(newUser)
+        const sanitizedRegister = registerSchema.safeParse(newUser)
 
         if (!sanitizedRegister.success) {
             throw fromZodError(sanitizedRegister.error)
@@ -94,29 +97,32 @@ async function register(req: Request, res: Response) {
 
         const { password, ...userData } = newUser
 
+        // Buscar rol "user" por nombre (no hardcodear ID)
+        const userRole = await em.findOneOrFail(Role, { name: USER_ROLE.USER })
+
         const user = em.create(User, {
             ...userData,
             password: hashSync(newUser.password, Number(env.defaultSaltRounds)),
-            role: 2,
+            role: userRole.id,
         })
 
-        await em.flush()
+        await em.persistAndFlush(user)
 
         res.status(201).json({
             message: 'User created',
             data: {
-                user: user,
-                token: getJWT({ id: user.id }),
+                user: getUserResponse(user),
+                token: getJWT({ userId: user.id! }),
             },
         })
     } catch (error: any) {
-        // Custom error handling
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-
+        // 4. Error genérico
+        console.error({
+            name: error.name,
+            message: error.message,
+            code: error.code,
+            detail: error.sqlMessage || error.detail,
+        })
         // Zod Validation Error
         if (error.name === 'ZodValidationError' || error.details) {
             return res.status(400).json({
@@ -124,15 +130,24 @@ async function register(req: Request, res: Response) {
                 errors: error.details, // Array de errores de Zod
             })
         }
-
         // MikroORM Error
-        if (error.name === 'EntityNotFoundError') {
+        if (error.name === 'NotFoundError') {
             return res.status(401).json({
-                message: 'Credential is not valid',
+                message: "Rol user doesn't exist in db",
             })
         }
-        // 4. Error genérico
-        console.error({ errorName: error.name })
+        // MikroORM Error
+        if (error.sqlMessage.includes('user_name_unique')) {
+            return res.status(409).json({
+                message: `Name already taken`,
+            })
+        }
+        if (error.sqlMessage.includes('user_mail_unique')) {
+            return res.status(409).json({
+                message: `Email already taken`,
+            })
+        }
+
         return res.status(500).json({
             message: 'Internal server error',
         })
@@ -141,17 +156,35 @@ async function register(req: Request, res: Response) {
 
 //TODO
 
-async function checkAuthStatus() {
-    return
+async function checkAuthStatus(req: RequestWithUser, res: Response) {
+    const user = req.user!
+
+    return res.status(201).json({
+        message: 'User authenticated',
+        data: {
+            user: getUserResponse(user),
+            token: getJWT({ userId: user.id! }),
+        },
+    })
 }
 
 //* PRIVATE METHODS
-function getJWT(payload: any) {
+function getJWT(payload: JwtPayload) {
     const token = jwt.sign(payload, env.jwtSecret, {
         algorithm: 'HS256',
         expiresIn: '24h',
     })
     return token
+}
+
+function getUserResponse(user: User) {
+    return {
+        id: user.id,
+        name: user.name,
+        mail: user.mail,
+        location: user.location,
+        role: user.role,
+    }
 }
 
 export { register, login, checkAuthStatus }

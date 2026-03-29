@@ -13,6 +13,7 @@ import { matchupRouter } from './matchup/matchup.routes.js'
 import { tagRouter } from './tag/tag.routes.js'
 import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
+import { seedRoles, seedLocations } from './db/seeds.js'
 
 const app = express()
 app.use(express.json())
@@ -46,6 +47,8 @@ app.use((_, res) => {
 })
 
 await syncSchema() // Never in production
+await seedRoles()
+await seedLocations()
 
 app.listen(3000, () => {
     console.log('Server running on https://localhost:3000/')

@@ -27,9 +27,7 @@ async function findAll(req: Request, res: Response) {
 
         const query = req.query.query ? String(req.query.query) : undefined
         const role = req.query.role ? Number(req.query.role) : undefined
-        const location = req.query.location
-            ? Number(req.query.location)
-            : undefined
+        const location = req.query.location ? Number(req.query.location) : undefined
 
         const filter: any = {}
 
@@ -65,7 +63,8 @@ async function findOne(req: Request, res: Response) {
             { id },
             { populate: ['location', 'inscriptions', 'role', 'tournament'] },
         )
-        res.status(200).json({ message: 'Found user', data: user })
+        const { password, ...userData } = user
+        res.status(200).json({ message: 'Found user', data: userData })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
@@ -78,10 +77,7 @@ async function add(req: Request, res: Response) {
         if (!sanitizedUser.success) {
             throw fromZodError(sanitizedUser.error)
         } else {
-            sanitizedUser.data.password = hashSync(
-                sanitizedUser.data.password,
-                Number(env.defaultSaltRounds),
-            )
+            sanitizedUser.data.password = hashSync(sanitizedUser.data.password, Number(env.defaultSaltRounds))
             const user = em.create(User, sanitizedUser.data)
             await em.flush()
             res.status(201).json({ message: 'User created', data: user })
@@ -97,10 +93,7 @@ async function update(req: Request, res: Response) {
             throw fromZodError(sanitizedPartialUser.error)
         } else {
             const id = Number.parseInt(req.params.id)
-            req.body.password = hashSync(
-                req.body.password,
-                Number(env.defaultSaltRounds),
-            )
+            req.body.password = hashSync(req.body.password, Number(env.defaultSaltRounds))
             const user = em.getReference(User, id)
             em.assign(user, req.body)
             await em.flush()

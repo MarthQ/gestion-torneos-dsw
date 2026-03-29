@@ -27,3 +27,6 @@ dist/**/*
 
 ## built vscode extensions
 *.vsix
+
+## mysql (docker)
+mysql/
