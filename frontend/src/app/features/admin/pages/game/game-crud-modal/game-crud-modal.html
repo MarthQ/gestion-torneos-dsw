@@ -12,6 +12,7 @@
               placeholder="Ingrese el nombre del juego"
               formControlName="name"
             />
+            <form-error-label [control]="gameForm.get('name')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Descripción del juego</legend>
@@ -21,7 +22,7 @@
               placeholder="Ingrese la descripción del juego"
               formControlName="description"
             ></textarea>
-            <span class="label">Obligatorio</span>
+            <form-error-label [control]="gameForm.get('description')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             @if (gameForm.get('imgUrl')?.value) {

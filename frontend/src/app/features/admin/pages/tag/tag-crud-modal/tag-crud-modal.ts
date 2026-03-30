@@ -1,11 +1,12 @@
 import { I18nSelectPipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 import { Tag } from '@shared/interfaces/tag';
 
 @Component({
   selector: 'tag-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './tag-crud-modal.html',
 })
 export class TagCrudModal {

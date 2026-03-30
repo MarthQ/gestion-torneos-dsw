@@ -13,8 +13,7 @@
                 placeholder="Ingrese un número"
                 formControlName="id"
               />
-
-              <p class="label">Obligatorio</p>
+              <form-error-label [control]="tournamentForm.get('id')!"></form-error-label>
             </fieldset>
           }
           <fieldset class="fieldset">
@@ -25,7 +24,7 @@
               placeholder="Ingrese el nombre del torneo"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tournamentForm.get('name')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Descripción del juego</legend>
@@ -35,7 +34,7 @@
               placeholder="Ingrese la descripción del juego"
               formControlName="description"
             ></textarea>
-            <span class="label">Obligatorio</span>
+            <form-error-label [control]="tournamentForm.get('description')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Fecha y Hora del torneo</legend>
@@ -44,7 +43,7 @@
               class="input input-primary border-base-300 input-bordered"
               formControlName="datetimeinit"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Cupo Máximo</legend>
@@ -54,7 +53,7 @@
               placeholder="Ingrese el cupo máximo"
               formControlName="maxParticipants"
             />
-            <p class="label">Obligatorio.</p>
+            <form-error-label [control]="tournamentForm.get('maxParticipants')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Creador del torneo</legend>

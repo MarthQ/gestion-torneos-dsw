@@ -13,8 +13,7 @@
                 placeholder="Ingrese un número"
                 formControlName="id"
               />
-
-              <p class="label">Obligatorio</p>
+              <form-error-label [control]="roleForm.get('id')!"></form-error-label>
             </fieldset>
           }
           <fieldset class="fieldset">
@@ -25,7 +24,7 @@
               placeholder="Ingrese el nombre del rol"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="roleForm.get('name')!"></form-error-label>
           </fieldset>
         </div>
       } @else {

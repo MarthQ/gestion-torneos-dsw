@@ -13,8 +13,7 @@
                 placeholder="Ingrese un número"
                 formControlName="id"
               />
-
-              <p class="label">Obligatorio</p>
+              <form-error-label [control]="tagForm.get('id')!"></form-error-label>
             </fieldset>
           }
           <fieldset class="fieldset">
@@ -25,7 +24,7 @@
               placeholder="Ingrese el nombre de la etiqueta"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tagForm.get('name')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Descripción de la etiqueta</legend>
@@ -35,7 +34,7 @@
               placeholder="Ingrese la descripción de la etiqueta"
               formControlName="description"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tagForm.get('description')!"></form-error-label>
           </fieldset>
         </div>
       } @else {
