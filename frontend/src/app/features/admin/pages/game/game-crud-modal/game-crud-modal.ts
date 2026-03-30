@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GameService } from '@features/tournament-hub/services/game.service';
+import { GameService } from '@shared/services/game.service';
 import { Game } from '@shared/interfaces/game';
 import { debounceTime, switchMap, tap } from 'rxjs';
 

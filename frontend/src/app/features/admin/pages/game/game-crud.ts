@@ -8,7 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { GameService } from '@features/tournament-hub/services/game.service';
+import { GameService } from '@shared/services/game.service';
 import { Toaster } from '@shared/utils/toaster';
 import { Game } from '@shared/interfaces/game';
 import { map, of, tap } from 'rxjs';
@@ -18,7 +18,6 @@ import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { GameCrudModal } from './game-crud-modal/game-crud-modal';
 
 @Component({
-  selector: 'app-game-crud',
   imports: [Pagination, SearchBar, GameCrudModal],
   templateUrl: './game-crud.html',
 })

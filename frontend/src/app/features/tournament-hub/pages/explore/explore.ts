@@ -3,9 +3,9 @@ import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { map, tap } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 
-import { GameService } from '@features/tournament-hub/services/game.service';
-import { TagService } from '@features/tournament-hub/services/tag.service';
-import { TournamentService } from '@features/tournament-hub/services/tournament.service';
+import { GameService } from '@shared/services/game.service';
+import { TagService } from '@shared/services/tag.service';
+import { TournamentService } from '@shared/services/tournament.service';
 
 import { TournamentActionMap, tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 import { QueryFilter } from '@shared/interfaces/filters';

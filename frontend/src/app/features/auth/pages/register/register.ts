@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { toast } from 'ngx-sonner';
 
-import { LocationService } from '@features/tournament-hub/services/location.service';
+import { LocationService } from '@shared/services/location.service';
 import { RegisterForm } from '@features/auth/interfaces/register-form.interface';
 import { AuthService } from '@features/auth/services/auth.service';
 import { FormUtils } from '@shared/utils/form-utils';

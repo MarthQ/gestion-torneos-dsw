@@ -1,22 +1,21 @@
 import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
-import { TournamentService } from '@features/tournament-hub/services/tournament.service';
+import { TournamentService } from '@shared/services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { DatePipe, I18nSelectPipe } from '@angular/common';
 import { Toaster } from '@shared/utils/toaster';
-import { LocationService } from '@features/tournament-hub/services/location.service';
-import { TagService } from '@features/tournament-hub/services/tag.service';
-import { UserService } from '@features/tournament-hub/services/user.service';
+import { LocationService } from '@shared/services/location.service';
+import { TagService } from '@shared/services/tag.service';
+import { UserService } from '@shared/services/user.service';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { map, tap } from 'rxjs';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
-import { GameService } from '@features/tournament-hub/services/game.service';
+import { GameService } from '@shared/services/game.service';
 import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 
 @Component({
-  selector: 'app-tournament-crud',
   imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe, I18nSelectPipe],
   templateUrl: './tournament-crud.html',
 })

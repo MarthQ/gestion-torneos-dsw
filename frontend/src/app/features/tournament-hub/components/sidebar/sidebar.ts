@@ -32,32 +32,32 @@ export class Sidebar {
   adminSidebarButtons = signal([
     {
       name: 'CRUD Juegos',
-      routerPath: 'admin/crud/game',
+      routerPath: 'admin/game',
       icon: `icon-[bx--joystick]`,
     },
     {
       name: 'CRUD Localidades',
-      routerPath: 'admin/crud/location',
+      routerPath: 'admin/location',
       icon: `icon-[mdi--location]`,
     },
     {
       name: 'CRUD Usuarios',
-      routerPath: 'admin/crud/user',
+      routerPath: 'admin/user',
       icon: `icon-[mdi--users]`,
     },
     {
       name: 'CRUD Torneos',
-      routerPath: 'admin/crud/tournament',
+      routerPath: 'admin/tournament',
       icon: `icon-[solar--cup-bold]`,
     },
     {
       name: 'CRUD Tags',
-      routerPath: 'admin/crud/tag',
+      routerPath: 'admin/tag',
       icon: `icon-[tabler--tag]`,
     },
     {
       name: 'CRUD Roles',
-      routerPath: 'admin/crud/role',
+      routerPath: 'admin/role',
       icon: `icon-[eos-icons--role-binding]`,
     },
   ]);
@@ -72,11 +72,6 @@ export class Sidebar {
       name: 'Mis inscripciones',
       routerPath: '/my-inscriptions',
       icon: `icon-[material-symbols--joystick]`,
-    },
-    {
-      name: 'Mi Perfil',
-      routerPath: '/profile',
-      icon: `icon-[gg--profile]`,
     },
     {
       name: 'Configuraciones',

@@ -14,3 +14,17 @@
   font-family: 'Segoe-Script';
   src: url('public/assets/segoesc.ttf') format('truetype');
 }
+
+@theme {
+  /* Custom Animations */
+  --animate-fadeIn: fadeIn 1s ease-in-out;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}

@@ -1,32 +1,20 @@
-import {
-  Component,
-  computed,
-  ElementRef,
-  inject,
-  linkedSignal,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { Role } from '@shared/interfaces/role';
 import { map, tap } from 'rxjs';
+import { RoleService } from '@features/admin/services/role.service';
 import { Toaster } from '@shared/utils/toaster';
-
 import { Tag } from '@shared/interfaces/tag';
-import { TagService } from '@features/tournament-hub/services/tag.service';
-import { TagCrudModal } from './tag-crud-modal/tag-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
+import { RoleCrudModal } from './role-crud-modal/role-crud-modal';
 
 @Component({
-  selector: 'admin-tag-crud',
-  imports: [TagCrudModal, Pagination, SearchBar],
-  templateUrl: './tag-crud.html',
+  imports: [RoleCrudModal, Pagination, SearchBar],
+  templateUrl: './role-crud.html',
 })
-export class TagCrud {
-  tagService = inject(TagService);
-
-  // ElementRef for resetting the query
-  searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+export class RoleCrud {
+  roleService = inject(RoleService);
 
   // API Get parameters (for table)
   query = signal('');
@@ -40,49 +28,46 @@ export class TagCrud {
   modalType = signal<'add' | 'edit' | 'delete'>('add');
   openModal = signal<boolean>(false);
 
-  selectedTag = signal<Partial<Tag>>({});
+  selectedRole = signal<Partial<Role>>({});
 
-  tagMeta = signal<PaginationMeta | undefined>(undefined);
+  roleMeta = signal<PaginationMeta | undefined>(undefined);
 
-  tagResource = rxResource({
+  roleResource = rxResource({
     params: () => ({ query: this.query(), page: this.page() }),
     stream: ({ params }) => {
-      return this.tagService.getTagsPaginated(params.query, params.page, this.pageSize).pipe(
-        tap((response) => this.tagMeta.set(response.meta)),
+      return this.roleService.getRolesPaginated(params.query, params.page, this.pageSize).pipe(
+        tap((response) => this.roleMeta.set(response.meta)),
+        tap((response) => console.log(response)),
         map((response) => response.data),
       );
     },
   });
-
-  // Visual actions (pagination)
   pageChangedTo(newPage: number) {
     this.page.set(newPage);
   }
 
-  // CRUD Actions
-  addTag() {
+  addRole() {
     this.modalType.set('add');
-    this.selectedTag.set({});
+    this.selectedRole.set({});
     this.openModal.set(true);
   }
-  editTag(tag: Tag) {
+  editRole(role: Role) {
     this.modalType.set('edit');
-    this.selectedTag.set(tag);
+    this.selectedRole.set(role);
     this.openModal.set(true);
   }
-  deleteTag(tag: Tag) {
+  deleteRole(role: Role) {
     this.modalType.set('delete');
-    this.selectedTag.set(tag);
+    this.selectedRole.set(role);
     this.openModal.set(true);
   }
-
-  handleCrudAction(tag: Tag) {
+  handleCrudAction(role: Role) {
     switch (this.modalType()) {
       case 'add':
-        this.tagService.addTag(tag).subscribe({
+        this.roleService.addRole(role).subscribe({
           next: () => {
-            Toaster.success('La etiqueta se agregó correctamente');
-            this.tagResource.reload();
+            Toaster.success('El rol se agregó correctamente');
+            this.roleResource.reload();
           },
           error: (err) => {
             Toaster.error(err);
@@ -91,10 +76,10 @@ export class TagCrud {
         });
         break;
       case 'edit':
-        this.tagService.updateTag(tag).subscribe({
+        this.roleService.updateRole(role).subscribe({
           next: () => {
-            Toaster.success('La etiqueta se modificó correctamente');
-            this.tagResource.reload();
+            Toaster.success('El rol se modificó correctamente');
+            this.roleResource.reload();
           },
           error: (err) => {
             Toaster.error(err);
@@ -103,10 +88,10 @@ export class TagCrud {
         });
         break;
       case 'delete':
-        this.tagService.deleteTag(tag).subscribe({
+        this.roleService.deleteRole(role).subscribe({
           next: () => {
-            Toaster.success('La etiqueta se eliminó correctamente');
-            this.tagResource.reload();
+            Toaster.success('El rol se eliminó correctamente');
+            this.roleResource.reload();
           },
           error: (err) => {
             Toaster.error(err);

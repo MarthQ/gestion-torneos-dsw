@@ -27,6 +27,10 @@ export const TournamentHubRoutes: Routes = [
         path: 'profile',
         component: UserProfile,
       },
+      {
+        path: 'admin',
+        loadChildren: () => import('../admin/admin.routes'),
+      },
     ],
   },
 ];

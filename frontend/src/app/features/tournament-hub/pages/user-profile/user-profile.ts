@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthService } from '@features/auth/services/auth.service';
-import { UserService } from '@features/tournament-hub/services/user.service';
+import { UserService } from '@shared/services/user.service';
 import { map } from 'rxjs';
 import { RouterLink } from '@angular/router';
 

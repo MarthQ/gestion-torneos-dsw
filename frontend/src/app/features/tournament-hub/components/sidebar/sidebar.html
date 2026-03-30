@@ -65,21 +65,29 @@
             </li>
           }
         }
-        <li class="grow-0"></li>
+        <hr class="opacity-75 my-2 grow" />
         <li class="mt-auto">
           <button
             class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
             [attr.data-tip]="authService.user()?.name"
             routerLink="/profile"
-            routerLinkActive="bg-primary font-bold"
+            routerLinkActive="bg-primary"
           >
             <!-- <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span> -->
             <div class="flex items-center justify-center">
               <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
             </div>
-            <div class="flex flex-col ml-2">
-              <span class="is-drawer-close:hidden">{{ authService.user()?.name }}</span>
-              <span class="is-drawer-close:hidden">{{ authService.user()?.mail }}</span>
+            <div class="flex flex-col ml-2 justify-center">
+              <span
+                class="is-drawer-close:hidden text-primary-content"
+                routerLinkActive="font-bold"
+                >{{ authService.user()?.name }}</span
+              >
+              <span
+                class="is-drawer-close:hidden text-xs text-gray-500 truncate max-w-x"
+                routerLinkActive="text-primary-content"
+                >{{ authService.user()?.mail }}</span
+              >
             </div>
           </button>
         </li>
