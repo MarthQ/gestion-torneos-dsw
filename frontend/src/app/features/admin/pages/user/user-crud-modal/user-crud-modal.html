@@ -81,7 +81,7 @@
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
             <button
-              class="btn btn-primary hover:btn-success"
+              class="btn btn-primary"
               [disabled]="!userForm.valid"
               (click)="emitUser()"
             >
@@ -92,7 +92,7 @@
               Borrar Usuario
             </button>
           }
-          <button class="btn">Cancelar</button>
+          <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
     </form>
