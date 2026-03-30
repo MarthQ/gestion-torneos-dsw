@@ -3,13 +3,13 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { Toaster } from '@shared/utils/toaster';
 import { map, tap } from 'rxjs';
 
-import { UserService } from '@services/user.service';
+import { UserService } from '@features/tournament-hub/services/user.service';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { User, UserFormDTO } from '@shared/interfaces/user';
 import { UserCrudModal } from './user-crud-modal/user-crud-modal';
-import { LocationService } from '@services/location.service';
-import { RoleService } from '@services/role.service';
+import { LocationService } from '@features/tournament-hub/services/location.service';
+import { RoleService } from '@features/tournament-hub/services/role.service';
 import { QueryFilter } from '@shared/interfaces/filters';
 
 @Component({

@@ -12,7 +12,7 @@ import { map, tap } from 'rxjs';
 import { Toaster } from '@shared/utils/toaster';
 
 import { Tag } from '@shared/interfaces/tag';
-import { TagService } from '@services/tag.service';
+import { TagService } from '@features/tournament-hub/services/tag.service';
 import { TagCrudModal } from './tag-crud-modal/tag-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';

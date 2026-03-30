@@ -8,7 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { GameService } from '@services/game.service';
+import { GameService } from '@features/tournament-hub/services/game.service';
 import { Toaster } from '@shared/utils/toaster';
 import { Game } from '@shared/interfaces/game';
 import { map, of, tap } from 'rxjs';

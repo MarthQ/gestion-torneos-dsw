@@ -2,11 +2,9 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgxSonnerToaster } from 'ngx-sonner';
 
-import { Sidebar } from '@layout/sidebar/sidebar';
-
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Sidebar, NgxSonnerToaster],
+  imports: [RouterOutlet, NgxSonnerToaster],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

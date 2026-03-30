@@ -2,7 +2,7 @@ import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Role } from '@shared/interfaces/role';
 import { map, tap } from 'rxjs';
-import { RoleService } from '@services/role.service';
+import { RoleService } from '@features/tournament-hub/services/role.service';
 import { Toaster } from '@shared/utils/toaster';
 import { Tag } from '@shared/interfaces/tag';
 import { Pagination } from '@shared/components/pagination/pagination';

@@ -1,18 +1,18 @@
 import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
-import { TournamentService } from '@services/tournament.service';
+import { TournamentService } from '@features/tournament-hub/services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { DatePipe, I18nSelectPipe } from '@angular/common';
 import { Toaster } from '@shared/utils/toaster';
-import { LocationService } from '@services/location.service';
-import { TagService } from '@services/tag.service';
-import { UserService } from '@services/user.service';
+import { LocationService } from '@features/tournament-hub/services/location.service';
+import { TagService } from '@features/tournament-hub/services/tag.service';
+import { UserService } from '@features/tournament-hub/services/user.service';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { map, tap } from 'rxjs';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
-import { GameService } from '@services/game.service';
+import { GameService } from '@features/tournament-hub/services/game.service';
 import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 
 @Component({

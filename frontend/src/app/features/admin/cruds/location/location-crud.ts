@@ -12,7 +12,7 @@ import { map, tap } from 'rxjs';
 
 import { Toaster } from '@shared/utils/toaster';
 import { Location } from '@shared/interfaces/location';
-import { LocationService } from '@services/location.service';
+import { LocationService } from '@features/tournament-hub/services/location.service';
 import { LocationCrudModal } from './location-crud-modal/location-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
