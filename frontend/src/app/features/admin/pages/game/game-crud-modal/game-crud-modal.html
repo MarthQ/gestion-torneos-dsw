@@ -1,0 +1,72 @@
+<dialog #gameModal class="modal" (close)="onDialogClose()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
+    <form [formGroup]="gameForm">
+      @if (type() === 'edit') {
+        <div class="py-4">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Nombre del juego</legend>
+            <input
+              type="text"
+              class="input focus:input-primary"
+              placeholder="Ingrese el nombre del juego"
+              formControlName="name"
+            />
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Descripción del juego</legend>
+            <textarea
+              type="textarea"
+              class="textarea textarea-bordered focus:textarea-primary w-full"
+              placeholder="Ingrese la descripción del juego"
+              formControlName="description"
+            ></textarea>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
+            @if (gameForm.get('imgUrl')?.value) {
+              <img
+                [src]="gameForm.get('imgUrl')?.value"
+                alt="Portada de {{ gameForm.get('name')?.value }}"
+                class="w-8 h-8 object-cover rounded"
+              />
+            }
+            <legend class="fieldset-legend">Pick a file</legend>
+            <input type="file" class="file-input" />
+            <label class="label">Max size 2MB</label>
+          </fieldset>
+        </div>
+      } @else if (type() === 'add') {
+        <p>
+          ¿Está seguro de que desea agregar el juego
+          <strong>{{ gameForm.get('name')?.value }}</strong
+          >?
+        </p>
+      } @else if (type() === 'delete') {
+        <p>
+          ¿Está seguro de que desea eliminar el juego de la base de datos
+          <strong>{{ gameForm.get('name')?.value }}</strong
+          >?
+        </p>
+      }
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2">
+          @if (type() === 'add' || type() === 'edit') {
+            <button
+              class="btn btn-primary hover:btn-success"
+              [disabled]="!gameForm.valid"
+              (click)="emitGame()"
+            >
+              Guardar cambios
+            </button>
+          } @else {
+            <button class="btn btn-primary hover:btn-warning" (click)="emitGame()">
+              Borrar Juego
+            </button>
+          }
+          <button class="btn">Cancelar</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>

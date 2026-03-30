@@ -1,0 +1,100 @@
+<dialog #userModal class="modal" (close)="onDialogClose()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
+    <form [formGroup]="userForm">
+      @if (type() === 'add' || type() === 'edit') {
+        <div class="py-4">
+          @if (type() === 'add') {
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend">ID del usuario</legend>
+              <input
+                type="number"
+                class="input focus:input-primary"
+                placeholder="Ingrese un número"
+                formControlName="id"
+              />
+
+              <p class="label">Obligatorio</p>
+            </fieldset>
+          }
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Nombre del usuario</legend>
+            <input
+              type="text"
+              class="input focus:input-primary"
+              placeholder="Ingrese el nombre del usuario"
+              formControlName="name"
+            />
+            <p class="label">Obligatorio</p>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Mail del usuario</legend>
+            <input
+              type="mail"
+              class="input focus:input-primary"
+              placeholder="Ingrese el mail del usuario"
+              formControlName="mail"
+            />
+            <p class="label">Obligatorio</p>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Contraseña del usuario</legend>
+            <input
+              type="password"
+              class="input focus:input-primary"
+              placeholder="Ingrese la contraseña del usuario"
+              formControlName="password"
+            />
+            <p class="label">Obligatorio. Debe tener 8 caracteres o más</p>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Localidad del usuario</legend>
+            <select class="select" formControlName="location">
+              <option disabled selected>Seleccione la localidad del usuario</option>
+              @for (location of locationResource().value(); track location.id) {
+                <option [ngValue]="location.id">
+                  {{ location.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Rol del usuario</legend>
+            <select class="select" formControlName="role">
+              <option disabled selected>Seleccione el rol del usuario</option>
+              @for (role of roleResource().value(); track role.id) {
+                <option [ngValue]="role.id">{{ role.name }}</option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+        </div>
+      } @else {
+        <p>
+          ¿Está seguro de que desea eliminar al usuario
+          <strong>{{ userForm.get('name')?.value }}</strong
+          >?
+        </p>
+      }
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2">
+          @if (type() === 'add' || type() === 'edit') {
+            <button
+              class="btn btn-primary hover:btn-success"
+              [disabled]="!userForm.valid"
+              (click)="emitUser()"
+            >
+              Guardar cambios
+            </button>
+          } @else {
+            <button class="btn btn-primary hover:btn-warning" (click)="emitUser()">
+              Borrar Usuario
+            </button>
+          }
+          <button class="btn">Cancelar</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>
