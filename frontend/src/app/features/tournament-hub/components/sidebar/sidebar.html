@@ -66,31 +66,44 @@
           }
         }
         <hr class="opacity-75 my-2 grow" />
-        <li class="mt-auto">
-          <button
-            class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-            [attr.data-tip]="authService.user()?.name"
-            routerLink="/profile"
-            routerLinkActive="bg-primary"
-          >
-            <!-- <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span> -->
-            <div class="flex items-center justify-center">
-              <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
-            </div>
-            <div class="flex flex-col ml-2 justify-center">
-              <span
-                class="is-drawer-close:hidden text-primary-content"
-                routerLinkActive="font-bold"
-                >{{ authService.user()?.name }}</span
-              >
-              <span
-                class="is-drawer-close:hidden text-xs text-gray-500 truncate max-w-x"
-                routerLinkActive="text-primary-content"
-                >{{ authService.user()?.mail }}</span
-              >
-            </div>
-          </button>
-        </li>
+        @if (authService.user()) {
+          <li class="mt-auto">
+            <button
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              [attr.data-tip]="authService.user()?.name"
+              routerLink="/profile"
+              routerLinkActive="bg-primary"
+            >
+              <!-- <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span> -->
+              <div class="flex items-center justify-center">
+                <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
+              </div>
+              <div class="flex flex-col ml-2 justify-center">
+                <span
+                  class="is-drawer-close:hidden text-primary-content"
+                  routerLinkActive="font-bold"
+                  >{{ authService.user()?.name }}</span
+                >
+                <span
+                  class="is-drawer-close:hidden text-xs text-gray-500 truncate max-w-x"
+                  routerLinkActive="text-primary-content"
+                  >{{ authService.user()?.mail }}</span
+                >
+              </div>
+            </button>
+          </li>
+        } @else {
+          <li class="mt-auto">
+            <button
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              data-tip="Login"
+              routerLink="/auth/login"
+            >
+              <span class="icon-[material-symbols--login] my-1.5 inline-block size-4"></span>
+              <span class="is-drawer-close:hidden">Loguearse</span>
+            </button>
+          </li>
+        }
       </ul>
     </div>
   </div>

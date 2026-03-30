@@ -9,4 +9,8 @@ export const routes: Routes = [
     path: '',
     loadChildren: () => import('./features/tournament-hub/tournament-hub.routes'),
   },
+  {
+    path: '**',
+    redirectTo: '',
+  },
 ];

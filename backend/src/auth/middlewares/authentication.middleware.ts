@@ -21,7 +21,7 @@ export async function authenticationMiddleware(req: RequestWithUser, res: Respon
             algorithms: ['HS256'],
         }) as JwtPayload
 
-        const user = await em.findOneOrFail(User, { id: decoded.userId })
+        const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
         if (!user) {
             return res.status(401).json({ message: 'Invalid user' })
