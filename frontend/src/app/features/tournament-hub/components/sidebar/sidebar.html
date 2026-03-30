@@ -36,10 +36,10 @@
         @for (button of sidebarButtons(); track button.name) {
           <li>
             <button
-              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10"
               [attr.data-tip]="button.name"
               [routerLink]="button.routerPath"
-              routerLinkActive="bg-primary font-bold"
+              routerLinkActive="bg-primary text-primary-content font-bold"
             >
               <span class="{{ button.icon }} my-1.5 inline-block size-4"></span>
               <span class="is-drawer-close:hidden">{{ button.name }}</span>
@@ -54,10 +54,10 @@
           @for (adminButton of adminSidebarButtons(); track adminButton.name) {
             <li>
               <button
-                class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10"
                 [attr.data-tip]="adminButton.name"
                 [routerLink]="adminButton.routerPath"
-                routerLinkActive="bg-primary font-bold"
+                routerLinkActive="bg-primary text-primary-content font-bold"
               >
                 <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span>
                 <span class="is-drawer-close:hidden">{{ adminButton.name }}</span>
@@ -72,23 +72,18 @@
               class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
               [attr.data-tip]="authService.user()?.name"
               routerLink="/profile"
-              routerLinkActive="bg-primary"
+              routerLinkActive="bg-primary text-primary-content"
             >
-              <!-- <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span> -->
               <div class="flex items-center justify-center">
                 <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
               </div>
               <div class="flex flex-col ml-2 justify-center">
-                <span
-                  class="is-drawer-close:hidden text-primary-content"
-                  routerLinkActive="font-bold"
-                  >{{ authService.user()?.name }}</span
-                >
-                <span
-                  class="is-drawer-close:hidden text-xs text-gray-500 truncate max-w-x"
-                  routerLinkActive="text-primary-content"
-                  >{{ authService.user()?.mail }}</span
-                >
+                <span class="is-drawer-close:hidden">
+                  {{ authService.user()?.name }}
+                </span>
+                <span class="is-drawer-close:hidden text-xs text-base-content/60 truncate max-w-x"
+                  >{{ authService.user()?.mail }}
+                </span>
               </div>
             </button>
           </li>

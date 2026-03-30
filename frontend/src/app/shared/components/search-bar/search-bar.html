@@ -1,16 +1,16 @@
 <div
-  class="bg-base-300 p-4 rounded-xl border border-gray-700 mb-6 flex flex-wrap gap-4 items-center"
+  class="bg-base-300 p-4 rounded-xl border border-base-300 mb-6 flex flex-wrap gap-4 items-center"
 >
   <div class="relative flex-1">
     <input
       type="text"
       placeholder="Buscar por nombre o ID..."
-      class="input input-bordered w-full pl-10 border-gray-600 focus:border-indigo-500"
+      class="input input-primary border-base-300 input-bordered w-full pl-10"
       #searchInput
       (keyup)="query.set(searchInput.value)"
     />
     <span
-      class="icon-[material-symbols--search] left-2 top-2 text-gray-500 absolute"
+      class="icon-[material-symbols--search] left-2 top-2 text-base-content/60 absolute"
       style="width: 24px; height: 24px"
     ></span>
   </div>
