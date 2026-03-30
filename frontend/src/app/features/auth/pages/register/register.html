@@ -1,0 +1,56 @@
+<h3 class="text-lg font-bold">Registro de usuario</h3>
+
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Nombre del usuario</legend>
+    <input
+      type="text"
+      class="input focus:input-primary"
+      placeholder="Ingrese el nombre del usuario"
+      formControlName="name"
+    />
+    <form-error-label [control]="registerForm.get('name')!"></form-error-label>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Email del usuario</legend>
+    <input
+      type="email"
+      class="input focus:input-primary"
+      placeholder="Ingrese el mail del usuario"
+      formControlName="mail"
+    />
+    <form-error-label [control]="registerForm.get('mail')!"></form-error-label>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Contraseña del usuario</legend>
+    <input
+      type="password"
+      class="input focus:input-primary"
+      placeholder="Ingrese la contraseña del usuario"
+      formControlName="password"
+    />
+    <form-error-label [control]="registerForm.get('password')!"></form-error-label>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Localidad del usuario</legend>
+    <select class="select" formControlName="location">
+      <option disabled selected>Seleccione la localidad del usuario</option>
+      @for (location of locationResource.value(); track location.id) {
+        <option [ngValue]="location.id">
+          {{ location.name }}
+        </option>
+      }
+    </select>
+    <form-error-label [control]="registerForm.get('location')!"></form-error-label>
+  </fieldset>
+
+  <button class="btn btn-primary hover:btn-success mt-4 w-full" type="submit">Registrarse</button>
+</form>
+
+<p class="mt-4 text-sm">
+  ¿Ya tienes cuenta?
+  <a routerLink="/auth/login" class="text-primary cursor-pointer">ingresá acá</a>
+</p>

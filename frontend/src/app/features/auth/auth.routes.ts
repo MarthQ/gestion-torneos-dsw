@@ -1,14 +1,30 @@
 import { Routes } from '@angular/router';
-import { registerComponent } from './register/register';
-import { LoginComponent } from './login/login.component';
+import { Register } from './pages/register/register';
+import { Login } from './pages/login/login';
+import { AuthLayout } from './layout/auth-layout/auth-layout';
+import { NotAuthenticatedGuard } from './guards/not-authenticated.guard';
 
 export const authRoutes: Routes = [
-    {
-        path:'register',
-        component: registerComponent
-    },
-    {
-        path:'login',
-        component:LoginComponent
-    }
+  {
+    path: '',
+    component: AuthLayout,
+    canMatch: [NotAuthenticatedGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'explore',
+        pathMatch: 'full',
+      },
+      {
+        path: 'login',
+        component: Login,
+      },
+      {
+        path: 'register',
+        component: Register,
+      },
+    ],
+  },
 ];
+
+export default authRoutes;

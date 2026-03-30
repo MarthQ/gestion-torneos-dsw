@@ -1,0 +1,34 @@
+<h3 class="text-lg font-bold">Iniciar sesión</h3>
+
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit($event)">
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Email</legend>
+    <input
+      type="email"
+      class="input focus:input-primary"
+      placeholder="Ingrese el mail del usuario"
+      formControlName="email"
+    />
+  </fieldset>
+  <form-error-label [control]="loginForm.get('email')!"></form-error-label>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Contraseña</legend>
+    <input
+      type="password"
+      class="input focus:input-primary"
+      placeholder="Ingrese la contraseña del usuario"
+      formControlName="password"
+    />
+    <form-error-label [control]="loginForm.get('password')!"></form-error-label>
+  </fieldset>
+
+  <button type="submit" class="btn btn-primary hover:btn-success w-full mt-4">
+    Iniciar sesión
+  </button>
+</form>
+
+<p class="mt-4 text-sm">
+  ¿No tenes cuenta?
+  <a routerLink="/auth/register" class="text-primary cursor-pointer">Registrate acá</a>
+</p>
