@@ -20,7 +20,7 @@
   <!-- Card 1 -->
 
   @for (tournament of tournamentResource.value(); track tournament.id) {
-    <div class="tournament-card bg-base-800 rounded-xl overflow-hidden border border-gray-700">
+    <div class="tournament-card bg-base-300 rounded-xl overflow-hidden border border-base-300">
       <div class="h-40 bg-cover bg-center" [style]="getBackgroundImageStyle(tournament)">
         <div class="p-4 flex justify-between">
           <span
@@ -47,7 +47,7 @@
           ></span
           >{{ tournament.game.name }}
         </div>
-        <div class="flex justify-between pt-4 border-t border-gray-700">
+        <div class="flex justify-between pt-4 border-t border-base-300">
           <div class="flex items-center bg-info-content rounded-2xl px-4 text-info">
             <span class="icon-[formkit--datetime] mr-2"></span>
             <span class="text-xs font-bold">{{
