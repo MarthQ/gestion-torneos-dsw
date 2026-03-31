@@ -39,11 +39,8 @@ export class TagService {
       );
   }
 
-  addTag(newTag: Tag): Observable<Tag> {
-    const { id, ...rest } = newTag;
-    const body = id ? { id, ...rest } : rest;
-
-    return this.http.post<ApiResponse<Tag>>(`${environment.apiUrl}/tags`, body).pipe(
+  addTag(newTag: Omit<Tag, 'id'>): Observable<Tag> {
+    return this.http.post<ApiResponse<Tag>>(`${environment.apiUrl}/tags`, newTag).pipe(
       map((response) => response.data),
       catchError((error) => {
         console.log('Error adding tag: ', error);
@@ -64,10 +61,8 @@ export class TagService {
     );
   }
 
-  deleteTag(toBeDeletedTag: Tag): Observable<Tag> {
-    const { id, ...rest } = toBeDeletedTag;
-
-    return this.http.delete<ApiResponse<Tag>>(`${environment.apiUrl}/tags/${id}`).pipe(
+  deleteTag(toBeDeletedTag: Pick<Tag, 'id'>): Observable<Tag> {
+    return this.http.delete<ApiResponse<Tag>>(`${environment.apiUrl}/tags/${toBeDeletedTag.id}`).pipe(
       map((response) => response.data),
       catchError((error) => {
         console.log('Error removing tag: ', error);

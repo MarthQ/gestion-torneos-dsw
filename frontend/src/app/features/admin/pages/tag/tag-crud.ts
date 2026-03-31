@@ -13,7 +13,7 @@ import { Toaster } from '@shared/utils/toaster';
 
 import { Tag } from '@shared/interfaces/tag';
 import { TagService } from '@shared/services/tag.service';
-import { TagCrudModal } from './tag-crud-modal/tag-crud-modal';
+import { TagCrudModal, TagCrudAction } from './tag-crud-modal/tag-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
@@ -76,10 +76,10 @@ export class TagCrud {
     this.openModal.set(true);
   }
 
-  handleCrudAction(tag: Tag) {
-    switch (this.modalType()) {
-      case 'add':
-        this.tagService.addTag(tag).subscribe({
+  handleCrudAction(event: TagCrudAction) {
+    switch (event.actionType) {
+      case 'create':
+        this.tagService.addTag(event.data).subscribe({
           next: () => {
             Toaster.success('La etiqueta se agregó correctamente');
             this.tagResource.reload();
@@ -90,8 +90,8 @@ export class TagCrud {
           },
         });
         break;
-      case 'edit':
-        this.tagService.updateTag(tag).subscribe({
+      case 'update':
+        this.tagService.updateTag(event.data).subscribe({
           next: () => {
             Toaster.success('La etiqueta se modificó correctamente');
             this.tagResource.reload();
@@ -103,7 +103,7 @@ export class TagCrud {
         });
         break;
       case 'delete':
-        this.tagService.deleteTag(tag).subscribe({
+        this.tagService.deleteTag(event.data).subscribe({
           next: () => {
             Toaster.success('La etiqueta se eliminó correctamente');
             this.tagResource.reload();
