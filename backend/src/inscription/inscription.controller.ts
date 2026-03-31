@@ -17,10 +17,33 @@ const InscriptionSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const Inscriptions = await em.find(Inscription, {}, { populate: ['user', 'tournament'] })
+        const page = req.query.page ? Number(req.query.page) : undefined
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : undefined
+
+        const tournament = req.query.tournament ? Number(req.query.tournament) : undefined
+        const user = req.query.user ? Number(req.query.user) : undefined
+
+        const filter: any = {}
+
+        if (tournament) filter.tournament = tournament
+        if (user) filter.user = user
+
+        if (page && pageSize) {
+            const [inscriptions, total] = await em.findAndCount(Inscription, filter, {
+                limit: pageSize,
+                offset: (page - 1) * pageSize,
+            })
+            return res.status(200).json({
+                message: 'Found paginated inscriptions',
+                data: inscriptions,
+                meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+            })
+        }
+
+        const inscriptions = await em.find(Inscription, filter, { populate: ['user', 'tournament'] })
         res.status(200).json({
             message: 'Found all inscriptions',
-            data: Inscriptions,
+            data: inscriptions,
         })
     } catch (error: any) {
         res.status(500).json({ message: error.message })

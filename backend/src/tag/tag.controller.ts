@@ -13,9 +13,8 @@ const TagSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const page = req.query.page ? Number(req.query.page) : 1
-        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-        const offset = (page - 1) * pageSize
+        const page = req.query.page ? Number(req.query.page) : undefined
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : undefined
 
         const query = req.query.query ? String(req.query.query) : undefined
 
@@ -24,15 +23,21 @@ async function findAll(req: Request, res: Response) {
             ? { $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }] }
             : {}
 
-        const [tags, total] = await em.findAndCount(Tag, filter, {
-            limit: pageSize,
-            offset,
-        })
-
+        if (page && pageSize) {
+            const [tags, total] = await em.findAndCount(Tag, filter, {
+                limit: pageSize,
+                offset: (page - 1) * pageSize,
+            })
+            return res.status(200).json({
+                message: 'Found paginated tags',
+                data: tags,
+                meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+            })
+        }
+        const tags = await em.find(Tag, filter)
         res.status(200).json({
-            message: 'Found selected tags',
+            message: 'Found all tags',
             data: tags,
-            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
         res.status(404).json({ message: error.message })
