@@ -3,12 +3,13 @@ import { Explore } from './pages/explore/explore';
 import { MyInscriptions } from './pages/my-inscriptions/my-inscriptions';
 import { UserProfile } from './pages/user-profile/user-profile';
 import { MainLayout } from './layout/main-layout/main-layout';
+import { AuthenticatedGuard } from '@features/auth/guards/authenticated.guard';
 
 export const TournamentHubRoutes: Routes = [
   {
     path: '',
     component: MainLayout,
-    // canMatch: [AuthenticatedGuard],
+
     children: [
       {
         path: '',
@@ -29,6 +30,7 @@ export const TournamentHubRoutes: Routes = [
       },
       {
         path: 'admin',
+        canMatch: [AuthenticatedGuard],
         loadChildren: () => import('../admin/admin.routes'),
       },
     ],

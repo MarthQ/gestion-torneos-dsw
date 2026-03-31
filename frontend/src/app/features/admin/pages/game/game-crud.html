@@ -22,7 +22,11 @@
       </thead>
       <tbody>
         @for (game of gameData(); track game.name) {
-          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
+          <tr
+            class="hover:bg-neutral hover:text-neutral-content transition-colors"
+            [class.opacity-50]="!game.id"
+            [class.hover:opacity-100]="!game.id"
+          >
             <td>
               @if (!game.id) {
                 <span class="italic">Sin ID</span>

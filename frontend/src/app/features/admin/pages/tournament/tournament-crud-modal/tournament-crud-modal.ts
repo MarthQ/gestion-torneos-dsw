@@ -1,14 +1,5 @@
 import { I18nSelectPipe } from '@angular/common';
-import {
-  Component,
-  effect,
-  ElementRef,
-  inject,
-  input,
-  output,
-  ResourceRef,
-  viewChild,
-} from '@angular/core';
+import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -24,6 +15,8 @@ import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { User } from '@shared/interfaces/user';
 import { Location } from '@shared/interfaces/location';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+import { map } from 'rxjs';
+import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
 
 @Component({
   selector: 'tournament-crud-modal',
@@ -37,14 +30,19 @@ export class TournamentCrudModal {
   closed = output<void>();
   confirmAction = output<TournamentFormDTO>();
 
-  locationResource = input.required<ResourceRef<Location[] | undefined>>();
-  gameResource = input.required<ResourceRef<Game[] | undefined>>();
-  tagResource = input.required<ResourceRef<Tag[] | undefined>>();
-  userResource = input.required<ResourceRef<User[] | undefined>>();
+  locationResource = input.required<Location[]>();
+  gameResource = input.required<Game[]>();
+  tagResource = input.required<Tag[]>();
+  userResource = input.required<User[]>();
 
   tournamentModal = viewChild.required<ElementRef<HTMLDialogElement>>('tournamentModal');
 
   fb = inject(FormBuilder);
+
+  private readonly EXCLUSIVE_GROUPS: readonly string[][] = [
+    [EVENT_TAGS.VIRTUAL.name, EVENT_TAGS.IN_PERSON.name],
+    [EVENT_TAGS.HAS_PRIZE.name, EVENT_TAGS.NO_PRIZE.name],
+  ];
 
   // Mapper for the modal's title using i18nSelectPipe
   titleMap: any = {
@@ -63,21 +61,33 @@ export class TournamentCrudModal {
     creator: [0, [Validators.required, Validators.min(1)]],
     location: [0, [Validators.required, Validators.min(1)]],
     game: [0, [Validators.required, Validators.min(1)]],
-    tags: this.fb.array([], this.areTagsCoherent()),
+    tags: this.fb.array([]),
+  });
+
+  setTagValidatorEffect = effect(() => {
+    if (this.tagResource()?.length) {
+      this.tournamentTags.setValidators(this.areTagsCoherent());
+      this.tournamentTags.updateValueAndValidity();
+    }
   });
 
   areTagsCoherent(): ValidatorFn {
     return (control: AbstractControl) => {
+      const availableTags = this.tagResource();
+
+      if (!availableTags?.length) return null;
+
       const tagIds: number[] = control.value ?? [];
 
-      if (
-        (tagIds.includes(1) && tagIds.includes(2)) ||
-        (tagIds.includes(3) && tagIds.includes(4))
-      ) {
-        return { tagsNotCoherent: true };
-      }
+      const selectedTagNames = availableTags
+        .filter((t) => tagIds.includes(t.id))
+        .map((t) => t.name);
 
-      return null;
+      const hasConflict = this.EXCLUSIVE_GROUPS.some(
+        (group) => group.filter((tag) => selectedTagNames.includes(tag)).length > 1,
+      );
+
+      return hasConflict ? { tagsNotCoherent: true } : null;
     };
   }
 
@@ -88,13 +98,37 @@ export class TournamentCrudModal {
   toggleTag(tagId: number) {
     const currentTags: number[] = this.tournamentTags.value ?? [];
     const index = currentTags.indexOf(tagId);
+    const availableTags = this.tagResource();
 
-    if (index === -1) {
-      this.tournamentTags.push(this.fb.control(tagId));
-    } else {
+    if (!availableTags || availableTags.length === 0) return;
+
+    const selectedTag = availableTags.find((t) => t.id === tagId);
+    if (!selectedTag) return;
+
+    if (index !== -1) {
       this.tournamentTags.removeAt(index);
+      return;
     }
-    console.log(this.tournamentForm.get('tags')?.value);
+
+    const groupOfSelectedTag = this.EXCLUSIVE_GROUPS.find((group) =>
+      group.includes(selectedTag.name),
+    );
+
+    if (groupOfSelectedTag) {
+      const tagsToRemove = availableTags.filter(
+        (t) => groupOfSelectedTag.includes(t.name) && currentTags.includes(t.id),
+      );
+
+      tagsToRemove.forEach((tag) => {
+        const idx = currentTags.indexOf(tag.id);
+        if (idx !== -1) {
+          this.tournamentTags.removeAt(idx);
+          currentTags.splice(idx, 1);
+        }
+      });
+    }
+
+    this.tournamentTags.push(this.fb.control(tagId));
   }
 
   initTags(tags: Tag[]) {

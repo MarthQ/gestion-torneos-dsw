@@ -2,6 +2,8 @@ import { ORM } from '../shared/db/orm.js'
 import { Role } from '../role/role.entity.js'
 import { Location } from '../location/location.entity.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
+import { EVENT_TAGS } from '../tag/interfaces/default-tags.const.js'
+import { Tag } from '../tag/tag.entity.js'
 
 const DEFAULT_ROLES = Object.values(USER_ROLE)
 
@@ -15,6 +17,22 @@ export async function seedRoles() {
     }
     await em.flush()
     console.log('✅ Roles seeded')
+}
+
+const DEFAULT_TAGS = Object.values(EVENT_TAGS)
+export async function seedTags() {
+    const em = ORM.em.fork()
+    for (const tag of DEFAULT_TAGS) {
+        const exists = await em.findOne(Tag, { name: tag.name })
+        if (!exists) {
+            em.create(Tag, {
+                name: tag.name,
+                description: tag.description,
+            })
+        }
+    }
+    await em.flush()
+    console.log('✅ Tags seeded')
 }
 
 // Localidades de Argentina organizadas por provincia
