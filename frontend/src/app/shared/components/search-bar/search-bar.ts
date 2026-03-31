@@ -34,6 +34,10 @@ export class SearchBar {
   clearQuery() {
     this.query.set('');
     this.searchInput().nativeElement.value = '';
+    this.selectedLocation.set(0);
+    this.selectedRole.set(0);
+    this.selectedTag.set(0);
+    this.selectedGame.set(0);
   }
 
   filterEffect = effect(() => {

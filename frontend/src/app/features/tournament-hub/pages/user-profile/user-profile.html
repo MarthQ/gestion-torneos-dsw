@@ -15,7 +15,7 @@
           </div>
         </div>
         <h2 class="card-title text-2xl">{{ userResource.value()!.name }}</h2>
-        <p class="text-base-content/60">{{ userResource.value()!.mail }}</p>
+        <p class="text-base-content/60 font-mono">{{ userResource.value()!.mail }}</p>
       </div>
 
       <!-- Info -->
@@ -30,7 +30,7 @@
               <tr>
                 <td class="font-semibold">Ubicación</td>
                 <td>
-                  <span class="badge badge-outline">
+                  <span class="badge badge-info font-bold">
                     <span class="icon-[mdi--location] mr-1"></span>
                     {{ userResource.value()!.location.name }}
                   </span>
@@ -58,7 +58,11 @@
 
         <!-- Actions -->
         <div class="card-actions justify-end mt-4">
-          <button class="btn btn-error" (click)="logout()" routerLink="/auth/login">
+          <button
+            class="btn btn-ghost border-error hover:btn-error"
+            (click)="logout()"
+            routerLink="/auth/login"
+          >
             <span class="icon-[mdi--logout] mr-2"></span>
             Cerrar sesión
           </button>
