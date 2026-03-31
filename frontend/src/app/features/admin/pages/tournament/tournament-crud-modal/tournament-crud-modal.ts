@@ -23,10 +23,11 @@ import { Tag } from '@shared/interfaces/tag';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { User } from '@shared/interfaces/user';
 import { Location } from '@shared/interfaces/location';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 
 @Component({
   selector: 'tournament-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './tournament-crud-modal.html',
 })
 export class TournamentCrudModal {

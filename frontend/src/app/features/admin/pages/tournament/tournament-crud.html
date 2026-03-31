@@ -1,7 +1,7 @@
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
   <div>
-    <h1 class="text-3xl font-bold text-white">Gestión de Torneos</h1>
-    <h2 class="text-gray-400">Administra los torneos registrados en el sistema.</h2>
+    <h1 class="text-3xl font-bold">Gestión de Torneos</h1>
+    <h2 class="text-base-content/60">Administra los torneos registrados en el sistema.</h2>
   </div>
   <button class="btn btn-primary shadow-lg" (click)="addTournament()">
     <span class="icon-[ic--baseline-plus] mr-2"></span>
@@ -20,11 +20,11 @@
   (queryFiltered)="queryFilters.set($event)"
 />
 
-<div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
+<div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
   @if (userResource.hasValue()) {
     <table class="table w-full">
       <!-- head -->
-      <thead class="bg-base-300 text-gray-300">
+      <thead class="bg-base-300">
         <tr>
           <th>ID</th>
           <th>Nombre</th>
@@ -39,24 +39,24 @@
           <th class="text-center">Acciones</th>
         </tr>
       </thead>
-      <tbody class="text-gray-300">
+      <tbody>
         @for (tournament of tournamentResource.value(); track tournament.id) {
-          <tr class="hover:bg-gray-700/30 transition-colors">
+          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
             <td>
-              <div class="font-mono text-sm text-gray-500">{{ tournament.id }}</div>
+              <div class="font-mono text-sm">{{ tournament.id }}</div>
             </td>
             <td>
-              <div class="font-bold text-white">
+              <div class="font-bold">
                 {{ tournament.name }}
               </div>
             </td>
             <td>
-              <div class="text-xs text-gray-500 truncate max-w-xs">
+              <div class="text-xs truncate max-w-xs">
                 {{ tournament.description }}
               </div>
             </td>
             <td>
-              <div class="flex items-center gap-1 text-gray-400">
+              <div class="flex items-center gap-1">
                 <span
                   class="icon-[fluent-mdl2--date-time]"
                   style="width: 18px; height: 18px"
@@ -81,24 +81,24 @@
               </div>
             </td>
             <td>
-              <div class="text-sm text-gray-400 text-center">
+              <div class="text-sm text-center">
                 {{ tournament.creator.name }}
               </div>
             </td>
             <td>
-              <div class="text-sm font-medium text-secondary">
+              <div class="text-sm font-medium">
                 {{ tournament.game.name }}
               </div>
             </td>
             <td>
-              <div class="text-xs text-gray-500 truncate max-w-xs">
+              <div class="text-xs truncate max-w-xs">
                 {{ tournament.tags.map(tag => tag.name).join(', ') }}
               </div>
             </td>
             <td>
               <div class="flex justify-center gap-2">
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:text-yellow-300"
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
                   (click)="editTournament(tournament)"
                 >
                   <span
@@ -107,7 +107,7 @@
                   ></span>
                 </button>
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:text-red-400"
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
                   (click)="deleteTournament(tournament)"
                 >
                   <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>

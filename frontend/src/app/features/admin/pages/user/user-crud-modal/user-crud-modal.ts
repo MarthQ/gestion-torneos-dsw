@@ -10,6 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 import { Location } from '@shared/interfaces/location';
 import { Role } from '@shared/interfaces/role';
 import { User, UserFormDTO } from '@shared/interfaces/user';
@@ -17,7 +18,7 @@ import { FormUtils } from '@shared/utils/form-utils';
 
 @Component({
   selector: 'user-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './user-crud-modal.html',
 })
 export class UserCrudModal {

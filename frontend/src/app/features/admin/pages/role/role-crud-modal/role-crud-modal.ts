@@ -1,11 +1,12 @@
 import { I18nSelectPipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 import { Role } from '@shared/interfaces/role';
 
 @Component({
   selector: 'role-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './role-crud-modal.html',
 })
 export class RoleCrudModal {

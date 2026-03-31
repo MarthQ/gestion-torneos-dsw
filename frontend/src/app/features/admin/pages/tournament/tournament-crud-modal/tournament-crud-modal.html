@@ -9,23 +9,22 @@
               <legend class="fieldset-legend">ID del torneo</legend>
               <input
                 type="number"
-                class="input focus:input-primary"
+                class="input input-primary border-base-300 input-bordered"
                 placeholder="Ingrese un número"
                 formControlName="id"
               />
-
-              <p class="label">Obligatorio</p>
+              <form-error-label [control]="tournamentForm.get('id')!"></form-error-label>
             </fieldset>
           }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre del Torneo</legend>
             <input
               type="text"
-              class="input focus:input-primary w-full"
+              class="input input-primary border-base-300 input-bordered w-full"
               placeholder="Ingrese el nombre del torneo"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tournamentForm.get('name')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Descripción del juego</legend>
@@ -35,26 +34,26 @@
               placeholder="Ingrese la descripción del juego"
               formControlName="description"
             ></textarea>
-            <span class="label">Obligatorio</span>
+            <form-error-label [control]="tournamentForm.get('description')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Fecha y Hora del torneo</legend>
             <input
               type="datetime-local"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               formControlName="datetimeinit"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Cupo Máximo</legend>
             <input
               type="number"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese el cupo máximo"
               formControlName="maxParticipants"
             />
-            <p class="label">Obligatorio.</p>
+            <form-error-label [control]="tournamentForm.get('maxParticipants')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Creador del torneo</legend>
@@ -120,7 +119,7 @@
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
             <button
-              class="btn btn-primary hover:btn-success"
+              class="btn btn-primary"
               [disabled]="!tournamentForm.valid"
               (click)="emitTournament()"
             >
@@ -131,7 +130,7 @@
               Borrar Torneo
             </button>
           }
-          <button class="btn">Cancelar</button>
+          <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
     </form>

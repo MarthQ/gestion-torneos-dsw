@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AuthService } from '@features/auth/services/auth.service';
-import { Footer } from '../footer/footer';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SlicePipe } from '@angular/common';
+
+import { AuthService } from '@features/auth/services/auth.service';
+import { USER_ROLE } from '@features/auth/interfaces/user-role.const';
+import { Footer } from '../footer/footer';
 
 @Component({
   selector: 'app-sidebar',
@@ -24,8 +26,9 @@ import { SlicePipe } from '@angular/common';
 })
 export class Sidebar {
   authService = inject(AuthService);
+  router = inject(Router);
 
-  isAdmin = this.authService.user()!.role;
+  isAdmin = this.authService.user()?.role.name === USER_ROLE.ADMIN;
 
   isSidebarToggled = signal(false);
 

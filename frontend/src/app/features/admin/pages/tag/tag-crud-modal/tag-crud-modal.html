@@ -9,33 +9,32 @@
               <legend class="fieldset-legend">ID de la localidad</legend>
               <input
                 type="number"
-                class="input focus:input-primary"
+                class="input input-primary border-base-300 input-bordered"
                 placeholder="Ingrese un número"
                 formControlName="id"
               />
-
-              <p class="label">Obligatorio</p>
+              <form-error-label [control]="tagForm.get('id')!"></form-error-label>
             </fieldset>
           }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre de la etiqueta</legend>
             <input
               type="text"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese el nombre de la etiqueta"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tagForm.get('name')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Descripción de la etiqueta</legend>
             <input
               type="text"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese la descripción de la etiqueta"
               formControlName="description"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="tagForm.get('description')!"></form-error-label>
           </fieldset>
         </div>
       } @else {
@@ -49,7 +48,7 @@
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
             <button
-              class="btn btn-primary hover:btn-success"
+              class="btn btn-primary"
               [disabled]="!tagForm.valid"
               (click)="emitTag()"
             >
@@ -60,7 +59,7 @@
               Borrar Etiqueta
             </button>
           }
-          <button class="btn">Cancelar</button>
+          <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
     </form>

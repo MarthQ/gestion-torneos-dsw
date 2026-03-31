@@ -9,47 +9,46 @@
               <legend class="fieldset-legend">ID del usuario</legend>
               <input
                 type="number"
-                class="input focus:input-primary"
+                class="input input-primary border-base-300 input-bordered"
                 placeholder="Ingrese un número"
                 formControlName="id"
               />
-
-              <p class="label">Obligatorio</p>
+              <form-error-label [control]="userForm.get('id')!"></form-error-label>
             </fieldset>
           }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre del usuario</legend>
             <input
               type="text"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese el nombre del usuario"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="userForm.get('name')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Mail del usuario</legend>
             <input
               type="mail"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese el mail del usuario"
               formControlName="mail"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="userForm.get('mail')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Contraseña del usuario</legend>
             <input
               type="password"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese la contraseña del usuario"
               formControlName="password"
             />
-            <p class="label">Obligatorio. Debe tener 8 caracteres o más</p>
+            <form-error-label [control]="userForm.get('password')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Localidad del usuario</legend>
-            <select class="select" formControlName="location">
+            <select class="select select-primary border-base-300" formControlName="location">
               <option disabled selected>Seleccione la localidad del usuario</option>
               @for (location of locationResource().value(); track location.id) {
                 <option [ngValue]="location.id">
@@ -61,7 +60,7 @@
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Rol del usuario</legend>
-            <select class="select" formControlName="role">
+            <select class="select select-primary border-base-300" formControlName="role">
               <option disabled selected>Seleccione el rol del usuario</option>
               @for (role of roleResource().value(); track role.id) {
                 <option [ngValue]="role.id">{{ role.name }}</option>
@@ -80,11 +79,7 @@
       <div class="modal-action">
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
-            <button
-              class="btn btn-primary hover:btn-success"
-              [disabled]="!userForm.valid"
-              (click)="emitUser()"
-            >
+            <button class="btn btn-primary" [disabled]="!userForm.valid" (click)="emitUser()">
               Guardar cambios
             </button>
           } @else {
@@ -92,7 +87,7 @@
               Borrar Usuario
             </button>
           }
-          <button class="btn">Cancelar</button>
+          <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
     </form>

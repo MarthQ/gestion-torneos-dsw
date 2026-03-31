@@ -1,12 +1,13 @@
 import { I18nSelectPipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 
 import { Location } from '@shared/interfaces/location';
 
 @Component({
   selector: 'location-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './location-crud-modal.html',
 })
 export class LocationCrudModal {

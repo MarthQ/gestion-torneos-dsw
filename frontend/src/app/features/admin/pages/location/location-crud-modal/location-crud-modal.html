@@ -9,23 +9,22 @@
               <legend class="fieldset-legend">ID de la localidad</legend>
               <input
                 type="number"
-                class="input focus:input-primary"
+                class="input input-primary border-base-300 input-bordered"
                 placeholder="Ingrese un número"
                 formControlName="id"
               />
-
-              <p class="label">Obligatorio</p>
+              <form-error-label [control]="locationForm.get('id')!"></form-error-label>
             </fieldset>
           }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre de la localidad</legend>
             <input
               type="text"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese el nombre de la localidad"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="locationForm.get('name')!"></form-error-label>
           </fieldset>
         </div>
       } @else {
@@ -39,7 +38,7 @@
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
             <button
-              class="btn btn-primary hover:btn-success"
+              class="btn btn-primary"
               [disabled]="!locationForm.valid"
               (click)="emitLocation()"
             >
@@ -50,7 +49,7 @@
               Borrar Localidad
             </button>
           }
-          <button class="btn">Cancelar</button>
+          <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
     </form>
