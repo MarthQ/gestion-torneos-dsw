@@ -59,7 +59,7 @@
             <legend class="fieldset-legend">Creador del torneo</legend>
             <select class="select" formControlName="creator">
               <option disabled selected>Seleccione el creador del torneo</option>
-              @for (user of userResource().value(); track user.id) {
+              @for (user of userResource(); track user.id) {
                 <option [ngValue]="user.id">
                   {{ user.name }}
                 </option>
@@ -71,7 +71,7 @@
             <legend class="fieldset-legend">Localidad del torneo</legend>
             <select class="select" formControlName="location">
               <option disabled selected>Seleccione la localidad del torneo</option>
-              @for (location of locationResource().value(); track location.id) {
+              @for (location of locationResource(); track location.id) {
                 <option [ngValue]="location.id">
                   {{ location.name }}
                 </option>
@@ -83,7 +83,7 @@
             <legend class="fieldset-legend">Juego del torneo</legend>
             <select class="select" formControlName="game">
               <option disabled selected>Seleccione el juego del torneo</option>
-              @for (game of gameResource().value(); track game.id) {
+              @for (game of gameResource(); track game.id) {
                 <option [ngValue]="game.id">
                   {{ game.name }}
                 </option>
@@ -94,7 +94,7 @@
           <fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-4">
             <legend class="fieldset-legend">Etiquetas del torneo</legend>
             <div class="flex flex-col gap-3">
-              @for (tag of tagResource().value(); track tag.id) {
+              @for (tag of tagResource(); track tag.id) {
                 <div>
                   <input
                     type="checkbox"

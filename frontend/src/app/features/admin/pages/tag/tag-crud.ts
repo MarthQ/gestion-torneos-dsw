@@ -16,6 +16,7 @@ import { TagService } from '@shared/services/tag.service';
 import { TagCrudModal } from './tag-crud-modal/tag-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
+import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
 
 @Component({
   imports: [TagCrudModal, Pagination, SearchBar],
@@ -113,5 +114,13 @@ export class TagCrud {
           },
         });
     }
+  }
+
+  isDefaultTag(tag: any) {
+    const result = Object.values(EVENT_TAGS)
+      .map((eventTag) => eventTag.name)
+      .includes(tag.name);
+
+    return result;
   }
 }

@@ -16,6 +16,7 @@ import { map, of, tap } from 'rxjs';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { GameCrudModal } from './game-crud-modal/game-crud-modal';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   imports: [Pagination, SearchBar, GameCrudModal],

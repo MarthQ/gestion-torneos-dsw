@@ -132,15 +132,21 @@
   }
 </div>
 
-@if (tournamentResource.hasValue()) {
+@if (
+  tournamentResource.hasValue() &&
+  gameResource.hasValue() &&
+  locationResource.hasValue() &&
+  userResource.hasValue() &&
+  tagResource.hasValue()
+) {
   <tournament-crud-modal
     [tournament]="selectedTournament()"
     [type]="modalType()"
     [open]="openModal()"
-    [gameResource]="gameResource"
-    [locationResource]="locationResource"
-    [userResource]="userResource"
-    [tagResource]="tagResource"
+    [gameResource]="gameResource.value()"
+    [locationResource]="locationResource.value()"
+    [userResource]="userResource.value()"
+    [tagResource]="tagResource.value()"
     (closed)="openModal.set(false)"
     (confirmAction)="handleCrudAction($event)"
   />
