@@ -48,9 +48,7 @@ export class UserService {
 
   addUser(newUser: Omit<UserFormDTO, 'id'>): Observable<UserFormDTO> {
     return this.http
-      .post<
-        ApiResponse<UserFormDTO>
-      >(`${environment.apiUrl}/users`, { ...newUser, password: '12345678' })
+      .post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, { newUser })
       .pipe(
         map((response) => response.data),
         catchError((error) => {
@@ -87,5 +85,11 @@ export class UserService {
 
   getUserById(userId: Number) {
     return this.http.get(`${baseUrl}/users/${userId}`);
+  }
+
+  sendInvitation(userId: number, frontendUrl: string) {
+    return this.http
+      .get(`${baseUrl}/users/${userId}/invite`, { params: { frontendUrl } })
+      .pipe(catchError((error) => error.error.message));
   }
 }

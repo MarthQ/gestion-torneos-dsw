@@ -1,0 +1,43 @@
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { AuthService } from '@features/auth/services/auth.service';
+import { Toaster } from '@shared/utils/toaster';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+
+@Component({
+  imports: [ReactiveFormsModule, FormErrorLabel, RouterLink],
+  templateUrl: './forgot-password.html',
+})
+export class ForgotPassword {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  public mailSended = signal<boolean>(false);
+
+  forgotForm = this.fb.group({
+    mail: ['', Validators.required],
+  });
+
+  onSubmit(event: Event) {
+    event.preventDefault();
+
+    if (this.forgotForm.invalid) {
+      this.forgotForm.markAllAsTouched();
+      return;
+    }
+
+    const { mail } = this.forgotForm.value;
+
+    const frontendUrl = window.location.host;
+
+    console.log(frontendUrl);
+
+    this.authService.requestForgotPassword(mail!, frontendUrl).subscribe({
+      error: (message) => {
+        Toaster.error(message);
+      },
+    });
+    this.mailSended.set(true);
+  }
+}

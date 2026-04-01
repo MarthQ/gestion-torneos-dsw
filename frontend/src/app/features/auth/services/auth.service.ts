@@ -89,4 +89,21 @@ export class AuthService {
 
     return throwError(() => error.error.message);
   }
+
+  requestForgotPassword(mail: string, frontendUrl: string) {
+    const body = { mail };
+    const params = { frontendUrl };
+    return this.http
+      .post(`${baseUrl}/auth/forgot-password`, body, { params })
+      .pipe(catchError((error: any) => throwError(() => error.error.message)));
+  }
+
+  requestSetupPassword(password: string, mailToken: string): Observable<boolean> {
+    const body = { password };
+    const params = { mailToken };
+    return this.http.post<AuthResponse>(`${baseUrl}/auth/setup-password`, body, { params }).pipe(
+      map((resp) => this.handleAuthSuccess(resp)),
+      catchError((error: any) => throwError(() => error.error.message)),
+    );
+  }
 }
