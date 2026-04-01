@@ -23,6 +23,8 @@ export const authRoutes: Routes = [
         path: 'register',
         component: Register,
       },
+      //TODO forgot-password-page -> Requests the email from the user which password going to be changed http.post(`${baseUrl}/user/forgot-password`)
+      //TODO setup-password-page -> Request & Validate using ReactiveFormModules currentPassword & confirmCurrentPassword to send http.post(`${baseUrl}/user/setupPassword`) with email_token.
     ],
   },
 ];

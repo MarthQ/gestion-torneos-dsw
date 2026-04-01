@@ -65,7 +65,10 @@
               </div>
             </td>
             <td>
-              <div class="badge" [class]="tournament.status | i18nSelect: tournamentStatusMap">
+              <div
+                class="font-bold badge h-max w-max justify-center"
+                [class]="tournament.status | i18nSelect: tournamentStatusMap"
+              >
                 {{ tournament.status }}
               </div>
             </td>

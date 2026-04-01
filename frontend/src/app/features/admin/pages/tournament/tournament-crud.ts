@@ -14,6 +14,7 @@ import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
 import { GameService } from '@shared/services/game.service';
 import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
+import { CrudAction } from '@shared/interfaces/crudAction';
 
 @Component({
   imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe, I18nSelectPipe],
@@ -93,38 +94,38 @@ export class TournamentCrud {
     this.openModal.set(true);
   }
 
-  handleCrudAction(tournament: TournamentFormDTO) {
-    switch (this.modalType()) {
-      case 'add':
-        this.tournamentService.addTournament(tournament).subscribe({
+  handleCrudAction(event: CrudAction<TournamentFormDTO>) {
+    switch (event.actionType) {
+      case 'create':
+        this.tournamentService.addTournament(event.data).subscribe({
           next: () => {
             Toaster.success('El torneo se agregó correctamente');
             this.tournamentResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
+          error: (message: string) => {
+            Toaster.error(message);
           },
         });
         break;
-      case 'edit':
-        this.tournamentService.updateTournament(tournament).subscribe({
+      case 'update':
+        this.tournamentService.updateTournament(event.data).subscribe({
           next: () => {
             Toaster.success('El torneo se modificó correctamente');
             this.tournamentResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
+          error: (message: string) => {
+            Toaster.error(message);
           },
         });
         break;
       case 'delete':
-        this.tournamentService.deleteTournament(tournament).subscribe({
+        this.tournamentService.deleteTournament(event.data).subscribe({
           next: () => {
             Toaster.success('El torneo se eliminó correctamente');
             this.tournamentResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
+          error: (message: string) => {
+            Toaster.error(message);
           },
         });
     }

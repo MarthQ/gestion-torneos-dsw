@@ -111,9 +111,9 @@ export class GameCrud {
             this.gameResource.reload();
             this.igdbGameResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
@@ -123,9 +123,9 @@ export class GameCrud {
             Toaster.success('El juego se modificó correctamente');
             this.gameResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
@@ -136,9 +136,9 @@ export class GameCrud {
             this.gameResource.reload();
             this.igdbGameResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
     }

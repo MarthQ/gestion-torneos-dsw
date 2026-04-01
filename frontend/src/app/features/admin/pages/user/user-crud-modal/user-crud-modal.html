@@ -4,18 +4,6 @@
     <form [formGroup]="userForm">
       @if (type() === 'add' || type() === 'edit') {
         <div class="py-4">
-          @if (type() === 'add') {
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend">ID del usuario</legend>
-              <input
-                type="number"
-                class="input input-primary border-base-300 input-bordered"
-                placeholder="Ingrese un número"
-                formControlName="id"
-              />
-              <form-error-label [control]="userForm.get('id')!"></form-error-label>
-            </fieldset>
-          }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre del usuario</legend>
             <input
@@ -35,16 +23,6 @@
               formControlName="mail"
             />
             <form-error-label [control]="userForm.get('mail')!"></form-error-label>
-          </fieldset>
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">Contraseña del usuario</legend>
-            <input
-              type="password"
-              class="input input-primary border-base-300 input-bordered"
-              placeholder="Ingrese la contraseña del usuario"
-              formControlName="password"
-            />
-            <form-error-label [control]="userForm.get('password')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Localidad del usuario</legend>

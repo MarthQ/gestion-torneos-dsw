@@ -12,7 +12,6 @@ export interface User {
 export interface UserFormDTO {
   id: number;
   name: string;
-  password: string;
   mail: string;
   location: number;
   role: number;
@@ -27,8 +26,7 @@ export interface UserRegisterDTO {
   role?: string;
 }
 
-export interface UserFormLogin{
-  mail:string;
+export interface UserFormLogin {
+  mail: string;
   password: string;
 }
-

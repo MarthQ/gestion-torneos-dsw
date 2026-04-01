@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+import { CrudAction } from '@shared/interfaces/crudAction';
 import { Location } from '@shared/interfaces/location';
 import { Role } from '@shared/interfaces/role';
 import { User, UserFormDTO } from '@shared/interfaces/user';
@@ -26,7 +27,7 @@ export class UserCrudModal {
   type = input.required<'add' | 'edit' | 'delete'>();
   open = input.required<boolean>();
   closed = output<void>();
-  confirmAction = output<UserFormDTO>();
+  confirmAction = output<CrudAction<UserFormDTO>>();
 
   locationResource = input.required<ResourceRef<Location[] | undefined>>();
   roleResource = input.required<ResourceRef<Role[] | undefined>>();
@@ -43,10 +44,8 @@ export class UserCrudModal {
   };
 
   userForm = this.fb.nonNullable.group({
-    id: [0, Validators.required],
     name: ['', Validators.required],
     mail: ['', [Validators.required, Validators.pattern(FormUtils.emailPattern)]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
     location: [0, [Validators.required, Validators.min(1)]],
     role: [0, [Validators.required, Validators.min(1)]],
   });
@@ -55,7 +54,6 @@ export class UserCrudModal {
     if (this.open()) {
       this.userModal().nativeElement.showModal();
       this.userForm.patchValue({
-        id: this.user().id ?? 0,
         name: this.user().name ?? '',
         mail: this.user().mail ?? '',
         location: this.user().location?.id ?? 0,
@@ -71,8 +69,24 @@ export class UserCrudModal {
   }
   emitUser() {
     if (this.userForm.valid) {
-      const user = this.userForm.getRawValue();
-      this.confirmAction.emit(user);
+      const { name, mail, location, role } = this.userForm.getRawValue();
+      const id = this.user()?.id;
+      switch (this.type()) {
+        case 'add':
+          this.confirmAction.emit({
+            actionType: 'create',
+            data: { name, mail, location, role },
+          });
+          break;
+        case 'edit':
+          this.confirmAction.emit({
+            actionType: 'update',
+            data: { id: id!, name, mail, location, role },
+          });
+          break;
+        case 'delete':
+          this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
+      }
     }
   }
 }

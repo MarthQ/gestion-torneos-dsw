@@ -43,7 +43,7 @@ async function login(req: Request, res: Response) {
         const user = await em.findOneOrFail(User, { mail: mail }, { populate: ['role', 'location'] })
 
         //* if Passwords doesn't match
-        if (!compareSync(password, user.password)) {
+        if (!compareSync(password, user.password!)) {
             const error = new Error('Credential is not valid (password)')
             ;(error as any).statusCode = 401
             throw error
@@ -97,7 +97,6 @@ async function register(req: Request, res: Response) {
 
         const { password, ...userData } = newUser
 
-        // Buscar rol "user" por nombre (no hardcodear ID)
         const userRole = await em.findOneOrFail(Role, { name: USER_ROLE.USER })
 
         const user = em.create(User, {
@@ -116,7 +115,7 @@ async function register(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        // 4. Error genérico
+        // General error
         console.error({
             name: error.name,
             message: error.message,

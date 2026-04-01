@@ -85,6 +85,6 @@ export class Sidebar {
 
   toggleSidebar() {
     this.isSidebarToggled.update((current) => !current);
-    console.log(this.isSidebarToggled());
+    console.log({ isAdmin: this.isAdmin });
   }
 }

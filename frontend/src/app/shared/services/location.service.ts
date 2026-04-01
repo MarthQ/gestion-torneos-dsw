@@ -36,17 +36,16 @@ export class LocationService {
       );
   }
 
-  addLocation(newLocation: Location): Observable<Location> {
-    const { id, ...rest } = newLocation;
-    const body = id ? { id, ...rest } : rest;
-
-    return this.http.post<ApiResponse<Location>>(`${environment.apiUrl}/locations`, body).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error adding location: ', error);
-        return throwError(() => new Error(`No se pudo agregar la localidad`));
-      }),
-    );
+  addLocation(newLocation: Omit<Location, 'id'>): Observable<Location> {
+    return this.http
+      .post<ApiResponse<Location>>(`${environment.apiUrl}/locations`, newLocation)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error adding location: ', error);
+          return throwError(() => error.error.message);
+        }),
+      );
   }
 
   updateLocation(updatedLocation: Location): Observable<Location> {
@@ -58,20 +57,20 @@ export class LocationService {
         map((response) => response.data),
         catchError((error) => {
           console.log('Error updating location: ', error);
-          return throwError(() => new Error(`No se pudo modificar la localidad`));
+          return throwError(() => error.error.message);
         }),
       );
   }
 
-  deleteLocation(toBeDeletedLocation: Location): Observable<Location> {
-    const { id, ...rest } = toBeDeletedLocation;
-
-    return this.http.delete<ApiResponse<Location>>(`${environment.apiUrl}/locations/${id}`).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error removing location: ', error);
-        return throwError(() => new Error(`No se pudo borrar la localidad`));
-      }),
-    );
+  deleteLocation(toBeDeletedLocation: Pick<Location, 'id'>): Observable<Location> {
+    return this.http
+      .delete<ApiResponse<Location>>(`${environment.apiUrl}/locations/${toBeDeletedLocation.id}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error removing location: ', error);
+          return throwError(() => error.error.message);
+        }),
+      );
   }
 }

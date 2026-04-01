@@ -4,18 +4,6 @@
     <form [formGroup]="roleForm">
       @if (type() === 'add' || type() === 'edit') {
         <div class="py-4">
-          @if (type() === 'add') {
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend">ID del rol</legend>
-              <input
-                type="number"
-                class="input input-primary border-base-300 input-bordered"
-                placeholder="Ingrese un número"
-                formControlName="id"
-              />
-              <form-error-label [control]="roleForm.get('id')!"></form-error-label>
-            </fieldset>
-          }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre del rol</legend>
             <input
@@ -37,11 +25,7 @@
       <div class="modal-action">
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
-            <button
-              class="btn btn-primary"
-              [disabled]="!roleForm.valid"
-              (click)="emitRole()"
-            >
+            <button class="btn btn-primary" [disabled]="!roleForm.valid" (click)="emitRole()">
               Guardar cambios
             </button>
           } @else {

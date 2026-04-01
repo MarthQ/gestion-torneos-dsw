@@ -4,18 +4,6 @@
     <form [formGroup]="locationForm">
       @if (type() === 'add' || type() === 'edit') {
         <div class="py-4">
-          @if (type() === 'add') {
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend">ID de la localidad</legend>
-              <input
-                type="number"
-                class="input input-primary border-base-300 input-bordered"
-                placeholder="Ingrese un número"
-                formControlName="id"
-              />
-              <form-error-label [control]="locationForm.get('id')!"></form-error-label>
-            </fieldset>
-          }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre de la localidad</legend>
             <input

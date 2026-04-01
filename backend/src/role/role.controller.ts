@@ -25,6 +25,7 @@ async function findAll(req: Request, res: Response) {
         const [roles, total] = await em.findAndCount(Role, filter, {
             limit: pageSize,
             offset,
+            orderBy: { id: 'asc' },
         })
 
         res.status(200).json({
