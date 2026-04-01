@@ -97,7 +97,6 @@ async function register(req: Request, res: Response) {
 
         const { password, ...userData } = newUser
 
-        // Buscar rol "user" por nombre (no hardcodear ID)
         const userRole = await em.findOneOrFail(Role, { name: USER_ROLE.USER })
 
         const user = em.create(User, {
@@ -116,7 +115,7 @@ async function register(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        // 4. Error genérico
+        // General error
         console.error({
             name: error.name,
             message: error.message,

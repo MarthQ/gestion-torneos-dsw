@@ -8,6 +8,7 @@ import { Tag } from '@shared/interfaces/tag';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { RoleCrudModal } from './role-crud-modal/role-crud-modal';
+import { CrudAction } from '@shared/interfaces/crudAction';
 
 @Component({
   imports: [RoleCrudModal, Pagination, SearchBar],
@@ -61,41 +62,41 @@ export class RoleCrud {
     this.selectedRole.set(role);
     this.openModal.set(true);
   }
-  handleCrudAction(role: Role) {
-    switch (this.modalType()) {
-      case 'add':
-        this.roleService.addRole(role).subscribe({
+  handleCrudAction(event: CrudAction<Role>) {
+    switch (event.actionType) {
+      case 'create':
+        this.roleService.addRole(event.data).subscribe({
           next: () => {
             Toaster.success('El rol se agregó correctamente');
             this.roleResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
-      case 'edit':
-        this.roleService.updateRole(role).subscribe({
+      case 'update':
+        this.roleService.updateRole(event.data).subscribe({
           next: () => {
             Toaster.success('El rol se modificó correctamente');
             this.roleResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
       case 'delete':
-        this.roleService.deleteRole(role).subscribe({
+        this.roleService.deleteRole(event.data).subscribe({
           next: () => {
             Toaster.success('El rol se eliminó correctamente');
             this.roleResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
     }

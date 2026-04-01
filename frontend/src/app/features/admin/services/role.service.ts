@@ -38,11 +38,8 @@ export class RoleService {
       );
   }
 
-  addRole(newTag: Role): Observable<Role> {
-    const { id, ...rest } = newTag;
-    const body = id ? { id, ...rest } : rest;
-
-    return this.http.post<ApiResponse<Role>>(`${environment.apiUrl}/roles`, body).pipe(
+  addRole(newRole: Omit<Role, 'id'>): Observable<Role> {
+    return this.http.post<ApiResponse<Role>>(`${environment.apiUrl}/roles`, newRole).pipe(
       map((response) => response.data),
       catchError((error) => {
         console.log('Error adding tag: ', error);
@@ -51,8 +48,8 @@ export class RoleService {
     );
   }
 
-  updateRole(updatedTag: Role): Observable<Role> {
-    const { id, ...body } = updatedTag;
+  updateRole(updatedRole: Role): Observable<Role> {
+    const { id, ...body } = updatedRole;
 
     return this.http.patch<ApiResponse<Role>>(`${environment.apiUrl}/roles/${id}`, body).pipe(
       map((response) => response.data),
@@ -63,15 +60,15 @@ export class RoleService {
     );
   }
 
-  deleteRole(toBeDeletedTag: Role): Observable<Role> {
-    const { id, ...rest } = toBeDeletedTag;
-
-    return this.http.delete<ApiResponse<Role>>(`${environment.apiUrl}/roles/${id}`).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error removing role: ', error);
-        return throwError(() => new Error(`No se pudo borrar el rol`));
-      }),
-    );
+  deleteRole(toBeDeletedRole: Pick<Role, 'id'>): Observable<Role> {
+    return this.http
+      .delete<ApiResponse<Role>>(`${environment.apiUrl}/roles/${toBeDeletedRole.id}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error removing role: ', error);
+          return throwError(() => new Error(`No se pudo borrar el rol`));
+        }),
+      );
   }
 }

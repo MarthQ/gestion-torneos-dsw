@@ -76,13 +76,23 @@ async function add(req: Request, res: Response) {
 
         if (!sanitizedUser.success) {
             throw fromZodError(sanitizedUser.error)
-        } else {
-            sanitizedUser.data.password = hashSync(sanitizedUser.data.password, Number(env.defaultSaltRounds))
-            const user = em.create(User, sanitizedUser.data)
-            await em.flush()
-            res.status(201).json({ message: 'User created', data: user })
         }
+        sanitizedUser.data.password = hashSync(sanitizedUser.data.password!, Number(env.defaultSaltRounds))
+        const { password, ...userWithoutPassword } = em.create(User, sanitizedUser.data)
+        await em.flush()
+        res.status(201).json({ message: 'User created', data: userWithoutPassword })
     } catch (error: any) {
+        // MikroORM Errors
+        if (error.sqlMessage.includes('user_name_unique')) {
+            return res.status(409).json({
+                message: `Name already taken`,
+            })
+        }
+        if (error.sqlMessage.includes('user_mail_unique')) {
+            return res.status(409).json({
+                message: `Email already taken`,
+            })
+        }
         res.status(500).json({ message: error.message })
     }
 }
@@ -100,6 +110,19 @@ async function update(req: Request, res: Response) {
             res.status(200).json({ message: 'User updated' })
         }
     } catch (error: any) {
+        console.log({ error })
+
+        // MikroORM Errors
+        if (error.sqlMessage.includes('user_name_unique')) {
+            return res.status(409).json({
+                message: `Name already taken`,
+            })
+        }
+        if (error.sqlMessage.includes('user_mail_unique')) {
+            return res.status(409).json({
+                message: `Email already taken`,
+            })
+        }
         res.status(500).json(error.message)
     }
 }

@@ -44,7 +44,7 @@ export class TagService {
       map((response) => response.data),
       catchError((error) => {
         console.log('Error adding tag: ', error);
-        return throwError(() => new Error(`No se pudo agregar la etiqueta`));
+        return throwError(() => error.error.message);
       }),
     );
   }
@@ -56,18 +56,20 @@ export class TagService {
       map((response) => response.data),
       catchError((error) => {
         console.log('Error updating tag: ', error);
-        return throwError(() => new Error(`No se pudo modificar la etiqueta`));
+        return throwError(() => error.error.message);
       }),
     );
   }
 
   deleteTag(toBeDeletedTag: Pick<Tag, 'id'>): Observable<Tag> {
-    return this.http.delete<ApiResponse<Tag>>(`${environment.apiUrl}/tags/${toBeDeletedTag.id}`).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error removing tag: ', error);
-        return throwError(() => new Error(`No se pudo borrar la etiqueta`));
-      }),
-    );
+    return this.http
+      .delete<ApiResponse<Tag>>(`${environment.apiUrl}/tags/${toBeDeletedTag.id}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error removing tag: ', error);
+          return throwError(() => error.error.message);
+        }),
+      );
   }
 }

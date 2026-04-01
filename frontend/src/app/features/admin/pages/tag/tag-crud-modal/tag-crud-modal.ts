@@ -2,12 +2,8 @@ import { I18nSelectPipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+import { CrudAction } from '@shared/interfaces/crudAction';
 import { Tag } from '@shared/interfaces/tag';
-
-export type TagCrudAction =
-  | { actionType: 'create'; data: Omit<Tag, 'id'> }
-  | { actionType: 'update'; data: Tag }
-  | { actionType: 'delete'; data: Pick<Tag, 'id'> };
 
 @Component({
   selector: 'tag-crud-modal',
@@ -19,7 +15,7 @@ export class TagCrudModal {
   type = input.required<'add' | 'edit' | 'delete'>();
   open = input.required<boolean>();
   closed = output<void>();
-  confirmAction = output<TagCrudAction>();
+  confirmAction = output<CrudAction<Tag>>();
 
   tagModal = viewChild.required<ElementRef<HTMLDialogElement>>('tagModal');
 
@@ -27,9 +23,9 @@ export class TagCrudModal {
 
   // Mapper for the modal's title using i18nSelectPipe
   titleMap: any = {
-    add: 'Agrega un tag',
-    edit: 'Modifica un tag.',
-    delete: 'Borrar un tag',
+    add: 'Agrega un etiqueta',
+    edit: 'Modifica un etiqueta',
+    delete: 'Borrar un etiqueta',
   };
 
   tagForm = this.fb.nonNullable.group({

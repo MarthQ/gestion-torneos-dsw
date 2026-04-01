@@ -11,7 +11,7 @@ export class User extends BaseEntity {
     name!: string
     @Property()
     password!: string
-    @Property()
+    @Property({ unique: true })
     mail!: string
     @ManyToOne(() => Location, { nullable: false })
     location!: Rel<Location>

@@ -4,6 +4,7 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
+  FormControl,
   ReactiveFormsModule,
   ValidatorFn,
   Validators,
@@ -15,8 +16,8 @@ import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { User } from '@shared/interfaces/user';
 import { Location } from '@shared/interfaces/location';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
-import { map } from 'rxjs';
 import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
+import { CrudAction } from '@shared/interfaces/crudAction';
 
 @Component({
   selector: 'tournament-crud-modal',
@@ -28,7 +29,7 @@ export class TournamentCrudModal {
   type = input.required<'add' | 'edit' | 'delete'>();
   open = input.required<boolean>();
   closed = output<void>();
-  confirmAction = output<TournamentFormDTO>();
+  confirmAction = output<CrudAction<TournamentFormDTO>>();
 
   locationResource = input.required<Location[]>();
   gameResource = input.required<Game[]>();
@@ -52,7 +53,6 @@ export class TournamentCrudModal {
   };
 
   tournamentForm = this.fb.nonNullable.group({
-    id: [0, Validators.required],
     name: ['', Validators.required],
     description: ['', Validators.required],
     datetimeinit: [new Date(), Validators.required],
@@ -61,7 +61,7 @@ export class TournamentCrudModal {
     creator: [0, [Validators.required, Validators.min(1)]],
     location: [0, [Validators.required, Validators.min(1)]],
     game: [0, [Validators.required, Validators.min(1)]],
-    tags: this.fb.array([]),
+    tags: this.fb.array<FormControl<number>>([]),
   });
 
   setTagValidatorEffect = effect(() => {
@@ -143,7 +143,6 @@ export class TournamentCrudModal {
       this.initTags(this.tournament().tags ?? []);
 
       this.tournamentForm.patchValue({
-        id: this.tournament().id ?? 0,
         name: this.tournament().name ?? '',
         description: this.tournament().description ?? '',
         datetimeinit: this.tournament().datetimeinit ?? new Date(),
@@ -163,8 +162,57 @@ export class TournamentCrudModal {
   }
   emitTournament() {
     if (this.tournamentForm.valid) {
-      const tournament = this.tournamentForm.getRawValue();
-      this.confirmAction.emit(tournament as TournamentFormDTO);
+      const {
+        name,
+        description,
+        datetimeinit,
+        status,
+        maxParticipants,
+        creator,
+        location,
+        game,
+        tags,
+      } = this.tournamentForm.getRawValue();
+      const id = this.tournament()?.id;
+
+      switch (this.type()) {
+        case 'add':
+          this.confirmAction.emit({
+            actionType: 'create',
+            data: {
+              name,
+              description,
+              datetimeinit,
+              status,
+              maxParticipants,
+              creator,
+              location,
+              game,
+              tags,
+            },
+          });
+          break;
+        case 'edit':
+          this.confirmAction.emit({
+            actionType: 'update',
+            data: {
+              id: id!,
+              name,
+              description,
+              datetimeinit,
+              status,
+              maxParticipants,
+              creator,
+              location,
+              game,
+              tags,
+            },
+          });
+          break;
+        case 'delete':
+          this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
+          break;
+      }
     }
   }
 }
