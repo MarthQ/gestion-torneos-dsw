@@ -10,6 +10,8 @@ import { RouterLink } from '@angular/router';
   templateUrl: './user-profile.html',
 })
 export class UserProfile {
+  //TODO implement a button to change password -> send email with link that redirect to a page to change the password (We can reuse the request setup-password-page).
+
   private authService = inject(AuthService);
   private userService = inject(UserService);
 

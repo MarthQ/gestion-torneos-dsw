@@ -18,6 +18,8 @@ import { CrudAction } from '@shared/interfaces/crudAction';
   templateUrl: './user-crud.html',
 })
 export class UserCrud {
+  //TODO implement resend email -> if the emailToken expires, the admin can resend the email which contains the link to setup the user's password.
+
   userService = inject(UserService);
 
   locationService = inject(LocationService);

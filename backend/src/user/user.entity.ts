@@ -9,8 +9,8 @@ import { Tournament } from '../tournament/tournament.entity.js'
 export class User extends BaseEntity {
     @Property({ nullable: false, unique: true })
     name!: string
-    @Property()
-    password!: string
+    @Property({ nullable: true })
+    password?: string
     @Property({ unique: true })
     mail!: string
     @ManyToOne(() => Location, { nullable: false })

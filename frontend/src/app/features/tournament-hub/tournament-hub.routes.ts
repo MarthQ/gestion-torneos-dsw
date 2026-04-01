@@ -33,6 +33,7 @@ export const TournamentHubRoutes: Routes = [
         canMatch: [AuthenticatedGuard],
         loadChildren: () => import('../admin/admin.routes'),
       },
+      //TODO change-password-page -> Request & Validate using ReactiveFormModules currentPassword & confirmCurrentPassword to send http.patch(`${baseUrl}/user/password`) with email_token.
     ],
   },
 ];

@@ -43,7 +43,7 @@ async function login(req: Request, res: Response) {
         const user = await em.findOneOrFail(User, { mail: mail }, { populate: ['role', 'location'] })
 
         //* if Passwords doesn't match
-        if (!compareSync(password, user.password)) {
+        if (!compareSync(password, user.password!)) {
             const error = new Error('Credential is not valid (password)')
             ;(error as any).statusCode = 401
             throw error

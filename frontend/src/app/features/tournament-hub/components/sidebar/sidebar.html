@@ -48,9 +48,7 @@
         }
         <hr class="opacity-75 my-2" />
 
-        <!-- Implementar collapsable -->
-
-        @if (!isAdmin) {
+        @if (isAdmin) {
           @for (adminButton of adminSidebarButtons(); track adminButton.name) {
             <li>
               <button
