@@ -33,8 +33,10 @@ async function searchIGDB(req: Request, res: Response) {
                 Authorization: `Bearer ${env.igdbAccessToken}`,
                 'Content-Type': 'text/plain',
             },
-            body: `search "${query}"; fields name,cover.url,summary,rating; limit 10;`,
+            body: `search "${query}"; fields name,cover.url,summary,rating; where game_type = (0,2,4,5,8,9,10,11,12); limit 10;`,
         })
+
+        // 0 (Main Game), 2 (Expansion), 4 (Standalone Expansion), 5 (Mod), 8 (Remake), 9 (Remaster), 10 (Expanded game), 11 (port), 12 (Fork)
 
         if (!response.ok) {
             return res.status(502).json({ message: 'IGDB API error' })
