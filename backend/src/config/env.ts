@@ -14,4 +14,10 @@ export const env = {
     igdbAccessToken: process.env.IGDB_ACCESS_TOKEN,
     defaultSaltRounds: process.env.DEFAULT_SALT_ROUNDS,
     jwtSecret: process.env.JWT_SECRET,
+    // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
+    jwtCookieSecure: process.env.JWT_COOKIE_SECURE === 'true',
+
+    // Cookie config (4 horas en ms)
+    jwtCookieMaxAge: 4 * 60 * 60 * 1000,
+    jwtCookieName: 'access_token',
 }
