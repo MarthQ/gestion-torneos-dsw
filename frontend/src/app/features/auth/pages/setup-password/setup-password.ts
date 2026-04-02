@@ -15,7 +15,7 @@ export class SetupPassword {
   private authService = inject(AuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
-  private mailToken = this.activatedRoute.snapshot.paramMap.get('token') ?? '';
+  private mailToken = this.activatedRoute.snapshot.queryParamMap.get('token') ?? '';
 
   setPasswordForm = this.fb.group(
     {
@@ -23,12 +23,13 @@ export class SetupPassword {
       confirmPassword: ['', Validators.required],
     },
     {
-      validators: [FormUtils.isFieldOneEqualToFieldTwo('passowrd', 'confirmPassword')],
+      validators: [FormUtils.isFieldOneEqualToFieldTwo('password', 'confirmPassword')],
     },
   );
 
   onSubmit(event: Event) {
     event.preventDefault();
+    console.log(this.mailToken);
 
     if (this.setPasswordForm.invalid) {
       this.setPasswordForm.markAllAsTouched();

@@ -24,7 +24,6 @@ export class AuthService {
     if (this._authStatus() === AUTH_STATUS.CHECKING) {
       return AUTH_STATUS.CHECKING;
     }
-
     if (this._user()) {
       return AUTH_STATUS.AUTHENTICATED;
     }

@@ -6,6 +6,7 @@ import { JwtPayload } from '../../auth/interfaces/jwt-payload.interface.js'
 
 export class JWTUtils {
     static verify(token: string): JwtPayload {
+        console.log(`El token en jwtutils es ${token}`)
         return jwt.verify(token, env.jwtSecret, {
             algorithms: ['HS256'],
         }) as JwtPayload

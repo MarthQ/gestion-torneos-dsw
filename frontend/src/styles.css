@@ -3,8 +3,9 @@
 @plugin "daisyui" {
   themes:
     light --default,
-    sunset --prefersdark,
-    cupcake;
+    dark --prefersdark,
+    cupcake,
+    sunset;
 }
 @plugin "@iconify/tailwind4" {
   prefixes: mdi-light;

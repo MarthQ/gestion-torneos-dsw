@@ -162,11 +162,6 @@ async function forgotPassword(req: Request, res: Response) {
         const reqUser: User = req.body
         const frontendUrl = String(req.query['frontendUrl'])
 
-        console.log(`El req.params es ${JSON.stringify(req.params)}`)
-        console.log(
-            `el requser es ${{ reqUser }} y el frontendurl es: ${JSON.stringify(req.params)} y las queries son ${JSON.stringify(req.query)}`,
-        )
-
         if (!reqUser) {
             const error = new Error('No user has been provided')
             ;(error as any).statusCode = 401
@@ -194,7 +189,7 @@ async function forgotPassword(req: Request, res: Response) {
 //TODO (USER) Setup password
 async function setupPassword(req: Request, res: Response) {
     try {
-        const mailToken = req.params.mailToken
+        const mailToken = String(req.query.mailToken)
 
         if (!mailToken) {
             const error = new Error('No token has been supplied')
@@ -208,9 +203,13 @@ async function setupPassword(req: Request, res: Response) {
 
         const password = req.body.password
 
+        console.log(`La password que estamos cargando es: -${password}-`)
+
         const userWithNewPassword = em.assign(user, {
             password: hashSync(password, Number(env.defaultSaltRounds)),
         })
+
+        await em.persistAndFlush(userWithNewPassword)
 
         res.status(200).json({
             message: `Updated user's password successfully`,

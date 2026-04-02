@@ -29,7 +29,7 @@ userRouter.patch('/password', authenticationMiddleware, changePassword)
 //(USER) Generate token & send mail with link to setup the new password
 userRouter.get('/change-password', authenticationMiddleware, requestResetPassword)
 
-//TODO (ADMIN) Update user's data
+//(ADMIN) Update user's data
 userRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
 
 export { userRouter }

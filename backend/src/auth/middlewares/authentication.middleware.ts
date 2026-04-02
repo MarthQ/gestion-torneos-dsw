@@ -20,13 +20,16 @@ export async function authenticationMiddleware(req: RequestWithUser, res: Respon
 
         const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
-        if (!user) {
-            return res.status(401).json({ message: 'Invalid user' })
-        }
-
         req.user = user
         next()
-    } catch (error) {
+    } catch (error: any) {
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: 'Credentials are not valid (email)',
+            })
+        }
+
         return res.status(401).json({ message: 'Invalid token' })
     }
 }

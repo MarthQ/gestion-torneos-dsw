@@ -9,6 +9,8 @@ export class Mailer {
         console.log(`La url es ${frontendUrl}`)
         console.log(`El token es ${token}`)
 
+        console.log(`El token es -${frontendUrl}/auth/setup-password?token=${token}-`)
+
         // Genero la url con token
         // Envio por mail la url con token
         // Si todo salió termina sino tira un error
