@@ -19,7 +19,7 @@ const mailer = new Mailer()
 const UserSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
-    password: z.string({ message: 'Password must be a string' }),
+    password: z.string({ message: 'Password must be a string' }).optional(),
     mail: z.string({ message: 'Mail must be a string' }),
     location: z.number({
         message: 'Location must be a number representing a location id',
@@ -48,9 +48,18 @@ async function findAll(req: Request, res: Response) {
             offset,
             populate: ['location', 'role'],
         })
+
+        const requestUsers = users.map((user) => {
+            const { password, ...rest } = user
+            return {
+                ...rest,
+                hasPassword: !!user.password,
+            }
+        })
+
         res.status(200).json({
             message: 'Found all locations',
-            data: users,
+            data: requestUsers,
             meta: {
                 total,
                 page,
@@ -97,12 +106,35 @@ async function add(req: Request, res: Response) {
         if (!sanitizedUser.success) {
             throw fromZodError(sanitizedUser.error)
         }
+
         const { password, ...userWithoutPassword } = em.create(User, sanitizedUser.data)
+
         await em.flush()
 
         res.status(201).json({ message: 'User created', data: userWithoutPassword })
     } catch (error: any) {
-        // MikroORM Errors
+        console.log({ error })
+
+        // Custom error handling
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // Zod Validation Error
+        if (error.name === 'ZodValidationError' || error.details) {
+            return res.status(400).json({
+                message: 'Invalid login request',
+                errors: error.details, // Array de errores de Zod
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: 'Credentials are not valid (email)',
+            })
+        }
+
         if (error.sqlMessage.includes('user_name_unique')) {
             return res.status(409).json({
                 message: `Name already taken`,
@@ -121,7 +153,8 @@ async function add(req: Request, res: Response) {
 async function sendInvitation(req: Request, res: Response) {
     try {
         const userId = Number.parseInt(req.params.id)
-        const frontendUrl = String(req.params.frontendUrl)
+
+        const frontendUrl = String(req.query['frontendUrl'])
 
         const user = await em.findOneOrFail(User, { id: userId })
 

@@ -170,7 +170,7 @@ async function forgotPassword(req: Request, res: Response) {
 
         const user = await em.findOneOrFail(User, { mail: reqUser.mail }, { populate: ['location', 'role'] })
 
-        mailer.sendEmail(user.mail, frontendUrl, { userId: user.id! })
+        mailer.sendEmail(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
     } catch (error: any) {
         if (error.statusCode) {
             return res.status(error.statusCode).json({
@@ -179,11 +179,6 @@ async function forgotPassword(req: Request, res: Response) {
         }
         res.status(500).json({ message: error.message })
     }
-
-    // //Extract userEmail from req.body
-    // // Verify if userEmail exists
-    // // Use private function sendEmail(email, tokenPayload) -> tokenPayload = { userId: number }
-    // // Return status
 }
 
 //TODO (USER) Setup password

@@ -17,13 +17,13 @@ const userRouter = Router()
 
 userRouter.get('/', findAll)
 userRouter.get('/:id', findOne)
-userRouter.put('/:id', update)
-userRouter.delete('/:id', remove)
+userRouter.put('/:id', authenticationMiddleware, update)
+userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
 
 //(ADMIN) Create user without password
 userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), add)
 //(ADMIN) Generate token & send mail with link to setup the password
-userRouter.get('/:id/invite', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), sendInvitation)
+userRouter.get('/:id/invite', authenticationMiddleware, sendInvitation)
 //(USER) Change password from "setup password page"
 userRouter.patch('/password', authenticationMiddleware, changePassword)
 //(USER) Generate token & send mail with link to setup the new password

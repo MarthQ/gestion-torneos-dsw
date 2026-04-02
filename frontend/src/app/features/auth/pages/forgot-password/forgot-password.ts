@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AuthService } from '@features/auth/services/auth.service';
@@ -13,7 +13,7 @@ import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel
 export class ForgotPassword {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-  public mailSended = signal<boolean>(false);
+  public mailSent = signal<boolean>(false);
 
   forgotForm = this.fb.group({
     mail: ['', Validators.required],
@@ -38,6 +38,6 @@ export class ForgotPassword {
         Toaster.error(message);
       },
     });
-    this.mailSended.set(true);
+    this.mailSent.set(true);
   }
 }

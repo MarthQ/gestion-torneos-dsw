@@ -122,7 +122,7 @@ export class UserCrud {
   }
 
   sendInvitation(user: User) {
-    const frontendUrl = window.location.host;
+    const frontendUrl = `${window.location.host}/auth/setup-password`;
     this.userService.sendInvitation(user.id, frontendUrl).subscribe({
       next: () => {
         Toaster.success(`Email enviado correctamente a ${user.mail}`);

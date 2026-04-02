@@ -47,15 +47,13 @@ export class UserService {
   }
 
   addUser(newUser: Omit<UserFormDTO, 'id'>): Observable<UserFormDTO> {
-    return this.http
-      .post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, { newUser })
-      .pipe(
-        map((response) => response.data),
-        catchError((error) => {
-          console.log('Error removing user: ', error);
-          return throwError(() => error.error.message);
-        }),
-      );
+    return this.http.post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, newUser).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
+      }),
+    );
   }
 
   updateUser(updatedUser: UserFormDTO): Observable<UserFormDTO> {
@@ -88,8 +86,12 @@ export class UserService {
   }
 
   sendInvitation(userId: number, frontendUrl: string) {
-    return this.http
-      .get(`${baseUrl}/users/${userId}/invite`, { params: { frontendUrl } })
-      .pipe(catchError((error) => error.error.message));
+    const params = { frontendUrl };
+    return this.http.get(`${baseUrl}/users/${userId}/invite`, { params }).pipe(
+      catchError((error) => {
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
+      }),
+    );
   }
 }
