@@ -1,5 +1,5 @@
-<dialog #tournamentModal class="modal py-2" (close)="onDialogClose()">
-  <div class="modal-box h-11/12">
+<dialog #tournamentModal class="modal" (close)="onDialogClose()">
+  <div class="modal-box max-h-11/12">
     <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
     <form [formGroup]="tournamentForm">
       @if (type() === 'add' || type() === 'edit') {

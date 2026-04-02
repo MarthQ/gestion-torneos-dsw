@@ -3,6 +3,8 @@ import { Register } from './pages/register/register';
 import { Login } from './pages/login/login';
 import { AuthLayout } from './layout/auth-layout/auth-layout';
 import { NotAuthenticatedGuard } from './guards/not-authenticated.guard';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
+import { SetupPassword } from './pages/setup-password/setup-password';
 
 export const authRoutes: Routes = [
   {
@@ -23,8 +25,14 @@ export const authRoutes: Routes = [
         path: 'register',
         component: Register,
       },
-      //TODO forgot-password-page -> Requests the email from the user which password going to be changed http.post(`${baseUrl}/user/forgot-password`)
-      //TODO setup-password-page -> Request & Validate using ReactiveFormModules currentPassword & confirmCurrentPassword to send http.post(`${baseUrl}/user/setupPassword`) with email_token.
+      {
+        path: 'forgot-password',
+        component: ForgotPassword,
+      },
+      {
+        path: 'setup-password',
+        component: SetupPassword,
+      },
     ],
   },
 ];

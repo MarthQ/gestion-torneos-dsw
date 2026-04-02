@@ -47,17 +47,13 @@ export class UserService {
   }
 
   addUser(newUser: Omit<UserFormDTO, 'id'>): Observable<UserFormDTO> {
-    return this.http
-      .post<
-        ApiResponse<UserFormDTO>
-      >(`${environment.apiUrl}/users`, { ...newUser, password: '12345678' })
-      .pipe(
-        map((response) => response.data),
-        catchError((error) => {
-          console.log('Error removing user: ', error);
-          return throwError(() => error.error.message);
-        }),
-      );
+    return this.http.post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, newUser).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
+      }),
+    );
   }
 
   updateUser(updatedUser: UserFormDTO): Observable<UserFormDTO> {
@@ -87,5 +83,15 @@ export class UserService {
 
   getUserById(userId: Number) {
     return this.http.get(`${baseUrl}/users/${userId}`);
+  }
+
+  sendInvitation(userId: number, frontendUrl: string) {
+    const params = { frontendUrl };
+    return this.http.get(`${baseUrl}/users/${userId}/invite`, { params }).pipe(
+      catchError((error) => {
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
+      }),
+    );
   }
 }

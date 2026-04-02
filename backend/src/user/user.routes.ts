@@ -6,9 +6,7 @@ import {
     update,
     remove,
     sendInvitation,
-    setupPassword,
     changePassword,
-    forgotPassword,
     requestResetPassword,
 } from './user.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
@@ -19,22 +17,19 @@ const userRouter = Router()
 
 userRouter.get('/', findAll)
 userRouter.get('/:id', findOne)
-userRouter.put('/:id', update)
-userRouter.delete('/:id', remove)
+userRouter.put('/:id', authenticationMiddleware, update)
+userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
 
-//TODO (ADMIN) Create user without password
+//(ADMIN) Create user without password
 userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), add)
-//TODO (ADMIN) Generate token & send mail with link to setup the password
-userRouter.post('/:id/invite', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), sendInvitation)
-//TODO (USER) Setup password using the link received by email
-userRouter.post('/setup-password', setupPassword)
-//TODO (USER) Change password from "setup password page"
+//(ADMIN) Generate token & send mail with link to setup the password
+userRouter.get('/:id/invite', authenticationMiddleware, sendInvitation)
+//(USER) Change password from "setup password page"
 userRouter.patch('/password', authenticationMiddleware, changePassword)
-//TODO (USER) Generate token & send mail with link to setup the new password
-userRouter.post('/change-password', authenticationMiddleware, requestResetPassword)
-//TODO (USER) Reset password from "Forgot your password?"
-userRouter.post('/forgot-password', forgotPassword)
-//TODO (ADMIN) Update user's data
+//(USER) Generate token & send mail with link to setup the new password
+userRouter.get('/change-password', authenticationMiddleware, requestResetPassword)
+
+//(ADMIN) Update user's data
 userRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
 
 export { userRouter }

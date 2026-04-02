@@ -1,17 +1,25 @@
 import { Request, Response } from 'express'
-import { User } from './user.entity.js'
-import { ORM } from '../shared/db/orm.js'
+
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { hashSync } from 'bcrypt'
+
+import { ORM } from '../shared/db/orm.js'
 import { env } from '../config/env.js'
+import { User } from './user.entity.js'
+import { Mailer } from '../shared/mailer/mailer.service.js'
+import { JWTUtils } from '../shared/auth/jwt.utils.js'
+import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
+import { UserMapper } from '../shared/mappers/user.mapper.js'
 
 const em = ORM.em
+
+const mailer = new Mailer()
 
 const UserSchema = z.object({
     id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
-    password: z.string({ message: 'Password must be a string' }),
+    password: z.string({ message: 'Password must be a string' }).optional(),
     mail: z.string({ message: 'Mail must be a string' }),
     location: z.number({
         message: 'Location must be a number representing a location id',
@@ -40,9 +48,18 @@ async function findAll(req: Request, res: Response) {
             offset,
             populate: ['location', 'role'],
         })
+
+        const requestUsers = users.map((user) => {
+            const { password, ...rest } = user
+            return {
+                ...rest,
+                hasPassword: !!user.password,
+            }
+        })
+
         res.status(200).json({
             message: 'Found all locations',
-            data: users,
+            data: requestUsers,
             meta: {
                 total,
                 page,
@@ -89,14 +106,35 @@ async function add(req: Request, res: Response) {
         if (!sanitizedUser.success) {
             throw fromZodError(sanitizedUser.error)
         }
-        const { password, ...userWithoutPassword } = em.create(User, sanitizedUser.data)
-        await em.flush()
 
-        //* Use private function sendEmail(email, tokenPayload) -> tokenPayload = { userId: number }
+        const { password, ...userWithoutPassword } = em.create(User, sanitizedUser.data)
+
+        await em.flush()
 
         res.status(201).json({ message: 'User created', data: userWithoutPassword })
     } catch (error: any) {
-        // MikroORM Errors
+        console.log({ error })
+
+        // Custom error handling
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // Zod Validation Error
+        if (error.name === 'ZodValidationError' || error.details) {
+            return res.status(400).json({
+                message: 'Invalid login request',
+                errors: error.details, // Array de errores de Zod
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: 'Credentials are not valid (email)',
+            })
+        }
+
         if (error.sqlMessage.includes('user_name_unique')) {
             return res.status(409).json({
                 message: `Name already taken`,
@@ -110,54 +148,118 @@ async function add(req: Request, res: Response) {
         res.status(500).json({ message: error.message })
     }
 }
-//TODO (ADMIN) Generate token & send mail
+
+//(ADMIN) Generate token & send mail
 async function sendInvitation(req: Request, res: Response) {
-    //* Extract userID from req.params.id
-    //* Verify if userID belong to a user
-    //* Extract userEmail from user
-    //* Use private function sendEmail(email, tokenPayload) -> tokenPayload = { userId: number }
-    res.status(404).json({ message: 'It has not yet been implemented' })
+    try {
+        const userId = Number.parseInt(req.params.id)
+
+        const frontendUrl = String(req.query['frontendUrl'])
+
+        const user = await em.findOneOrFail(User, { id: userId })
+
+        const email = user.mail
+
+        await mailer.sendEmail(email, frontendUrl, { userId })
+
+        return res.status(200).json({ message: 'An email has been sent successfully to invite the user' })
+    } catch (error: any) {
+        console.log(error)
+        // Custom error from mailer
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: "User doesn't exist in database",
+            })
+        }
+        res.status(500).json({ message: error.message })
+    }
 }
-//TODO (USER) Setup password
-async function setupPassword(req: Request, res: Response) {
-    //* Extract email_token
-    //* Verify email_token expiraton
-    //* Extract userEmail from token
-    //* Verify if userEmail belongs to a user
-    //* Extract & Hash password from req.body
-    //* Set user password
-    //* Return status
-    res.status(404).json({ message: 'It has not yet been implemented' })
-}
-//TODO (USER) Change password
+
+//(USER) Change password
 async function changePassword(req: Request, res: Response) {
-    //* Extract email_token
-    //* Verify email_token expiraton
-    //* Extract userEmail from token
-    //* Verify if userEmail belongs to a user
-    //* Extract & Hash password from req.body
-    //* Update user password
-    //* Return status
-    res.status(404).json({ message: 'It has not yet been implemented' })
+    try {
+        const mailToken = req.params.mailToken
+
+        if (!mailToken) {
+            const error = new Error('No token has been supplied')
+            ;(error as any).statusCode = 400
+            throw error
+        }
+
+        const decoded = JWTUtils.verify(mailToken)
+
+        const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
+
+        const password = req.body.password
+
+        const userWithNewPassword = em.assign(user, {
+            password: hashSync(password, Number(env.defaultSaltRounds)),
+        })
+
+        res.status(200).json({
+            message: `Updated user's password successfully`,
+            data: {
+                user: UserMapper.getUserResponse(userWithNewPassword),
+                token: JWTUtils.getJWT({ userId: user.id! }),
+            },
+        })
+    } catch (error: any) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: "User doesn't exist in database",
+            })
+        }
+        res.status(500).json({ message: error.message })
+    }
+
+    // // Extract email_token
+    // // Verify email_token expiraton
+    // // Extract userEmail from token
+    // // Verify if userEmail belongs to a user
+    // // Extract & Hash password from req.body
+    // // Update user password
+    // // Return status
 }
-//TODO (USER) Generate token & send mail with link to setup the new password
-async function requestResetPassword(req: Request, res: Response) {
+//(USER) Generate token & send mail with link to setup the new password
+async function requestResetPassword(req: RequestWithUser, res: Response) {
     //* The user is already authenticated by going through the authenticated middleware
 
-    //* Extract userEmail from req.user.email
-    //* Use private function sendEmail(email, tokenPayload) -> tokenPayload = { userId: number }
-    //* Return status
-    res.status(404).json({ message: 'It has not yet been implemented' })
+    try {
+        const email = String(req.user!.mail!)
+        const user = req.user
+        const frontendUrl = req.params.frontendUrl
+
+        if (!email) {
+            const error = new Error('No email has been supplied')
+            ;(error as any).statusCode = 400
+            throw error
+        }
+
+        const mailerResponse = mailer.sendEmail(email, frontendUrl, { userId: user!.id! })
+
+        res.status(200).json(`A reset password mail has been sent to the user's email`)
+    } catch (error: any) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        res.status(500).json({ message: error.message })
+    }
 }
-//TODO (USER) Reset password from "Forgot your password?"
-async function forgotPassword(req: Request, res: Response) {
-    //* Extract userEmail from req.body
-    //* Verify if userEmail exists
-    //* Use private function sendEmail(email, tokenPayload) -> tokenPayload = { userId: number }
-    //* Return status
-    res.status(404).json({ message: 'It has not yet been implemented' })
-}
-//TODO (ADMIN) Update user's data
+//(ADMIN) Update user's data
 async function update(req: Request, res: Response) {
     try {
         const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
@@ -189,24 +291,4 @@ async function update(req: Request, res: Response) {
     }
 }
 
-//TODO impleme
-function sendEmail(email: string, jwtPayload: { userId: number }) {
-    //*
-    //* Generate JWT using a jwt.sign()
-    //* Send email using emailService -> NODEMAILER
-    //* Return emailService response (successful or error)
-    return null
-}
-
-export {
-    findAll,
-    findOne,
-    add,
-    update,
-    remove,
-    sendInvitation,
-    setupPassword,
-    changePassword,
-    requestResetPassword,
-    forgotPassword,
-}
+export { findAll, findOne, add, update, remove, sendInvitation, changePassword, requestResetPassword }

@@ -12,7 +12,7 @@ export function authorizeMiddleware(...allowedRoles: string[]) {
         const userRole = user.role.name
 
         if (!allowedRoles.includes(userRole)) {
-            return res.status(401).json({
+            return res.status(403).json({
                 message: `User ${user.name} need a valid role: [${allowedRoles}]`,
             })
         }
