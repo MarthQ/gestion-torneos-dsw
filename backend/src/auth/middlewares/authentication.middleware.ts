@@ -21,6 +21,7 @@ export async function authenticationMiddleware(req: RequestWithUser, res: Respon
         const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
         req.user = user
+        console.log('Hasta acá llego')
         next()
     } catch (error: any) {
         // MikroORM Error
