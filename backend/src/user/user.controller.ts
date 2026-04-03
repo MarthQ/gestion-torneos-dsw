@@ -160,7 +160,7 @@ async function sendInvitation(req: Request, res: Response) {
 
         const email = user.mail
 
-        await mailer.sendEmail(email, frontendUrl, { userId })
+        await mailer.sendPasswordAsignation(email, frontendUrl, { userId })
 
         return res.status(200).json({ message: 'An email has been sent successfully to invite the user' })
     } catch (error: any) {
@@ -247,7 +247,7 @@ async function requestResetPassword(req: RequestWithUser, res: Response) {
             throw error
         }
 
-        const mailerResponse = mailer.sendEmail(email, frontendUrl, { userId: user!.id! })
+        const mailerResponse = mailer.sendPasswordReset(email, frontendUrl, { userId: user!.id! })
 
         res.status(200).json(`A reset password mail has been sent to the user's email`)
     } catch (error: any) {
