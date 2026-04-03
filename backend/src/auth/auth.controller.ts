@@ -17,6 +17,27 @@ const em = ORM.em
 
 const mailer = new Mailer()
 
+// Helper function to set JWT cookie
+function setJwtCookie(res: Response, token: string) {
+    res.cookie(env.jwtCookieName, token, {
+        httpOnly: true,
+        secure: env.jwtCookieSecure, // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
+        sameSite: 'lax',
+        maxAge: env.jwtCookieMaxAge,
+        path: '/',
+    })
+}
+
+// Helper function to clear JWT cookie
+function clearJwtCookie(res: Response) {
+    res.clearCookie(env.jwtCookieName, {
+        httpOnly: true,
+        secure: env.jwtCookieSecure,
+        sameSite: 'lax',
+        path: '/',
+    })
+}
+
 //* VALIDATORS
 const loginSchema = z.object({
     mail: z.string({ message: 'Mail must be a string' }).email({ message: 'Mail must be a valid email' }),
@@ -52,11 +73,14 @@ async function login(req: Request, res: Response) {
             throw error
         }
 
+        // Generate JWT and set as HttpOnly cookie
+        const token = JWTUtils.getJWT({ userId: user.id! })
+        setJwtCookie(res, token)
+
         res.status(200).json({
             message: 'User logged successfully',
             data: {
                 user: UserMapper.getUserResponse(user),
-                token: JWTUtils.getJWT({ userId: user.id! }),
             },
         })
     } catch (error: any) {
@@ -110,11 +134,14 @@ async function register(req: Request, res: Response) {
 
         await em.persistAndFlush(user)
 
+        // Generate JWT and set as HttpOnly cookie
+        const token = JWTUtils.getJWT({ userId: user.id! })
+        setJwtCookie(res, token)
+
         res.status(201).json({
             message: 'User created',
             data: {
                 user: UserMapper.getUserResponse(user),
-                token: JWTUtils.getJWT({ userId: user.id! }),
             },
         })
     } catch (error: any) {
@@ -206,11 +233,14 @@ async function setupPassword(req: Request, res: Response) {
 
         await em.persistAndFlush(userWithNewPassword)
 
+        // Generate JWT and set as HttpOnly cookie
+        const token = JWTUtils.getJWT({ userId: user.id! })
+        setJwtCookie(res, token)
+
         res.status(200).json({
             message: `Updated user's password successfully`,
             data: {
                 user: UserMapper.getUserResponse(userWithNewPassword),
-                token: JWTUtils.getJWT({ userId: user.id! }),
             },
         })
     } catch (error: any) {
@@ -237,9 +267,16 @@ async function checkAuthStatus(req: RequestWithUser, res: Response) {
         message: 'User authenticated',
         data: {
             user: UserMapper.getUserResponse(user),
-            token: JWTUtils.getJWT({ userId: user.id! }),
         },
     })
 }
 
-export { register, login, checkAuthStatus, forgotPassword, setupPassword }
+async function logout(req: Request, res: Response) {
+    clearJwtCookie(res)
+
+    res.status(200).json({
+        message: 'Logged out successfully',
+    })
+}
+
+export { register, login, checkAuthStatus, forgotPassword, setupPassword, logout }

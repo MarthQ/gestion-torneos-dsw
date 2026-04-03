@@ -10,7 +10,6 @@ export const TournamentHubRoutes: Routes = [
   {
     path: '',
     component: MainLayout,
-
     children: [
       {
         path: '',
