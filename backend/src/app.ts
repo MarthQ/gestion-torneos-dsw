@@ -13,7 +13,8 @@ import { matchupRouter } from './matchup/matchup.routes.js'
 import { tagRouter } from './tag/tag.routes.js'
 import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
-import { seedRoles, seedLocations, seedTags } from './db/seeds.js'
+import { regionRouter } from './region/region.routes.js'
+import { seedRoles, seedLocations, seedTags, seedRegions } from './db/seeds.js'
 import { env } from './config/env.js'
 
 const app = express()
@@ -37,6 +38,7 @@ app.use('/api/games', gameRouter)
 app.use('/api/tournaments', tournamentRouter)
 app.use('/api/users', userRouter)
 app.use('/api/locations', locationRouter)
+app.use('/api/regions', regionRouter)
 app.use('/api/inscriptions', inscriptionRouter)
 app.use('/api/matchups', matchupRouter)
 app.use('/api/tags', tagRouter)
@@ -51,6 +53,7 @@ await syncSchema() // Never in production
 await seedRoles()
 await seedLocations()
 await seedTags()
+await seedRegions()
 
 app.listen(3000, () => {
     console.log('Server running on https://localhost:3000/')
