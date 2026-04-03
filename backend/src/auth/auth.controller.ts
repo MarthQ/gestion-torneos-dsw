@@ -170,7 +170,7 @@ async function forgotPassword(req: Request, res: Response) {
 
         const user = await em.findOneOrFail(User, { mail: reqUser.mail }, { populate: ['location', 'role'] })
 
-        mailer.sendEmail(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
+        mailer.sendPasswordReset(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
     } catch (error: any) {
         if (error.statusCode) {
             return res.status(error.statusCode).json({
