@@ -15,11 +15,9 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private _user = signal<User | null>(null);
-  private _token = signal<string | null>(localStorage.getItem('token'));
   private _authStatus = signal<AuthStatus>(AUTH_STATUS.CHECKING);
 
   user = computed<User | null>(() => this._user());
-  token = computed<string | null>(() => this._token());
   authStatus = computed<AuthStatus>(() => {
     if (this._authStatus() === AUTH_STATUS.CHECKING) {
       return AUTH_STATUS.CHECKING;
@@ -52,39 +50,52 @@ export class AuthService {
   }
 
   checkAuthStatus(): Observable<boolean> {
-    if (!this._token()) {
-      this.logout();
-      return of(false);
-    }
-
+    // With HttpOnly cookies, we just check with the backend
+    // No need to check local token first - cookies handle it automatically
     return this.http.get<AuthResponse>(`${baseUrl}/auth/check-status`).pipe(
-      map((resp) => this.handleAuthSuccess(resp)),
-      catchError((error: any) => this.handleAuthError(error)),
+      map((resp) => {
+        this.handleAuthSuccess(resp);
+        return true;
+      }),
+      catchError(() => {
+        // No hay cookie válida - usuario no autenticado, pero la app debe cargar
+        this.clearLocalState();
+        return of(false);
+      }),
     );
   }
 
   logout() {
-    this._user.set(null);
-    this._token.set(null);
-    this._authStatus.set(AUTH_STATUS.NOT_AUTHENTICATED);
+    // Call logout endpoint to clear cookie, then clean local state
+    this.http.post(`${baseUrl}/auth/logout`, {}).subscribe({
+      next: () => {
+        this.clearLocalState();
+      },
+      error: () => {
+        // Even if the server call fails, clear local state
+        this.clearLocalState();
+      },
+    });
+  }
 
-    localStorage.removeItem('token');
+  private clearLocalState() {
+    this._user.set(null);
+    this._authStatus.set(AUTH_STATUS.NOT_AUTHENTICATED);
   }
 
   handleAuthSuccess(resp: AuthResponse): boolean {
     console.log(resp.message);
-    const { user, token } = resp.data;
+    const { user } = resp.data;
     this._user.set(user);
-    this._token.set(token);
     this._authStatus.set(AUTH_STATUS.AUTHENTICATED);
 
-    localStorage.setItem('token', token);
+    // No need to store token - HttpOnly cookie handles it
 
     return true;
   }
 
   handleAuthError(error: any) {
-    this.logout();
+    this.clearLocalState();
 
     return throwError(() => error.error.message);
   }

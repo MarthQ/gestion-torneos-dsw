@@ -5,11 +5,12 @@ import { ORM } from '../../shared/db/orm.js'
 
 import { User } from '../../user/user.entity.js'
 import { JWTUtils } from '../../shared/auth/jwt.utils.js'
+import { env } from '../../config/env.js'
 
 const em = ORM.em
 
 export async function authenticationMiddleware(req: RequestWithUser, res: Response, next: NextFunction) {
-    const token = req.headers.authorization?.split(' ')[1]
+    const token = req.cookies[env.jwtCookieName]
 
     if (!token) {
         return res.status(401).json({ message: 'No token' })
@@ -21,7 +22,16 @@ export async function authenticationMiddleware(req: RequestWithUser, res: Respon
         const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
         req.user = user
-        console.log('Hasta acá llego')
+
+        // Sliding session: renew cookie on each successful request
+        res.cookie(env.jwtCookieName, token, {
+            httpOnly: true,
+            secure: env.jwtCookieSecure, // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
+            sameSite: 'lax',
+            maxAge: env.jwtCookieMaxAge,
+            path: '/',
+        })
+
         next()
     } catch (error: any) {
         // MikroORM Error
