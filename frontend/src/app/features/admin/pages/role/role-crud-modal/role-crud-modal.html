@@ -4,28 +4,15 @@
     <form [formGroup]="roleForm">
       @if (type() === 'add' || type() === 'edit') {
         <div class="py-4">
-          @if (type() === 'add') {
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend">ID del rol</legend>
-              <input
-                type="number"
-                class="input focus:input-primary"
-                placeholder="Ingrese un número"
-                formControlName="id"
-              />
-
-              <p class="label">Obligatorio</p>
-            </fieldset>
-          }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre del rol</legend>
             <input
               type="text"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese el nombre del rol"
               formControlName="name"
             />
-            <p class="label">Obligatorio</p>
+            <form-error-label [control]="roleForm.get('name')!"></form-error-label>
           </fieldset>
         </div>
       } @else {
@@ -38,11 +25,7 @@
       <div class="modal-action">
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
-            <button
-              class="btn btn-primary hover:btn-success"
-              [disabled]="!roleForm.valid"
-              (click)="emitRole()"
-            >
+            <button class="btn btn-primary" [disabled]="!roleForm.valid" (click)="emitRole()">
               Guardar cambios
             </button>
           } @else {
@@ -50,7 +33,7 @@
               Borrar Rol
             </button>
           }
-          <button class="btn">Cancelar</button>
+          <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
     </form>

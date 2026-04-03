@@ -16,6 +16,7 @@ import { LocationService } from '@shared/services/location.service';
 import { LocationCrudModal } from './location-crud-modal/location-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
+import { CrudAction } from '@shared/interfaces/crudAction';
 
 @Component({
   imports: [LocationCrudModal, Pagination, SearchBar],
@@ -72,41 +73,41 @@ export class LocationCrud {
     this.selectedLocation.set(location);
     this.openModal.set(true);
   }
-  handleCrudAction(location: Location) {
-    switch (this.modalType()) {
-      case 'add':
-        this.locationService.addLocation(location).subscribe({
+  handleCrudAction(event: CrudAction<Location>) {
+    switch (event.actionType) {
+      case 'create':
+        this.locationService.addLocation(event.data).subscribe({
           next: () => {
             Toaster.success('La localidad se agregó correctamente');
             this.locationResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
-      case 'edit':
-        this.locationService.updateLocation(location).subscribe({
+      case 'update':
+        this.locationService.updateLocation(event.data).subscribe({
           next: () => {
             Toaster.success('La localidad se modificó correctamente');
             this.locationResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
       case 'delete':
-        this.locationService.deleteLocation(location).subscribe({
+        this.locationService.deleteLocation(event.data).subscribe({
           next: () => {
             Toaster.success('La localidad se eliminó correctamente');
             this.locationResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
     }

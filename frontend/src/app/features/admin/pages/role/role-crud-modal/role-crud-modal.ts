@@ -1,11 +1,13 @@
 import { I18nSelectPipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+import { CrudAction } from '@shared/interfaces/crudAction';
 import { Role } from '@shared/interfaces/role';
 
 @Component({
   selector: 'role-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './role-crud-modal.html',
 })
 export class RoleCrudModal {
@@ -13,7 +15,7 @@ export class RoleCrudModal {
   type = input.required<'add' | 'edit' | 'delete'>();
   open = input.required<boolean>();
   closed = output<void>();
-  confirmAction = output<Role>();
+  confirmAction = output<CrudAction<Role>>();
 
   roleModal = viewChild.required<ElementRef<HTMLDialogElement>>('roleModal');
 
@@ -27,7 +29,6 @@ export class RoleCrudModal {
   };
 
   roleForm = this.fb.nonNullable.group({
-    id: [0, Validators.required],
     name: ['', Validators.required],
   });
 
@@ -35,7 +36,6 @@ export class RoleCrudModal {
     if (this.open()) {
       this.roleModal().nativeElement.showModal();
       this.roleForm.patchValue({
-        id: this.role().id ?? 0,
         name: this.role().name ?? '',
       });
     } else {
@@ -47,9 +47,19 @@ export class RoleCrudModal {
     this.closed.emit();
   }
   emitRole() {
-    if (this.roleForm.valid) {
-      const role = this.roleForm.getRawValue();
-      this.confirmAction.emit(role);
+    const { name } = this.roleForm.getRawValue();
+    const id = this.role()?.id;
+
+    switch (this.type()) {
+      case 'add':
+        this.confirmAction.emit({ actionType: 'create', data: { name } });
+        break;
+      case 'edit':
+        this.confirmAction.emit({ actionType: 'update', data: { id: id!, name } });
+        break;
+      case 'delete':
+        this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
+        break;
     }
   }
 }

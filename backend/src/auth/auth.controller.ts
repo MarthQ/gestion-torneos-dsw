@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
 import { z } from 'zod'
-import { fromError, fromZodError, ValidationError } from 'zod-validation-error'
+import { fromZodError } from 'zod-validation-error'
 import { compareSync, hashSync } from 'bcrypt'
 
 import { env } from '../config/env.js'
@@ -10,9 +9,34 @@ import { User } from '../user/user.entity.js'
 import { Role } from '../role/role.entity.js'
 import { USER_ROLE } from './interfaces/user-role.const.js'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
-import { JwtPayload } from './interfaces/jwt-payload.interface.js'
+import { UserMapper } from '../shared/mappers/user.mapper.js'
+import { JWTUtils } from '../shared/auth/jwt.utils.js'
+import { Mailer } from '../shared/mailer/mailer.service.js'
 
 const em = ORM.em
+
+const mailer = new Mailer()
+
+// Helper function to set JWT cookie
+function setJwtCookie(res: Response, token: string) {
+    res.cookie(env.jwtCookieName, token, {
+        httpOnly: true,
+        secure: env.jwtCookieSecure, // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
+        sameSite: 'lax',
+        maxAge: env.jwtCookieMaxAge,
+        path: '/',
+    })
+}
+
+// Helper function to clear JWT cookie
+function clearJwtCookie(res: Response) {
+    res.clearCookie(env.jwtCookieName, {
+        httpOnly: true,
+        secure: env.jwtCookieSecure,
+        sameSite: 'lax',
+        path: '/',
+    })
+}
 
 //* VALIDATORS
 const loginSchema = z.object({
@@ -43,17 +67,20 @@ async function login(req: Request, res: Response) {
         const user = await em.findOneOrFail(User, { mail: mail }, { populate: ['role', 'location'] })
 
         //* if Passwords doesn't match
-        if (!compareSync(password, user.password)) {
+        if (!compareSync(password, user.password!)) {
             const error = new Error('Credential is not valid (password)')
             ;(error as any).statusCode = 401
             throw error
         }
 
+        // Generate JWT and set as HttpOnly cookie
+        const token = JWTUtils.getJWT({ userId: user.id! })
+        setJwtCookie(res, token)
+
         res.status(200).json({
             message: 'User logged successfully',
             data: {
-                user: getUserResponse(user),
-                token: getJWT({ userId: user.id! }),
+                user: UserMapper.getUserResponse(user),
             },
         })
     } catch (error: any) {
@@ -97,7 +124,6 @@ async function register(req: Request, res: Response) {
 
         const { password, ...userData } = newUser
 
-        // Buscar rol "user" por nombre (no hardcodear ID)
         const userRole = await em.findOneOrFail(Role, { name: USER_ROLE.USER })
 
         const user = em.create(User, {
@@ -108,15 +134,18 @@ async function register(req: Request, res: Response) {
 
         await em.persistAndFlush(user)
 
+        // Generate JWT and set as HttpOnly cookie
+        const token = JWTUtils.getJWT({ userId: user.id! })
+        setJwtCookie(res, token)
+
         res.status(201).json({
             message: 'User created',
             data: {
-                user: getUserResponse(user),
-                token: getJWT({ userId: user.id! }),
+                user: UserMapper.getUserResponse(user),
             },
         })
     } catch (error: any) {
-        // 4. Error genérico
+        // General error
         console.error({
             name: error.name,
             message: error.message,
@@ -154,7 +183,82 @@ async function register(req: Request, res: Response) {
     }
 }
 
-//TODO
+//TODO (USER) Reset password from "Forgot your password?"
+async function forgotPassword(req: Request, res: Response) {
+    try {
+        const reqUser: User = req.body
+        const frontendUrl = env.frontendURL
+
+        if (!reqUser) {
+            const error = new Error('No user has been provided')
+            ;(error as any).statusCode = 401
+            throw error
+        }
+
+        const user = await em.findOneOrFail(User, { mail: reqUser.mail }, { populate: ['location', 'role'] })
+
+        mailer.sendPasswordReset(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
+    } catch (error: any) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        res.status(500).json({ message: error.message })
+    }
+}
+
+//TODO (USER) Setup password
+async function setupPassword(req: Request, res: Response) {
+    try {
+        const mailToken = String(req.query.mailToken)
+
+        if (!mailToken) {
+            const error = new Error('No token has been supplied')
+            ;(error as any).statusCode = 400
+            throw error
+        }
+
+        const decoded = JWTUtils.verify(mailToken)
+
+        const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
+
+        const password = req.body.password
+
+        console.log(`La password que estamos cargando es: -${password}-`)
+
+        const userWithNewPassword = em.assign(user, {
+            password: hashSync(password, Number(env.defaultSaltRounds)),
+        })
+
+        await em.persistAndFlush(userWithNewPassword)
+
+        // Generate JWT and set as HttpOnly cookie
+        const token = JWTUtils.getJWT({ userId: user.id! })
+        setJwtCookie(res, token)
+
+        res.status(200).json({
+            message: `Updated user's password successfully`,
+            data: {
+                user: UserMapper.getUserResponse(userWithNewPassword),
+            },
+        })
+    } catch (error: any) {
+        // Custom error handling
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: "User doesn't exist in database",
+            })
+        }
+        res.status(500).json({ message: error.message })
+    }
+}
 
 async function checkAuthStatus(req: RequestWithUser, res: Response) {
     const user = req.user!
@@ -162,29 +266,17 @@ async function checkAuthStatus(req: RequestWithUser, res: Response) {
     return res.status(201).json({
         message: 'User authenticated',
         data: {
-            user: getUserResponse(user),
-            token: getJWT({ userId: user.id! }),
+            user: UserMapper.getUserResponse(user),
         },
     })
 }
 
-//* PRIVATE METHODS
-function getJWT(payload: JwtPayload) {
-    const token = jwt.sign(payload, env.jwtSecret, {
-        algorithm: 'HS256',
-        expiresIn: '24h',
+async function logout(req: Request, res: Response) {
+    clearJwtCookie(res)
+
+    res.status(200).json({
+        message: 'Logged out successfully',
     })
-    return token
 }
 
-function getUserResponse(user: User) {
-    return {
-        id: user.id,
-        name: user.name,
-        mail: user.mail,
-        location: user.location,
-        role: user.role,
-    }
-}
-
-export { register, login, checkAuthStatus }
+export { register, login, checkAuthStatus, forgotPassword, setupPassword, logout }

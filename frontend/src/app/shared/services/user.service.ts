@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { CrudAction } from '@shared/interfaces/crudAction';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { User, UserFormDTO } from '@shared/interfaces/user';
 import { catchError, map, Observable, throwError } from 'rxjs';
@@ -45,48 +46,52 @@ export class UserService {
       );
   }
 
-  addUser(newUser: UserFormDTO): Observable<UserFormDTO> {
-    console.log(newUser);
-
-    const { id, ...rest } = newUser;
-    const body = id ? { id, ...rest } : rest;
-
-    return this.http.post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, body).pipe(
+  addUser(newUser: Omit<UserFormDTO, 'id'>): Observable<UserFormDTO> {
+    return this.http.post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, newUser).pipe(
       map((response) => response.data),
       catchError((error) => {
-        console.log('Error adding user: ', error);
-        return throwError(() => new Error(`No se pudo agregar el usuario`));
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
       }),
     );
   }
 
   updateUser(updatedUser: UserFormDTO): Observable<UserFormDTO> {
     const { id, ...body } = updatedUser;
-
     return this.http
       .patch<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users/${id}`, body)
       .pipe(
         map((response) => response.data),
         catchError((error) => {
           console.log('Error updating user: ', error);
-          return throwError(() => new Error(`No se pudo modificar el usuario`));
+          return throwError(() => error.error.message);
         }),
       );
   }
 
-  deleteUser(toBeDeletedUser: UserFormDTO): Observable<UserFormDTO> {
-    const { id, ...rest } = toBeDeletedUser;
-
-    return this.http.delete<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users/${id}`).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error removing user: ', error);
-        return throwError(() => new Error(`No se pudo borrar el usuario`));
-      }),
-    );
+  deleteUser(toBeDeletedUser: Pick<UserFormDTO, 'id'>): Observable<UserFormDTO> {
+    return this.http
+      .delete<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users/${toBeDeletedUser.id}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error removing user: ', error);
+          return throwError(() => error.error.message);
+        }),
+      );
   }
 
   getUserById(userId: Number) {
     return this.http.get(`${baseUrl}/users/${userId}`);
+  }
+
+  sendInvitation(userId: number, path: string) {
+    const params = { path };
+    return this.http.get(`${baseUrl}/users/${userId}/invite`, { params }).pipe(
+      catchError((error) => {
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
+      }),
+    );
   }
 }

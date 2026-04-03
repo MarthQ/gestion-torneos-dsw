@@ -16,6 +16,7 @@ import { map, of, tap } from 'rxjs';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { GameCrudModal } from './game-crud-modal/game-crud-modal';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   imports: [Pagination, SearchBar, GameCrudModal],
@@ -110,9 +111,9 @@ export class GameCrud {
             this.gameResource.reload();
             this.igdbGameResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
@@ -122,9 +123,9 @@ export class GameCrud {
             Toaster.success('El juego se modificó correctamente');
             this.gameResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
@@ -135,9 +136,9 @@ export class GameCrud {
             this.gameResource.reload();
             this.igdbGameResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
     }

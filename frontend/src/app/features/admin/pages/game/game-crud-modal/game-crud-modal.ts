@@ -15,10 +15,11 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { GameService } from '@shared/services/game.service';
 import { Game } from '@shared/interfaces/game';
 import { debounceTime, switchMap, tap } from 'rxjs';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 
 @Component({
   selector: 'game-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule, FormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormsModule, FormErrorLabel],
   templateUrl: './game-crud-modal.html',
 })
 export class GameCrudModal {

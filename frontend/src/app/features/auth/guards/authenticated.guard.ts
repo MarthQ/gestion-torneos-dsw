@@ -9,7 +9,6 @@ export const AuthenticatedGuard: CanMatchFn = async (route: Route, segments: Url
 
   const isAuthenticated = authService.authStatus() === AUTH_STATUS.AUTHENTICATED;
 
-  //TODO: delete console.log
   console.log({ isAuthenticated }, { authStatus: authService.authStatus() });
 
   if (!isAuthenticated) {

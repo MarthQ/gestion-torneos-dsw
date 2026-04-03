@@ -36,10 +36,10 @@
         @for (button of sidebarButtons(); track button.name) {
           <li>
             <button
-              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10"
               [attr.data-tip]="button.name"
               [routerLink]="button.routerPath"
-              routerLinkActive="bg-primary font-bold"
+              routerLinkActive="bg-primary text-primary-content font-bold"
             >
               <span class="{{ button.icon }} my-1.5 inline-block size-4"></span>
               <span class="is-drawer-close:hidden">{{ button.name }}</span>
@@ -48,49 +48,55 @@
         }
         <hr class="opacity-75 my-2" />
 
-        <!-- Implementar collapsable -->
-
         @if (isAdmin) {
           @for (adminButton of adminSidebarButtons(); track adminButton.name) {
             <li>
               <button
-                class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10"
                 [attr.data-tip]="adminButton.name"
                 [routerLink]="adminButton.routerPath"
-                routerLinkActive="bg-primary font-bold"
+                routerLinkActive="bg-primary text-primary-content font-bold"
               >
                 <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span>
                 <span class="is-drawer-close:hidden">{{ adminButton.name }}</span>
               </button>
             </li>
           }
+          <hr class="opacity-75 my-2" />
         }
-        <hr class="opacity-75 my-2 grow" />
-        <li class="mt-auto">
-          <button
-            class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-            [attr.data-tip]="authService.user()?.name"
-            routerLink="/profile"
-            routerLinkActive="bg-primary"
-          >
-            <!-- <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span> -->
-            <div class="flex items-center justify-center">
-              <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
-            </div>
-            <div class="flex flex-col ml-2 justify-center">
-              <span
-                class="is-drawer-close:hidden text-primary-content"
-                routerLinkActive="font-bold"
-                >{{ authService.user()?.name }}</span
-              >
-              <span
-                class="is-drawer-close:hidden text-xs text-gray-500 truncate max-w-x"
-                routerLinkActive="text-primary-content"
-                >{{ authService.user()?.mail }}</span
-              >
-            </div>
-          </button>
-        </li>
+        @if (authService.user()) {
+          <li class="mt-auto">
+            <button
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              [attr.data-tip]="authService.user()?.name"
+              routerLink="/profile"
+              routerLinkActive="bg-primary text-primary-content"
+            >
+              <div class="flex items-center justify-center font-bold">
+                <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
+              </div>
+              <div class="flex flex-col ml-2 justify-center" routerLinkActive="font-bold">
+                <span class="is-drawer-close:hidden">
+                  {{ authService.user()?.name }}
+                </span>
+                <span class="is-drawer-close:hidden text-xs font-mono truncate max-w-x"
+                  >{{ authService.user()?.mail }}
+                </span>
+              </div>
+            </button>
+          </li>
+        } @else {
+          <li class="mt-auto">
+            <button
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              data-tip="Login"
+              routerLink="/auth/login"
+            >
+              <span class="icon-[material-symbols--login] my-1.5 inline-block size-4"></span>
+              <span class="is-drawer-close:hidden">Loguearse</span>
+            </button>
+          </li>
+        }
       </ul>
     </div>
   </div>

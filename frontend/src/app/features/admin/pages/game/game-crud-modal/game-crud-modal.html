@@ -8,10 +8,11 @@
             <legend class="fieldset-legend">Nombre del juego</legend>
             <input
               type="text"
-              class="input focus:input-primary"
+              class="input input-primary border-base-300 input-bordered"
               placeholder="Ingrese el nombre del juego"
               formControlName="name"
             />
+            <form-error-label [control]="gameForm.get('name')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Descripción del juego</legend>
@@ -21,7 +22,7 @@
               placeholder="Ingrese la descripción del juego"
               formControlName="description"
             ></textarea>
-            <span class="label">Obligatorio</span>
+            <form-error-label [control]="gameForm.get('description')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
             @if (gameForm.get('imgUrl')?.value) {
@@ -53,7 +54,7 @@
         <form method="dialog" class="flex gap-2">
           @if (type() === 'add' || type() === 'edit') {
             <button
-              class="btn btn-primary hover:btn-success"
+              class="btn btn-primary"
               [disabled]="!gameForm.valid"
               (click)="emitGame()"
             >
@@ -64,7 +65,7 @@
               Borrar Juego
             </button>
           }
-          <button class="btn">Cancelar</button>
+          <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
     </form>

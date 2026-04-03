@@ -27,15 +27,15 @@ async function findAll(req: Request, res: Response) {
                 offset: (page - 1) * pageSize,
             })
             return res.status(200).json({
-                message: 'Found all locations',
+                message: 'Found paginated locations',
                 data: locations,
                 meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
             })
         }
-        const Inscriptions = await em.find(Location, filter)
+        const locations = await em.find(Location, filter)
         res.status(200).json({
-            message: 'Found all inscriptions',
-            data: Inscriptions,
+            message: 'Found all locations',
+            data: locations,
         })
     } catch (error: any) {
         res.status(404).json({ message: error.message })

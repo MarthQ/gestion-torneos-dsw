@@ -1,12 +1,14 @@
 import { I18nSelectPipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+import { CrudAction } from '@shared/interfaces/crudAction';
 
 import { Location } from '@shared/interfaces/location';
 
 @Component({
   selector: 'location-crud-modal',
-  imports: [I18nSelectPipe, ReactiveFormsModule],
+  imports: [I18nSelectPipe, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './location-crud-modal.html',
 })
 export class LocationCrudModal {
@@ -14,7 +16,7 @@ export class LocationCrudModal {
   type = input.required<'add' | 'edit' | 'delete'>();
   open = input.required<boolean>();
   closed = output<void>();
-  confirmAction = output<Location>();
+  confirmAction = output<CrudAction<Location>>();
 
   locationModal = viewChild.required<ElementRef<HTMLDialogElement>>('locationModal');
 
@@ -28,7 +30,6 @@ export class LocationCrudModal {
   };
 
   locationForm = this.fb.nonNullable.group({
-    id: [0, Validators.required],
     name: ['', Validators.required],
   });
 
@@ -36,7 +37,6 @@ export class LocationCrudModal {
     if (this.open()) {
       this.locationModal().nativeElement.showModal();
       this.locationForm.patchValue({
-        id: this.location().id ?? 0,
         name: this.location().name ?? '',
       });
     } else {
@@ -49,8 +49,19 @@ export class LocationCrudModal {
   }
   emitLocation() {
     if (this.locationForm.valid) {
-      const location = this.locationForm.getRawValue();
-      this.confirmAction.emit(location);
+      const { name } = this.locationForm.getRawValue();
+      const id = this.location()?.id;
+
+      switch (this.type()) {
+        case 'add':
+          this.confirmAction.emit({ actionType: 'create', data: { name } });
+          break;
+        case 'edit':
+          this.confirmAction.emit({ actionType: 'update', data: { id: id!, name } });
+          break;
+        case 'delete':
+          this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
+      }
     }
   }
 }

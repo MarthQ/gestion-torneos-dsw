@@ -53,7 +53,7 @@ export class GameService {
       map((response) => response.data),
       catchError((error) => {
         console.log('Error adding game: ', error);
-        return throwError(() => new Error(`No se pudo agregar el juego`));
+        return throwError(() => error.error.message);
       }),
     );
   }
@@ -65,20 +65,20 @@ export class GameService {
       map((response) => response.data),
       catchError((error) => {
         console.log('Error updating game: ', error);
-        return throwError(() => new Error(`No se pudo modificar el juego`));
+        return throwError(() => error.error.message);
       }),
     );
   }
 
   deleteGame(toBeDeletedGame: Game): Observable<Game> {
-    const { id, ...rest } = toBeDeletedGame;
-
-    return this.http.delete<ApiResponse<Game>>(`${environment.apiUrl}/games/${id}`).pipe(
-      map((response) => response.data),
-      catchError((error) => {
-        console.log('Error removing game: ', error);
-        return throwError(() => new Error(`No se pudo borrar el juego`));
-      }),
-    );
+    return this.http
+      .delete<ApiResponse<Game>>(`${environment.apiUrl}/games/${toBeDeletedGame.id}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error removing game: ', error);
+          return throwError(() => error.error.message);
+        }),
+      );
   }
 }

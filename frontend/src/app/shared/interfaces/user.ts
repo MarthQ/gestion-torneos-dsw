@@ -8,11 +8,11 @@ export interface User {
   mail: string;
   location: Location;
   role: Role;
+  hasPassword: boolean;
 }
 export interface UserFormDTO {
   id: number;
   name: string;
-  password: string;
   mail: string;
   location: number;
   role: number;
@@ -27,8 +27,7 @@ export interface UserRegisterDTO {
   role?: string;
 }
 
-export interface UserFormLogin{
-  mail:string;
+export interface UserFormLogin {
+  mail: string;
   password: string;
 }
-

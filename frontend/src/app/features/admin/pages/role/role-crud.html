@@ -1,7 +1,9 @@
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
   <div>
-    <h1 class="text-3xl font-bold text-white">Gestión de Roles</h1>
-    <h2 class="text-gray-400">Administra los roles disponibles para asignar a los usuarios.</h2>
+    <h1 class="text-3xl font-bold">Gestión de Roles</h1>
+    <h2 class="text-base-content/60">
+      Administra los roles disponibles para asignar a los usuarios.
+    </h2>
   </div>
   <button class="btn btn-primary shadow-lg" (click)="addRole()">
     <span class="icon-[ic--baseline-plus] mr-2"></span>
@@ -11,22 +13,22 @@
 
 <app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" />
 
-<div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
+<div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
   @if (roleResource.hasValue()) {
     <table class="table w-full">
       <!-- head -->
-      <thead class="bg-base-300 text-gray-300">
+      <thead class="bg-base-300">
         <tr>
           <th>ID</th>
           <th>Nombre del Rol</th>
           <th class="text-center">Acciones</th>
         </tr>
       </thead>
-      <tbody class="text-gray-300">
+      <tbody>
         @for (role of roleResource.value(); track role.name) {
-          <tr class="hover:bg-gray-700/30 transition-colors">
+          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
             <td>
-              <div class="font-mono text-sm text-gray-500">{{ role.id }}</div>
+              <div class="font-mono text-sm">{{ role.id }}</div>
             </td>
             <td>
               <div class="font-bold badge badge-lg badge-primary">
@@ -37,7 +39,7 @@
             <td>
               <div class="flex justify-center gap-2">
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:text-yellow-300"
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
                   (click)="editRole(role)"
                 >
                   <span
@@ -46,7 +48,7 @@
                   ></span>
                 </button>
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:text-red-400"
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
                   (click)="deleteRole(role)"
                 >
                   <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>

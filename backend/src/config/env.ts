@@ -10,8 +10,23 @@ export const env = {
     DB_PORT: process.env.DB_PORT,
     DB_USERNAME: process.env.DB_USERNAME,
 
+    smtpHost: process.env.SMTP_HOST,
+    smtpPort: process.env.SMTP_PORT,
+    smtpUser: process.env.SMTP_USER,
+    smtpPass: process.env.SMTP_PASS,
+    mailFrom: process.env.MAIL_FROM,
+
     igdbClientId: process.env.IGDB_CLIENT_ID,
     igdbAccessToken: process.env.IGDB_ACCESS_TOKEN,
     defaultSaltRounds: process.env.DEFAULT_SALT_ROUNDS,
     jwtSecret: process.env.JWT_SECRET,
+
+    // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
+    jwtCookieSecure: process.env.JWT_COOKIE_SECURE === 'true',
+
+    // Cookie config (4 horas en ms)
+    jwtCookieMaxAge: 4 * 60 * 60 * 1000,
+    jwtCookieName: 'access_token',
+
+    frontendURL: process.env.FRONTEND_URL,
 }

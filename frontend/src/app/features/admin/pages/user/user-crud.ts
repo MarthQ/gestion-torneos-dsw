@@ -11,6 +11,7 @@ import { UserCrudModal } from './user-crud-modal/user-crud-modal';
 import { LocationService } from '@shared/services/location.service';
 import { RoleService } from '@features/admin/services/role.service';
 import { QueryFilter } from '@shared/interfaces/filters';
+import { CrudAction } from '@shared/interfaces/crudAction';
 
 @Component({
   imports: [Pagination, SearchBar, UserCrudModal],
@@ -80,43 +81,56 @@ export class UserCrud {
     this.openModal.set(true);
   }
 
-  handleCrudAction(user: UserFormDTO) {
-    switch (this.modalType()) {
-      case 'add':
-        this.userService.addUser(user).subscribe({
+  handleCrudAction(event: CrudAction<UserFormDTO>) {
+    switch (event.actionType) {
+      case 'create':
+        this.userService.addUser(event.data).subscribe({
           next: () => {
             Toaster.success('El usuario se agregó correctamente');
             this.userResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
-      case 'edit':
-        this.userService.updateUser(user).subscribe({
+      case 'update':
+        this.userService.updateUser(event.data).subscribe({
           next: () => {
             Toaster.success('El usuario se modificó correctamente');
             this.userResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
         break;
       case 'delete':
-        this.userService.deleteUser(user).subscribe({
+        this.userService.deleteUser(event.data).subscribe({
           next: () => {
             Toaster.success('El usuario se eliminó correctamente');
             this.userResource.reload();
           },
-          error: (err) => {
-            Toaster.error(err);
-            console.error(err);
+          error: (message) => {
+            Toaster.error(message);
+            console.error(message);
           },
         });
     }
+  }
+
+  sendInvitation(user: User) {
+    const path = '/auth/setup-password';
+    this.userService.sendInvitation(user.id, path).subscribe({
+      next: () => {
+        Toaster.success(`Email enviado correctamente a ${user.mail}`);
+      },
+      error: (message) => {
+        Toaster.error(message);
+        console.log(message);
+      },
+    });
   }
 }
