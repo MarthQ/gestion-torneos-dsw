@@ -29,7 +29,7 @@ export class UserProfile {
   }
 
   sendInvitation() {
-    const frontendUrl = `${window.location.host}/setup-password`;
+    const frontendUrl = '/setup-password';
     const user = this.userResource.value();
     this.userService.sendInvitation(user.id, frontendUrl).subscribe({
       next: () => {

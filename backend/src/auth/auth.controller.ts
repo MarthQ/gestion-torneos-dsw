@@ -187,7 +187,7 @@ async function register(req: Request, res: Response) {
 async function forgotPassword(req: Request, res: Response) {
     try {
         const reqUser: User = req.body
-        const frontendUrl = String(req.query['frontendUrl'])
+        const frontendUrl = env.frontendURL
 
         if (!reqUser) {
             const error = new Error('No user has been provided')

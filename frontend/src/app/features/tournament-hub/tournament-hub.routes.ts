@@ -4,7 +4,7 @@ import { MyInscriptions } from './pages/my-inscriptions/my-inscriptions';
 import { UserProfile } from './pages/user-profile/user-profile';
 import { MainLayout } from './layout/main-layout/main-layout';
 import { AuthenticatedGuard } from '@features/auth/guards/authenticated.guard';
-import { SetupPassword } from './pages/setup-password';
+import { SetupPassword } from './pages/setup-password/setup-password';
 
 export const TournamentHubRoutes: Routes = [
   {

@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 //TODO: Investigate how to do a injectable dependency in express
 export class Mailer {
     private getResetPasswordTemplate(token: string, frontendUrl: string): string {
-        const resetUrl = `http://${frontendUrl}?token=${encodeURIComponent(token)}`
+        const resetUrl = `${frontendUrl}?token=${encodeURIComponent(token)}`
         return `
     <h1>Recuperación de contraseña</h1>
     <p>Hiciste un pedido para restablecer tu contraseña.</p>
@@ -27,7 +27,7 @@ export class Mailer {
     <p>Si no pediste esto, ignorá este email.</p>`
     }
     private getPasswordAsignationTemplate(token: string, frontendUrl: string): string {
-        const resetUrl = `http://${frontendUrl}?token=${encodeURIComponent(token)}`
+        const resetUrl = `${frontendUrl}?token=${encodeURIComponent(token)}`
         return `
     <h1>Asignación de contraseña</h1>
     <p>Un admin creó tu cuenta por lo que debes asignar tu contraseña.</p>

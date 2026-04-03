@@ -14,12 +14,13 @@ import { tagRouter } from './tag/tag.routes.js'
 import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
 import { seedRoles, seedLocations, seedTags } from './db/seeds.js'
+import { env } from './config/env.js'
 
 const app = express()
 app.use(express.json())
 app.use(
     cors({
-        origin: 'http://localhost:4200',
+        origin: env.frontendURL,
         credentials: true,
     }),
 )

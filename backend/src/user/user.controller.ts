@@ -154,7 +154,7 @@ async function sendInvitation(req: Request, res: Response) {
     try {
         const userId = Number.parseInt(req.params.id)
 
-        const frontendUrl = String(req.query['frontendUrl'])
+        const frontendUrl = `${env.frontendURL}${req.query['path']}`
 
         const user = await em.findOneOrFail(User, { id: userId })
 
@@ -239,7 +239,7 @@ async function requestResetPassword(req: RequestWithUser, res: Response) {
     try {
         const email = String(req.user!.mail!)
         const user = req.user
-        const frontendUrl = req.params.frontendUrl
+        const frontendUrl = `${env.frontendURL}${req.query['path']}`
 
         if (!email) {
             const error = new Error('No email has been supplied')
