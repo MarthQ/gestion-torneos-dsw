@@ -85,8 +85,8 @@ export class UserService {
     return this.http.get(`${baseUrl}/users/${userId}`);
   }
 
-  sendInvitation(userId: number, frontendUrl: string) {
-    const params = { frontendUrl };
+  sendInvitation(userId: number, path: string) {
+    const params = { path };
     return this.http.get(`${baseUrl}/users/${userId}/invite`, { params }).pipe(
       catchError((error) => {
         console.log('Error removing user: ', error);

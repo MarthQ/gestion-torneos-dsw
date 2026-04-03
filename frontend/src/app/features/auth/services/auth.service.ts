@@ -100,11 +100,10 @@ export class AuthService {
     return throwError(() => error.error.message);
   }
 
-  requestForgotPassword(mail: string, frontendUrl: string) {
+  requestForgotPassword(mail: string) {
     const body = { mail };
-    const params = { frontendUrl };
     return this.http
-      .post(`${baseUrl}/auth/forgot-password`, body, { params })
+      .post(`${baseUrl}/auth/forgot-password`, body)
       .pipe(catchError((error: any) => throwError(() => error.error.message)));
   }
 

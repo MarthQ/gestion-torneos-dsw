@@ -29,11 +29,7 @@ export class ForgotPassword {
 
     const { mail } = this.forgotForm.value;
 
-    const frontendUrl = window.location.host;
-
-    console.log(frontendUrl);
-
-    this.authService.requestForgotPassword(mail!, frontendUrl).subscribe({
+    this.authService.requestForgotPassword(mail!).subscribe({
       error: (message) => {
         Toaster.error(message);
       },
