@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
+import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 

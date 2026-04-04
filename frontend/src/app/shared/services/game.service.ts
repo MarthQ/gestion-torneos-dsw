@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Game } from '@shared/interfaces/game';
+import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 

@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { User, UserFormDTO } from '@shared/interfaces/user';
+import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 

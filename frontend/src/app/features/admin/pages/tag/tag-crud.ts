@@ -18,9 +18,14 @@ import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { DataTable } from '@shared/components/data-table/data-table';
+import { TableColumn } from '@shared/interfaces/table-column';
+import { TableAction } from '@shared/interfaces/table-action';
+import { TableState } from '@shared/interfaces/table-state';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
-  imports: [TagCrudModal, Pagination, SearchBar],
+  imports: [Pagination, SearchBar, TagCrudModal, DataTable],
   templateUrl: './tag-crud.html',
 })
 export class TagCrud {
@@ -53,6 +58,34 @@ export class TagCrud {
         map((response) => response.data),
       );
     },
+  });
+
+  // Table configuration
+  tagColumns: TableColumn<Tag>[] = [
+    { key: 'id', label: 'ID', width: '80px' },
+    { key: 'name', label: 'Nombre', width: '200px' },
+    { key: 'description', label: 'Descripción' },
+  ];
+
+  tagActions: TableAction<Tag>[] = [
+    {
+      icon: 'boxicons--edit-filled',
+      label: 'Editar etiqueta',
+      action: 'edit',
+      color: 'warning',
+    },
+    {
+      icon: 'boxicons--trash',
+      label: 'Eliminar etiqueta',
+      action: 'delete',
+      color: 'error',
+    },
+  ];
+
+  tableState = computed<TableState>(() => {
+    if (this.tagResource.isLoading()) return 'loading';
+    if (this.tagResource.hasValue() && this.tagResource.value().length === 0) return 'empty';
+    return 'hasData';
   });
 
   // Visual actions (pagination)
@@ -123,5 +156,13 @@ export class TagCrud {
       .includes(tag.name);
 
     return result;
+  }
+
+  handleRowAction(event: { action: 'edit' | 'delete'; row: Tag }) {
+    if (event.action === 'edit') {
+      this.editTag(event.row);
+    } else {
+      this.deleteTag(event.row);
+    }
   }
 }

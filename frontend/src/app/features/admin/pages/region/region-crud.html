@@ -1,37 +1,37 @@
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
   <div>
-    <h1 class="text-3xl font-bold">Gestión de Etiquetas</h1>
+    <h1 class="text-3xl font-bold">Gestión de Regiones</h1>
     <h2 class="text-base-content/60">
-      Administra el catálogo de etiquetas disponibles para torneos.
+      Administra el catálogo de regiones disponibles para torneos y para usuarios.
     </h2>
   </div>
-  <button class="btn btn-primary shadow-lg" (click)="addTag()">
+  <button class="btn btn-primary shadow-lg" (click)="addRegion()">
     <span class="icon-[ic--baseline-plus] mr-2"></span>
-    Nueva Etiqueta
+    Nueva Región
   </button>
 </div>
 
 <app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" />
 
 <app-data-table
-  [columns]="tagColumns"
-  [data]="tagResource.value() ?? []"
+  [columns]="regionColumns"
+  [data]="regionResource.value() ?? []"
   [state]="tableState()"
-  [actions]="tagActions"
+  [actions]="regionActions"
   [pageSize]="pageSize"
   (rowAction)="handleRowAction($event)"
-  (retry)="tagResource.reload()"
+  (retry)="regionResource.reload()"
 />
 
 <app-pagination
   [inputPage]="page()"
-  [entityMeta]="tagMeta() ?? { total: 0, page: 1, pageSize: pageSize, totalPages: 0 }"
+  [entityMeta]="regionMeta() ?? { total: 0, page: 1, pageSize: pageSize, totalPages: 0 }"
   (currentPage)="pageChangedTo($event)"
 />
 
-@if (tagResource.hasValue()) {
-  <tag-crud-modal
-    [tag]="selectedTag()"
+@if (regionResource.hasValue()) {
+  <region-crud-modal
+    [region]="selectedRegion()"
     [type]="modalType()"
     [open]="openModal()"
     (closed)="openModal.set(false)"

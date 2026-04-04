@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Toaster } from '@shared/utils/toaster';
 import { map, tap } from 'rxjs';
@@ -6,15 +6,20 @@ import { map, tap } from 'rxjs';
 import { UserService } from '@shared/services/user.service';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
+import { DataTable } from '@shared/components/data-table/data-table';
+import { TableColumn } from '@shared/interfaces/table-column';
+import { TableAction } from '@shared/interfaces/table-action';
+import { TableState } from '@shared/interfaces/table-state';
 import { User, UserFormDTO } from '@shared/interfaces/user';
 import { UserCrudModal } from './user-crud-modal/user-crud-modal';
 import { LocationService } from '@shared/services/location.service';
 import { RoleService } from '@features/admin/services/role.service';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
-  imports: [Pagination, SearchBar, UserCrudModal],
+  imports: [Pagination, SearchBar, UserCrudModal, DataTable],
   templateUrl: './user-crud.html',
 })
 export class UserCrud {
@@ -132,5 +137,68 @@ export class UserCrud {
         console.log(message);
       },
     });
+  }
+
+  // Data Table Configuration
+  userColumns: TableColumn<User>[] = [
+    { key: 'id', label: 'ID', width: '60px' },
+    { key: 'name', label: 'Nombre', width: '180px' },
+    { key: 'mail', label: 'Correo Electrónico', width: '220px' },
+    {
+      key: 'location.name',
+      label: 'Localidad',
+      width: '150px',
+      badge: {
+        values: {},
+      },
+    },
+    {
+      key: 'role.name',
+      label: 'Rol',
+      width: '120px',
+      badge: {
+        values: {},
+      },
+    },
+  ];
+
+  userActions: TableAction<User>[] = [
+    {
+      icon: 'material-symbols--mail',
+      label: 'Enviar invitación',
+      action: 'edit',
+      condition: (user) => !user.hasPassword,
+      color: 'info',
+    },
+    {
+      icon: 'boxicons--edit-filled',
+      label: 'Editar usuario',
+      action: 'edit',
+      color: 'warning',
+    },
+    {
+      icon: 'boxicons--trash',
+      label: 'Eliminar usuario',
+      action: 'delete',
+      color: 'error',
+    },
+  ];
+
+  tableState = computed<TableState>(() => {
+    if (this.userResource.isLoading()) return 'loading';
+    if (this.userResource.hasValue() && this.userResource.value().length === 0) return 'empty';
+    return 'hasData';
+  });
+
+  handleRowAction(event: { action: 'edit' | 'delete'; row: User }) {
+    if (event.action === 'edit') {
+      if (!event.row.hasPassword) {
+        this.sendInvitation(event.row);
+      } else {
+        this.editUser(event.row);
+      }
+    } else {
+      this.deleteUser(event.row);
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Role } from '@shared/interfaces/role';
+import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
