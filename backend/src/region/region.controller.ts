@@ -58,13 +58,37 @@ async function add(req: Request, res: Response) {
 
         if (!sanitizedRegion.success) {
             throw fromZodError(sanitizedRegion.error)
-        } else {
-            const region = em.create(Region, sanitizedRegion.data)
-            await em.flush()
-            res.status(201).json({ message: 'Region created', data: region })
         }
+
+        const region = em.create(Region, sanitizedRegion.data)
+        await em.flush()
+        res.status(201).json({ message: 'Region created', data: region })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        // General error
+        console.error({
+            name: error.name,
+            message: error.message,
+            code: error.code,
+            detail: error.sqlMessage || error.detail,
+        })
+        // Zod Validation Error
+        if (error.name === 'ZodValidationError' || error.details) {
+            return res.status(400).json({
+                message: 'Invalid creation request',
+                errors: error.details, // Array de errores de Zod
+            })
+        }
+
+        // MikroORM Error
+        if (error.sqlMessage.includes('region_name_unique')) {
+            return res.status(409).json({
+                message: `Name already taken`,
+            })
+        }
+
+        return res.status(500).json({
+            message: 'Internal server error',
+        })
     }
 }
 async function update(req: Request, res: Response) {

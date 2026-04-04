@@ -63,6 +63,11 @@ export class Sidebar {
       routerPath: 'admin/role',
       icon: `icon-[eos-icons--role-binding]`,
     },
+    {
+      name: 'CRUD Region',
+      routerPath: 'admin/region',
+      icon: `icon-[mdi--world]`,
+    },
   ]);
 
   sidebarButtons = signal([

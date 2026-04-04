@@ -60,7 +60,7 @@ export class RegionService {
 
   deleteRegion(toBeDeletedRegion: Pick<Region, 'id'>): Observable<Region> {
     return this.http
-      .delete<ApiResponse<Region>>(`${environment.apiUrl}/locations/${toBeDeletedRegion.id}`)
+      .delete<ApiResponse<Region>>(`${environment.apiUrl}/regions/${toBeDeletedRegion.id}`)
       .pipe(
         map((response) => response.data),
         catchError((error) => {
