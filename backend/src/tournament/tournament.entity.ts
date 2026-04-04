@@ -14,6 +14,7 @@ import { Inscription } from '../inscription/inscription.entity.js'
 import { User } from '../user/user.entity.js'
 import { Location } from '../location/location.entity.js'
 import { Tag } from '../tag/tag.entity.js'
+import { Region } from '../region/region.entity.js'
 
 @Entity()
 export class Tournament extends BaseEntity {
@@ -31,6 +32,8 @@ export class Tournament extends BaseEntity {
     creator!: Rel<User>
     @ManyToOne(() => Location, { nullable: false })
     location!: Rel<Location>
+    @ManyToOne(() => Region, { nullable: true })
+    region?: Rel<Region>
     @ManyToOne(() => Game, { nullable: false })
     game!: Rel<Game>
     @OneToMany(() => Inscription, (inscription) => inscription.tournament)

@@ -19,6 +19,7 @@ const TournamentSchema = z.object({
         .gt(1, { message: 'The maximum number of participants should be greater than 1' }),
     game: z.number({ message: 'Game must be a number representing a game id' }),
     location: z.number({ message: 'Location must be a number representing a location id' }),
+    region: z.number({ message: 'Region must be a number representing a region id' }).optional(),
     creator: z.number({ message: 'Creator must be a number representing a user id' }),
     tags: z.array(z.number()),
 })
