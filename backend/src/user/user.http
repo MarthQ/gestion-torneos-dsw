@@ -13,7 +13,8 @@ Content-Type: application/json
   "name": "Joshua Abel Socolsky",
   "password": "BocaJuniors2002",
   "mail": "solbadguy1314@gmail.com",
-  "location": 3
+  "location": 1,
+  "role": 1
 }
 
 
@@ -32,8 +33,8 @@ Content-Type: application/json
 
 {
   "name": "Matthew Ryougi",
-  "password": "domain-expansion-4"
-  "mail": "depto-diseñodesistemas@hotmail.com"
+  "password": "domain-expansion-4",
+  "mail": "depto-diseñodesistemas@hotmail.com",
   "location":[1]
 }
 

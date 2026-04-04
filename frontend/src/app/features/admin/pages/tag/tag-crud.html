@@ -1,0 +1,97 @@
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold">Gestión de Etiquetas</h1>
+    <h2 class="text-base-content/60">
+      Administra el catálogo de etiquetas disponibles para torneos.
+    </h2>
+  </div>
+  <button class="btn btn-primary shadow-lg" (click)="addTag()">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nueva Etiqueta
+  </button>
+</div>
+
+<app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" />
+
+<div class="overflow-x-aut rounded-xl overflow-hidden shadow-xl">
+  @if (tagResource.hasValue()) {
+    <table class="table w-full">
+      <!-- head -->
+      <thead class="bg-base-300">
+        <tr>
+          <th>Nombre de la etiqueta</th>
+          <th>Descripción</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tag of tagResource.value(); track tag.name) {
+          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
+            <td>
+              <div class="font-mono text-sm">{{ tag.id }}</div>
+            </td>
+            <td>
+              <div class="font-bold badge badge-success">
+                <span class="icon-[tabler--tag]" style="width: 18px; height: 18px"></span>
+                {{ tag.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm">
+                {{ tag.description }}
+              </div>
+            </td>
+            <td>
+              <div class="flex justify-center gap-2">
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                  [disabled]="isDefaultTag(tag)"
+                  (click)="editTag(tag)"
+                >
+                  <span
+                    class="icon-[boxicons--edit-filled]"
+                    style="width: 24px; height: 24px"
+                  ></span>
+                </button>
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                  [disabled]="isDefaultTag(tag)"
+                  (click)="deleteTag(tag)"
+                >
+                  <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (tagResource.isLoading()) {
+    <div class="p-6 flex justify-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else {
+    <div class="p-6 flex justify-center">
+      <p>
+        Ocurrio un <strong class="text-error">error</strong> con los datos de etiquetas. Por favor
+        reinicie la página
+      </p>
+    </div>
+  }
+</div>
+
+@if (tagResource.hasValue()) {
+  <tag-crud-modal
+    [tag]="selectedTag()"
+    [type]="modalType()"
+    [open]="openModal()"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="tagMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>

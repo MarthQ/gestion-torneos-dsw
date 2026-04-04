@@ -1,10 +1,11 @@
 import { MikroORM } from '@mikro-orm/mysql'
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter'
+import { env } from '../../config/env.js'
 
 export const ORM = await MikroORM.init({
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
-    dbName: 'okiDSW',
+    dbName: env.DB_NAME,
     clientUrl: 'mysql://dsw:dsw@localhost:3306/okiDSW',
     highlighter: new SqlHighlighter(),
     debug: true,

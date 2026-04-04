@@ -49,6 +49,7 @@ export class FormUtils {
           return 'El mail ingresado ya esta en uso. Verifique que usted no tiene una cuenta';
         case 'usernameTaken':
           return 'El nombre de usuario "Strider" no esta disponible.';
+
         default:
           return `Error de validación no controlado: ${key}`;
       }

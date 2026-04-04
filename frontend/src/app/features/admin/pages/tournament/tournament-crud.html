@@ -1,0 +1,162 @@
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold">Gestión de Torneos</h1>
+    <h2 class="text-base-content/60">Administra los torneos registrados en el sistema.</h2>
+  </div>
+  <button class="btn btn-primary shadow-lg" (click)="addTournament()">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nuevo Torneo
+  </button>
+</div>
+
+<app-search-bar
+  [filters]="{
+    locations: locationResource.value(),
+    games: gameResource.value(),
+    tags: tagResource.value(),
+  }"
+  (queryChanged)="query.set($event)"
+  (clear)="query.set('')"
+  (queryFiltered)="queryFilters.set($event)"
+/>
+
+<div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
+  @if (userResource.hasValue()) {
+    <table class="table w-full">
+      <!-- head -->
+      <thead class="bg-base-300">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Fecha y Hora de inicio</th>
+          <th>Estado</th>
+          <th>Cupo Máximo</th>
+          <th>Localidad</th>
+          <th>Nombre del creador</th>
+          <th>Juego</th>
+          <th>Etiquetas</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tournament of tournamentResource.value(); track tournament.id) {
+          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
+            <td>
+              <div class="font-mono text-sm">{{ tournament.id }}</div>
+            </td>
+            <td>
+              <div class="font-bold">
+                {{ tournament.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-xs truncate max-w-xs">
+                {{ tournament.description }}
+              </div>
+            </td>
+            <td>
+              <div class="flex items-center gap-1">
+                <span
+                  class="icon-[fluent-mdl2--date-time]"
+                  style="width: 18px; height: 18px"
+                ></span>
+                {{ tournament.datetimeinit | date: 'short' }}
+              </div>
+            </td>
+            <td>
+              <div
+                class="font-bold badge h-max w-max justify-center"
+                [class]="tournament.status | i18nSelect: tournamentStatusMap"
+              >
+                {{ tournament.status }}
+              </div>
+            </td>
+            <td>
+              <div class="text-center font-semibold">
+                {{ tournament.maxParticipants }}
+              </div>
+            </td>
+            <td>
+              <div class="font-bold badge badge-info h-max">
+                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
+                {{ tournament.location.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm text-center">
+                {{ tournament.creator.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm font-medium">
+                {{ tournament.game.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-xs truncate max-w-xs">
+                {{ tournament.tags.map(tag => tag.name).join(', ') }}
+              </div>
+            </td>
+            <td>
+              <div class="flex justify-center gap-2">
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                  (click)="editTournament(tournament)"
+                >
+                  <span
+                    class="icon-[boxicons--edit-filled]"
+                    style="width: 24px; height: 24px"
+                  ></span>
+                </button>
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                  (click)="deleteTournament(tournament)"
+                >
+                  <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (tournamentResource.isLoading()) {
+    <div class="p-6 flex justify-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else {
+    <div class="p-6 flex justify-center">
+      <p>
+        Ocurrio un <strong class="text-error">error</strong> con los datos de torneos. Por favor
+        reinicie la página
+      </p>
+    </div>
+  }
+</div>
+
+@if (
+  tournamentResource.hasValue() &&
+  gameResource.hasValue() &&
+  locationResource.hasValue() &&
+  userResource.hasValue() &&
+  tagResource.hasValue()
+) {
+  <tournament-crud-modal
+    [tournament]="selectedTournament()"
+    [type]="modalType()"
+    [open]="openModal()"
+    [gameResource]="gameResource.value()"
+    [locationResource]="locationResource.value()"
+    [userResource]="userResource.value()"
+    [tagResource]="tagResource.value()"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="tournamentMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>

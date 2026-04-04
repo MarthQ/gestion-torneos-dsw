@@ -11,10 +11,21 @@ import { roleRouter } from './role/role.routes.js'
 import cors from 'cors'
 import { matchupRouter } from './matchup/matchup.routes.js'
 import { tagRouter } from './tag/tag.routes.js'
+import cookieParser from 'cookie-parser'
+import { authRouter } from './auth/auth.routes.js'
+import { seedRoles, seedLocations, seedTags } from './db/seeds.js'
+import { env } from './config/env.js'
 
 const app = express()
 app.use(express.json())
-app.use(cors())
+app.use(
+    cors({
+        origin: env.frontendURL,
+        credentials: true,
+    }),
+)
+
+app.use(cookieParser())
 
 // After base middlewares like express
 app.use((req, res, next) => {
@@ -27,15 +38,19 @@ app.use('/api/tournaments', tournamentRouter)
 app.use('/api/users', userRouter)
 app.use('/api/locations', locationRouter)
 app.use('/api/inscriptions', inscriptionRouter)
-app.use('/api/roles', roleRouter)
 app.use('/api/matchups', matchupRouter)
 app.use('/api/tags', tagRouter)
+app.use('/api/roles', roleRouter)
+app.use('/api/auth', authRouter)
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
 })
 
 await syncSchema() // Never in production
+await seedRoles()
+await seedLocations()
+await seedTags()
 
 app.listen(3000, () => {
     console.log('Server running on https://localhost:3000/')

@@ -1,0 +1,73 @@
+<dialog #userModal class="modal" (close)="onDialogClose()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
+    <form [formGroup]="userForm">
+      @if (type() === 'add' || type() === 'edit') {
+        <div class="py-4">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Nombre del usuario</legend>
+            <input
+              type="text"
+              class="input input-primary border-base-300 input-bordered"
+              placeholder="Ingrese el nombre del usuario"
+              formControlName="name"
+            />
+            <form-error-label [control]="userForm.get('name')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Mail del usuario</legend>
+            <input
+              type="mail"
+              class="input input-primary border-base-300 input-bordered"
+              placeholder="Ingrese el mail del usuario"
+              formControlName="mail"
+            />
+            <form-error-label [control]="userForm.get('mail')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Localidad del usuario</legend>
+            <select class="select select-primary border-base-300" formControlName="location">
+              <option disabled selected>Seleccione la localidad del usuario</option>
+              @for (location of locationResource().value(); track location.id) {
+                <option [ngValue]="location.id">
+                  {{ location.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Rol del usuario</legend>
+            <select class="select select-primary border-base-300" formControlName="role">
+              <option disabled selected>Seleccione el rol del usuario</option>
+              @for (role of roleResource().value(); track role.id) {
+                <option [ngValue]="role.id">{{ role.name }}</option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+        </div>
+      } @else {
+        <p>
+          ¿Está seguro de que desea eliminar al usuario
+          <strong>{{ userForm.get('name')?.value }}</strong
+          >?
+        </p>
+      }
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2">
+          @if (type() === 'add' || type() === 'edit') {
+            <button class="btn btn-primary" [disabled]="!userForm.valid" (click)="emitUser()">
+              Guardar cambios
+            </button>
+          } @else {
+            <button class="btn btn-primary hover:btn-warning" (click)="emitUser()">
+              Borrar Usuario
+            </button>
+          }
+          <button class="btn btn-ghost btn-error">Cancelar</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>

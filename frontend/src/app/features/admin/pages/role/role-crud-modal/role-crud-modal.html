@@ -1,0 +1,41 @@
+<dialog #roleModal class="modal" (close)="onDialogClose()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
+    <form [formGroup]="roleForm">
+      @if (type() === 'add' || type() === 'edit') {
+        <div class="py-4">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Nombre del rol</legend>
+            <input
+              type="text"
+              class="input input-primary border-base-300 input-bordered"
+              placeholder="Ingrese el nombre del rol"
+              formControlName="name"
+            />
+            <form-error-label [control]="roleForm.get('name')!"></form-error-label>
+          </fieldset>
+        </div>
+      } @else {
+        <p>
+          ¿Está seguro de que desea eliminar el rol
+          <strong>{{ roleForm.get('name')?.value }}</strong
+          >?
+        </p>
+      }
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2">
+          @if (type() === 'add' || type() === 'edit') {
+            <button class="btn btn-primary" [disabled]="!roleForm.valid" (click)="emitRole()">
+              Guardar cambios
+            </button>
+          } @else {
+            <button class="btn btn-primary hover:btn-warning" (click)="emitRole()">
+              Borrar Rol
+            </button>
+          }
+          <button class="btn btn-ghost btn-error">Cancelar</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>

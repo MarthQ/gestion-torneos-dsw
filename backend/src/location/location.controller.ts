@@ -13,22 +13,29 @@ const LocationSchema = z.object({
 
 async function findAll(req: Request, res: Response) {
     try {
-        const page = req.query.page ? Number(req.query.page) : 1
-        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-        const offset = (page - 1) * pageSize
+        const page = req.query.page ? Number(req.query.page) : undefined
+        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : undefined
 
         const query = req.query.query ? String(req.query.query) : undefined
 
         const filter = query ? { name: { $like: `%${query}%` } } : {}
 
-        const [locations, total] = await em.findAndCount(Location, filter, {
-            limit: pageSize,
-            offset,
-        })
+        // If page and pageSize come in query, return paginated results.
+        if (page && pageSize) {
+            const [locations, total] = await em.findAndCount(Location, filter, {
+                limit: pageSize,
+                offset: (page - 1) * pageSize,
+            })
+            return res.status(200).json({
+                message: 'Found paginated locations',
+                data: locations,
+                meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+            })
+        }
+        const locations = await em.find(Location, filter)
         res.status(200).json({
             message: 'Found all locations',
             data: locations,
-            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
         res.status(404).json({ message: error.message })

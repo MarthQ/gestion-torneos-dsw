@@ -1,0 +1,117 @@
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold">Gestión de Juegos</h1>
+    <h2 class="text-base-content/60">Administra el catálogo de juegos disponibles para torneos.</h2>
+  </div>
+</div>
+
+<app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" />
+
+<div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
+  @if (gameData()) {
+    <table class="table w-full">
+      <thead class="bg-base-300">
+        <tr>
+          <th>ID</th>
+          <th>IGDB ID</th>
+          <th>Foto</th>
+          <th>Nombre del juego</th>
+          <th>Descripción</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (game of gameData(); track game.name) {
+          <tr
+            class="hover:bg-neutral hover:text-neutral-content transition-colors"
+            [class.opacity-50]="!game.id"
+            [class.hover:opacity-100]="!game.id"
+          >
+            <td>
+              @if (!game.id) {
+                <span class="italic">Sin ID</span>
+              } @else {
+                <div class="font-mono text-sm">{{ game.id }}</div>
+              }
+            </td>
+            <td>
+              <div class="font-mono text-sm">{{ game.igdbId }}</div>
+            </td>
+            <td>
+              <div class="avatar">
+                <div class="w-16 rounded">
+                  <img [src]="game.imgUrl" alt="Foto de {{ game.name }}" />
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="font-bold">
+                {{ game.name }}
+              </div>
+            </td>
+            <td>
+              <div class="text-sm">
+                {{ game.description }}
+              </div>
+            </td>
+            <td>
+              <div class="flex justify-center gap-2">
+                @if (isInDatabase(game)) {
+                  <button
+                    class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                    (click)="editGame(game)"
+                  >
+                    <span
+                      class="icon-[boxicons--edit-filled]"
+                      style="width: 24px; height: 24px"
+                    ></span>
+                  </button>
+                  <button
+                    class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                    (click)="deleteGame(game)"
+                  >
+                    <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+                  </button>
+                } @else {
+                  <button
+                    class="btn btn-square btn-sm btn-ghost hover:border-success-content hover:bg-success-content hover:text-success"
+                    (click)="addGame(game)"
+                  >
+                    <span class="icon-[ic--baseline-plus]" style="width: 24px; height: 24px"></span>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (igdbGameResource.isLoading()) {
+    <div class="p-6 flex justify-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else {
+    <div class="p-6 flex justify-center">
+      <p>
+        Ocurrio un <strong class="text-error">error</strong> con los datos de juegos. Por favor
+        reinicie la página
+      </p>
+    </div>
+  }
+</div>
+
+@if (igdbGameResource.hasValue()) {
+  <game-crud-modal
+    [game]="selectedGame()"
+    [type]="modalType()"
+    [open]="openModal()"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="gameMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>

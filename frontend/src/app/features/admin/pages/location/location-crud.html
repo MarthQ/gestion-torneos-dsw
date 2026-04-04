@@ -1,0 +1,90 @@
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold">Gestión de Localidades</h1>
+    <h2 class="text-base-content/60">
+      Administra el catálogo de localidades disponibles para torneos y para usuarios.
+    </h2>
+  </div>
+  <button class="btn btn-primary shadow-lg" (click)="addLocation()">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nueva Localidad
+  </button>
+</div>
+
+<app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" />
+
+<div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
+  @if (locationResource.hasValue()) {
+    <table class="table w-full">
+      <!-- head -->
+      <thead class="bg-base-300">
+        <tr>
+          <th>ID</th>
+          <th>Nombre de la Localidad</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (location of locationResource.value(); track location.name) {
+          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
+            <td>
+              <div class="font-mono text-sm">{{ location.id }}</div>
+            </td>
+            <td>
+              <div class="font-bold badge badge-info">
+                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
+                {{ location.name }}
+              </div>
+            </td>
+            <td>
+              <div class="flex justify-center gap-2">
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                  (click)="editLocation(location)"
+                >
+                  <span
+                    class="icon-[boxicons--edit-filled]"
+                    style="width: 24px; height: 24px"
+                  ></span>
+                </button>
+                <button
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                  (click)="deleteLocation(location)"
+                >
+                  <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (locationResource.isLoading()) {
+    <div class="p-6 flex justify-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else {
+    <div class="p-6 flex justify-center">
+      <p>
+        Ocurrio un <strong class="text-error">error</strong> con los datos de localidades. Por favor
+        reinicie la página
+      </p>
+    </div>
+  }
+</div>
+
+@if (locationResource.hasValue()) {
+  <location-crud-modal
+    [location]="selectedLocation()"
+    [type]="modalType()"
+    [open]="openModal()"
+    (closed)="openModal.set(false)"
+    (confirmAction)="handleCrudAction($event)"
+  />
+}
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="locationMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>

@@ -1,0 +1,77 @@
+<div class="max-w-2xl mx-auto">
+  @if (userResource.isLoading()) {
+    <div class="flex justify-center py-8">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  } @else if (userResource.hasValue()) {
+    <div class="card bg-base-200 shadow-xl">
+      <!-- Header -->
+      <div class="card-body items-center text-center">
+        <div class="avatar placeholder">
+          <div
+            class="flex items-center justify-center bg-primary text-primary-content font-semibold rounded-full p-6"
+          >
+            <span class="text-5xl">{{ userResource.value()!.name.charAt(0).toUpperCase() }}</span>
+          </div>
+        </div>
+        <h2 class="card-title text-2xl">{{ userResource.value()!.name }}</h2>
+        <p class="text-base-content/60 font-mono">{{ userResource.value()!.mail }}</p>
+      </div>
+
+      <!-- Info -->
+      <div class="card-body pt-0">
+        <div class="overflow-x-auto">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class="font-semibold">ID</td>
+                <td>{{ userResource.value()!.id }}</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Ubicación</td>
+                <td>
+                  <span class="badge badge-info font-bold">
+                    <span class="icon-[mdi--location] mr-1"></span>
+                    {{ userResource.value()!.location.name }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Rol</td>
+                <td>
+                  <span class="badge badge-primary">
+                    {{ userResource.value()!.role.name }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Inscripciones</td>
+                <td>
+                  <span class="badge badge-secondary">
+                    {{ userResource.value()!.inscriptions?.length || 0 }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Actions -->
+        <div class="card-actions justify-end mt-4">
+          <button class="btn btn-ghost border-info hover:btn-info" (click)="sendInvitation()">
+            <span class="icon-[mdi--password-check] mr-2"></span>
+            Cambiar contraseña
+          </button>
+          <button
+            class="btn btn-ghost border-error hover:btn-error"
+            (click)="logout()"
+            routerLink="/auth/login"
+          >
+            <span class="icon-[mdi--logout] mr-2"></span>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
