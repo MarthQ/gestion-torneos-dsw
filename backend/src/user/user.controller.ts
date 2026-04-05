@@ -17,7 +17,6 @@ const em = ORM.em
 const mailer = new Mailer()
 
 const UserSchema = z.object({
-    id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
     password: z.string({ message: 'Password must be a string' }).optional(),
     mail: z.string({ message: 'Mail must be a string' }),

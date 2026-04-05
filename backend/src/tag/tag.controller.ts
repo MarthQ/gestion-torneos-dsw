@@ -6,7 +6,6 @@ import { z } from 'zod'
 const em = ORM.em
 
 const TagSchema = z.object({
-    id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
     description: z.string({ message: 'Description must be a string' }),
 })
