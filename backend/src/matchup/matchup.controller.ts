@@ -7,7 +7,6 @@ import { fromZodError } from 'zod-validation-error'
 const em = ORM.em
 
 const matchupSchema = z.object({
-    id: z.number().gt(0).optional(),
     player1Rounds: z
         .number({ message: 'Rounds must be a number' })
         .gt(0, { message: 'Rounds must be greater to 0' }),
