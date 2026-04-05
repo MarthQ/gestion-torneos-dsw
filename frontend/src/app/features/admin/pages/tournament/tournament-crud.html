@@ -21,119 +21,22 @@
 />
 
 <div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
-  @if (userResource.hasValue()) {
-    <table class="table w-full">
-      <!-- head -->
-      <thead class="bg-base-300">
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th>Fecha y Hora de inicio</th>
-          <th>Estado</th>
-          <th>Cupo Máximo</th>
-          <th>Localidad</th>
-          <th>Nombre del creador</th>
-          <th>Juego</th>
-          <th>Etiquetas</th>
-          <th class="text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (tournament of tournamentResource.value(); track tournament.id) {
-          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
-            <td>
-              <div class="font-mono text-sm">{{ tournament.id }}</div>
-            </td>
-            <td>
-              <div class="font-bold">
-                {{ tournament.name }}
-              </div>
-            </td>
-            <td>
-              <div class="text-xs truncate max-w-xs">
-                {{ tournament.description }}
-              </div>
-            </td>
-            <td>
-              <div class="flex items-center gap-1">
-                <span
-                  class="icon-[fluent-mdl2--date-time]"
-                  style="width: 18px; height: 18px"
-                ></span>
-                {{ tournament.datetimeinit | date: 'short' }}
-              </div>
-            </td>
-            <td>
-              <div
-                class="font-bold badge h-max w-max justify-center"
-                [class]="tournament.status | i18nSelect: tournamentStatusMap"
-              >
-                {{ tournament.status }}
-              </div>
-            </td>
-            <td>
-              <div class="text-center font-semibold">
-                {{ tournament.maxParticipants }}
-              </div>
-            </td>
-            <td>
-              <div class="font-bold badge badge-info h-max">
-                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
-                {{ tournament.location.name }}
-              </div>
-            </td>
-            <td>
-              <div class="text-sm text-center">
-                {{ tournament.creator.name }}
-              </div>
-            </td>
-            <td>
-              <div class="text-sm font-medium">
-                {{ tournament.game.name }}
-              </div>
-            </td>
-            <td>
-              <div class="text-xs truncate max-w-xs">
-                {{ tournament.tags.map(tag => tag.name).join(', ') }}
-              </div>
-            </td>
-            <td>
-              <div class="flex justify-center gap-2">
-                <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
-                  (click)="editTournament(tournament)"
-                >
-                  <span
-                    class="icon-[boxicons--edit-filled]"
-                    style="width: 24px; height: 24px"
-                  ></span>
-                </button>
-                <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
-                  (click)="deleteTournament(tournament)"
-                >
-                  <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
-                </button>
-              </div>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  } @else if (tournamentResource.isLoading()) {
-    <div class="p-6 flex justify-center">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
-    </div>
-  } @else {
-    <div class="p-6 flex justify-center">
-      <p>
-        Ocurrio un <strong class="text-error">error</strong> con los datos de torneos. Por favor
-        reinicie la página
-      </p>
-    </div>
-  }
+  <app-data-table
+    [columns]="tournamentColumns"
+    [data]="tournamentResource.value() ?? []"
+    [state]="tableState()"
+    [actions]="tournamentActions"
+    [pageSize]="pageSize"
+    (rowAction)="handleRowAction($event)"
+    (retry)="tournamentResource.reload()"
+  />
 </div>
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="tournamentMeta() ?? { total: 0, page: 1, pageSize: pageSize, totalPages: 0 }"
+  (currentPage)="pageChangedTo($event)"
+/>
 
 @if (
   tournamentResource.hasValue() &&
@@ -154,9 +57,3 @@
     (confirmAction)="handleCrudAction($event)"
   />
 }
-
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="tournamentMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>

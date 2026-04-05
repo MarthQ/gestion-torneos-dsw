@@ -12,6 +12,7 @@ import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament } from '@shared/interfaces/tournament';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   imports: [I18nSelectPipe, DatePipe, SearchBar, Pagination],

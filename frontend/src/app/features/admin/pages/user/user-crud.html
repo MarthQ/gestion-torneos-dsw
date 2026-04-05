@@ -16,97 +16,21 @@
   (queryFiltered)="queryFilters.set($event)"
 />
 
-<div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
-  @if (userResource.hasValue()) {
-    <table class="table w-full">
-      <!-- head -->
-      <thead class="bg-base-300">
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Correo Electrónico</th>
-          <th>Localidad</th>
-          <th>Rol</th>
-          <th class="text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (user of userResource.value(); track user.id) {
-          <tr class="hover:bg-neutral hover:text-neutral-content transition-colors">
-            <td>
-              <div class="font-mono text-sm">{{ user.id }}</div>
-            </td>
-            <td>
-              <div class="font-bold">
-                {{ user.name }}
-              </div>
-            </td>
-            <td>
-              <div class="text-sm font-bold">
-                {{ user.mail }}
-              </div>
-            </td>
-            <td>
-              <div class="text-sm font-bold badge badge-info">
-                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
-                {{ user.location.name }}
-              </div>
-            </td>
-            <td>
-              <div class="font-bold badge badge-secondary">
-                <span
-                  class="icon-[eos-icons--role-binding]"
-                  style="width: 18px; height: 18px"
-                ></span>
-                {{ user.role.name }}
-              </div>
-            </td>
-            <td>
-              <div class="flex justify-center gap-2">
-                <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
-                  (click)="editUser(user)"
-                >
-                  <span
-                    class="icon-[boxicons--edit-filled]"
-                    style="width: 24px; height: 24px"
-                  ></span>
-                </button>
-                <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
-                  (click)="deleteUser(user)"
-                >
-                  <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
-                </button>
-                <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-info-content hover:text-info"
-                  (click)="sendInvitation(user)"
-                  [class.invisible]="user.hasPassword"
-                >
-                  <span
-                    class="icon-[material-symbols--mail]"
-                    style="width: 24px; height: 24px"
-                  ></span>
-                </button>
-              </div>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  } @else if (userResource.isLoading()) {
-    <div class="p-6 flex justify-center">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
-    </div>
-  } @else {
-    <div class="p-6 flex justify-center">
-      <p>
-        Ocurrio un <strong class="text-error">error</strong> con los datos de usuarios. Por favor
-        reinicie la página
-      </p>
-    </div>
-  }
-</div>
+<app-data-table
+  [columns]="userColumns"
+  [data]="userResource.value() ?? []"
+  [state]="tableState()"
+  [actions]="userActions"
+  [pageSize]="pageSize"
+  (rowAction)="handleRowAction($event)"
+  (retry)="userResource.reload()"
+/>
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="userMeta() ?? { total: 0, page: 1, pageSize: pageSize, totalPages: 0 }"
+  (currentPage)="pageChangedTo($event)"
+/>
 
 @if (userResource.hasValue()) {
   <user-crud-modal
@@ -119,9 +43,3 @@
     (confirmAction)="handleCrudAction($event)"
   />
 }
-
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="userMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>

@@ -1,0 +1,153 @@
+<div class="overflow-x-auto rounded-xl shadow-xl">
+  @switch (state()) {
+    @case ('loading') {
+      <!-- Loading State -->
+      <div
+        class="flex flex-col items-center justify-center h-auto md:h-[569px] min-h-[569px] gap-4"
+      >
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="text-base-content/60">Cargando datos...</p>
+      </div>
+    }
+
+    @case ('empty') {
+      <!-- Empty State -->
+      <div
+        class="flex flex-col items-center justify-center h-auto md:h-[569px] min-h-[569px] gap-4"
+      >
+        <span class="icon-[tabler--database-off] text-6xl text-base-content/30"></span>
+        <p class="text-lg font-medium text-base-content/60">No se encontraron resultados</p>
+        <p class="text-sm text-base-content/40">Intenta con otro filtro o término de búsqueda</p>
+      </div>
+    }
+
+    @case ('error') {
+      <!-- Error State -->
+      <div
+        class="flex flex-col items-center justify-center h-auto md:h-[571px] min-h-[571px] gap-4"
+      >
+        <span class="icon-[tabler--alert-circle] text-6xl text-error"></span>
+        <p class="text-lg font-medium text-error">Ocurrió un error al cargar los datos</p>
+        <button class="btn btn-primary btn-sm" (click)="handleRetry()">
+          <span class="icon-[tabler--reload] mr-2"></span>
+          Reintentar
+        </button>
+      </div>
+    }
+
+    @case ('hasData') {
+      <!-- Data Table -->
+      <div class="h-auto md:h-[571px] md:overflow-y-auto">
+        <table class="table w-full table-fixed">
+          <!-- Head -->
+          <thead class="bg-base-300 sticky top-0 z-10">
+            <tr>
+              @for (col of columns(); track col.key) {
+                <th
+                  [style.width]="col.width"
+                  [class.text-center]="col.align === 'center'"
+                  [class.text-right]="col.align === 'right'"
+                  class="text-base-content"
+                >
+                  {{ col.label }}
+                </th>
+              }
+              @if (actions().length > 0) {
+                <th class="w-32 text-right">Acciones</th>
+              }
+            </tr>
+          </thead>
+
+          <!-- Body -->
+          <tbody>
+            <!-- Data Rows -->
+            @for (row of data(); track $index) {
+              <tr class="hover:bg-base-200 transition-colors h-12">
+                @for (col of columns(); track col.key) {
+                  <td
+                    [class.text-center]="col.align === 'center'"
+                    [class.text-right]="col.align === 'right'"
+                    [class.max-w-xs]="col.truncate"
+                    class="truncate"
+                  >
+                    @if (col.type === 'image') {
+                      <div class="avatar">
+                        <div class="w-12 rounded">
+                          @if (getValue(row, col.key)) {
+                            <img [src]="getValue(row, col.key)" [alt]="getColumnAlt(col, row)" />
+                          } @else {
+                            <img
+                              src="https://placehold.co/48x48/1e293b/white?text=?"
+                              alt="Sin imagen"
+                            />
+                          }
+                        </div>
+                      </div>
+                    } @else if (col.badge && getBadgeClass(col, getValue(row, col.key))) {
+                      <div
+                        class="badge h-max w-max"
+                        [class]="getBadgeClass(col, getValue(row, col.key))"
+                      >
+                        @if (getBadgeIcon(col, getValue(row, col.key))) {
+                          <span
+                            [class]="getActionIconClass(getBadgeIcon(col, getValue(row, col.key))!)"
+                            [style.width]="'16px'"
+                            [style.height]="'16px'"
+                          ></span>
+                        }
+                        {{ getValue(row, col.key) }}
+                      </div>
+                    } @else {
+                      {{ getValue(row, col.key) }}
+                    }
+                  </td>
+                }
+                @if (actions().length > 0) {
+                  <td class="text-right">
+                    <div class="flex justify-end gap-1">
+                      @for (action of actions(); track action.action) {
+                        @if (isActionVisible(action, row)) {
+                          <button
+                            class="btn btn-square btn-sm"
+                            [class]="getActionButtonClass(action)"
+                            [attr.aria-label]="action.label"
+                            (click)="handleRowAction(action.action, row)"
+                          >
+                            <span
+                              [class]="getActionIconClass(action.icon)"
+                              [style.width]="'18px'"
+                              [style.height]="'18px'"
+                            ></span>
+                          </button>
+                        }
+                      }
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+
+            <!-- Empty Rows (placeholder rows without data) -->
+            @for (i of getEmptyRowArray(emptyRows()); track i) {
+              <tr class="border-b border-base-300/30 h-12">
+                @for (col of columns(); track col.key) {
+                  <td class="text-base-content/20 h-12">
+                    <span class="text-sm">—</span>
+                  </td>
+                }
+                @if (actions().length > 0) {
+                  <td class="text-right">
+                    <div class="flex justify-end gap-1">
+                      <div class="w-8 h-8"></div>
+                      <div class="w-8 h-8"></div>
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,30 @@
+/* Data Table Component Styles */
+.table-fixed {
+  table-layout: fixed;
+}
+
+/* Skeleton pulse animation is built into DaisyUI, but we add custom styles */
+.animate-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Ensure proper text truncation */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.max-w-xs {
+  max-width: 160px;
+}
