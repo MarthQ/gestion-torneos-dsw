@@ -10,6 +10,8 @@
 
 51079 - Regodesebes, Mateo Ariel
 
+48128 - Socolsky, José
+
 ### Repositorio
 
 [_Repositorio con backend y frontend_](https://github.com/MarthQ/gestion-torneos-dsw)

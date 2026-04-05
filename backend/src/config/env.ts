@@ -4,11 +4,11 @@ if (!process.env.DEFAULT_SALT_ROUNDS) throw new Error('DEFAULT_SALT_ROUNDS is no
 if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
 export const env = {
-    DB_NAME: process.env.DB_NAME,
-    DB_PASSWORD: process.env.DB_PASSWORD,
-    DB_HOST: process.env.DB_HOST,
-    DB_PORT: process.env.DB_PORT,
-    DB_USERNAME: process.env.DB_USERNAME,
+    dbName: process.env.DB_NAME || 'dsw',
+    dbPassword: process.env.DB_PASSWORD || 'dsw',
+    dbHost: process.env.DB_HOST || 'localhost',
+    dbPort: process.env.DB_PORT || '3306',
+    dbUsername: process.env.DB_USERNAME,
 
     smtpHost: process.env.SMTP_HOST,
     smtpPort: process.env.SMTP_PORT,
