@@ -3,10 +3,10 @@ import { TournamentActionMap } from './tournament-map-styles';
 
 describe('tournamentStatusMap', () => {
   it('should return correct CSS class for each tournament status', () => {
-    expect(tournamentStatusMap['Abierto']).toBe('bg-green-500');
-    expect(tournamentStatusMap['Cerrado']).toBe('bg-red-500');
-    expect(tournamentStatusMap['En curso']).toBe('bg-yellow-500');
-    expect(tournamentStatusMap['Finalizado']).toBe('bg-orange-500');
+    expect(tournamentStatusMap['Abierto']).toBe('badge-primary');
+    expect(tournamentStatusMap['Cerrado']).toBe('badge-error');
+    expect(tournamentStatusMap['En curso']).toBe('badge-warning');
+    expect(tournamentStatusMap['Finalizado']).toBe('badge-secondary');
   });
 });
 

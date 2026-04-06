@@ -10,9 +10,9 @@ describe('Explore', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        { provide: TournamentService, useValue: jasmine.createSpyObj('TournamentService', ['getTournamentsPaginated']) },
-        { provide: TagService, useValue: jasmine.createSpyObj('TagService', ['getTags']) },
-        { provide: GameService, useValue: jasmine.createSpyObj('GameService', ['getGames']) }
+        { provide: TournamentService, useValue: { getTournamentsPaginated: vi.fn() } },
+        { provide: TagService, useValue: { getTags: vi.fn() } },
+        { provide: GameService, useValue: { getGames: vi.fn() } }
       ]
     }).compileComponents();
 
