@@ -39,6 +39,18 @@ export class Tournament extends BaseEntity {
     @OneToMany(() => Inscription, (inscription) => inscription.tournament)
     inscriptions = new Collection<Inscription>(this)
 
+    //TODO: agregar hasReward: boolean
+    //TODO: agregar rewardDescription: string -> @Property({ columnType: 'text' })
+    //TODO: agregar isOnline: boolean
+    //TODO: agregar place: string; vamos a dejar location para decir en que localidad se hace
+    //TODO: agregar bracketData:
+    // @Column({ type: 'json', nullable: true })
+    // bracketData?: {
+    //   tournament: { id: number; name: string };
+    //   stages: StageData[];
+    //   participants: ParticipantData[];
+    // }
+
     @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
     tags = new Collection<Tag>(this)
 }
