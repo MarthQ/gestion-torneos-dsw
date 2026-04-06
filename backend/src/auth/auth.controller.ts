@@ -104,8 +104,7 @@ async function login(req: Request, res: Response) {
                 message: 'Credentials are not valid (email)',
             })
         }
-        // 4. Error genérico
-        console.error({ errorName: error.name })
+
         return res.status(500).json({
             message: 'Internal server error',
         })

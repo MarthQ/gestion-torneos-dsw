@@ -1,27 +1,22 @@
-import { DatePipe, I18nSelectPipe } from '@angular/common';
 import { Component, inject, linkedSignal, signal } from '@angular/core';
-import { map, tap } from 'rxjs';
+import { TournamentService } from '../../../../shared/services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
-
-import { GameService } from '@shared/services/game.service';
-import { TagService } from '@shared/services/tag.service';
-import { TournamentService } from '@shared/services/tournament.service';
-
-import { TournamentActionMap, tournamentStatusMap } from '@shared/utils/tournament-map-styles';
-import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament } from '@shared/interfaces/tournament';
+import { DatePipe, I18nSelectPipe } from '@angular/common';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
+import { TagService } from '@shared/services/tag.service';
+import { GameService } from '@shared/services/game.service';
+import { QueryFilter } from '@shared/interfaces/filters';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { PaginationMeta } from '@shared/interfaces/api-response';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [I18nSelectPipe, DatePipe, SearchBar, Pagination],
-  templateUrl: './explore.html',
+  imports: [DatePipe, SearchBar, Pagination, RouterLink],
+  templateUrl: './myTournaments.html',
 })
-export class Explore {
-  tournamentActionMap = TournamentActionMap;
-  tournamentStatusMap = tournamentStatusMap;
-  tournamentService = inject(TournamentService);
+export class MyTournaments {
+  private tournamentService = inject(TournamentService);
   tagService = inject(TagService);
   gameService = inject(GameService);
 
@@ -34,6 +29,8 @@ export class Explore {
   });
   pageSize = 10;
 
+  tournamentMeta = signal<PaginationMeta | undefined>(undefined);
+
   tagResource = rxResource({
     stream: () => this.tagService.getTags(),
   });
@@ -41,17 +38,15 @@ export class Explore {
     stream: () => this.gameService.getGames(),
   });
 
-  tournamentMeta = signal<PaginationMeta | undefined>(undefined);
-
   tournamentResource = rxResource({
     params: () => ({ query: this.query(), queryFilters: this.queryFilters(), page: this.page() }),
     stream: ({ params }) => {
-      return this.tournamentService
-        .getTournamentsPaginated(params.query, params.queryFilters, params.page, this.pageSize)
-        .pipe(
-          tap((response) => this.tournamentMeta.set(response.meta)),
-          map((response) => response.data),
-        );
+      return this.tournamentService.getUserTournaments(
+        params.query,
+        params.queryFilters,
+        params.page,
+        this.pageSize,
+      );
     },
   });
 

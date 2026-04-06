@@ -9,8 +9,6 @@ export class Inscription extends BaseEntity {
     nickname!: string
     @Property()
     inscriptionDate!: Date
-    @Property()
-    points!: number
     @ManyToOne(() => Tournament, { nullable: false })
     tournament!: Rel<Tournament>
     @ManyToOne(() => User, { nullable: false })

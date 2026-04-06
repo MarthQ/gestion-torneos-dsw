@@ -1,0 +1,11 @@
+<div role="tablist" class="tabs tabs-box flex justify-between">
+  @for (tab of tabs; track tab.name) {
+    <a
+      role="tab"
+      class="tab"
+      [routerLink]="tab.router"
+      routerLinkActive="tab-active text-primary-content bg-primary"
+      >{{ tab.name }}</a
+    >
+  }
+</div>

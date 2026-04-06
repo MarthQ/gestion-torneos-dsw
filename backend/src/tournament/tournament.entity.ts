@@ -28,6 +28,9 @@ export class Tournament extends BaseEntity {
     status!: string
     @Property()
     maxParticipants!: number
+    //TODO cambiar de tipo string a 'single_elimination' | 'double_elimination'
+    @Property({ default: 'single_elimination' })
+    type!: string
     @ManyToOne(() => User, { nullable: false })
     creator!: Rel<User>
     @ManyToOne(() => Location, { nullable: false })
@@ -38,18 +41,6 @@ export class Tournament extends BaseEntity {
     game!: Rel<Game>
     @OneToMany(() => Inscription, (inscription) => inscription.tournament)
     inscriptions = new Collection<Inscription>(this)
-
-    //TODO: agregar hasReward: boolean
-    //TODO: agregar rewardDescription: string -> @Property({ columnType: 'text' })
-    //TODO: agregar isOnline: boolean
-    //TODO: agregar place: string; vamos a dejar location para decir en que localidad se hace
-    //TODO: agregar bracketData:
-    // @Column({ type: 'json', nullable: true })
-    // bracketData?: {
-    //   tournament: { id: number; name: string };
-    //   stages: StageData[];
-    //   participants: ParticipantData[];
-    // }
 
     @ManyToMany(() => Tag, (tag) => tag.tournaments, { owner: true })
     tags = new Collection<Tag>(this)

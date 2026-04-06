@@ -88,4 +88,65 @@ export class TournamentService {
         }),
       );
   }
+
+  // Tournament detail with populated relations
+  // getTournamentDetail(id: number): Observable<TournamentDetail> {
+  //   return this.http
+  //     .get<ApiResponse<TournamentDetail>>(`${environment.apiUrl}/tournaments/${id}`)
+  //     .pipe(
+  //       map((response) => response.data),
+  //       catchError((error) => {
+  //         console.error(error);
+  //         return throwError(() => error.error?.message || 'Tournament not found');
+  //       }),
+  //     );
+  // }
+
+  // User's tournaments
+  getUserTournaments(
+    query?: string,
+    queryFilters?: QueryFilter,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Observable<Tournament[]> {
+    const params: any = { page, pageSize };
+
+    if (query) params.query = query;
+    if (queryFilters?.location) params.location = queryFilters.location.id;
+    if (queryFilters?.role) params.role = queryFilters.role.id;
+    if (queryFilters?.game) params.game = queryFilters.game.id;
+    return this.http
+      .get<ApiResponse<Tournament[]>>(`${environment.apiUrl}/tournaments`, { params })
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          return throwError(() => error.error?.message || 'Failed to fetch user tournaments');
+        }),
+      );
+  }
+
+  // Bracket operations
+  getTournamentBracket(tournamentId: number): Observable<any> {
+    return this.http
+      .get<ApiResponse<any>>(`${environment.apiUrl}/brackets/tournament/${tournamentId}/bracket`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Bracket not found');
+        }),
+      );
+  }
+
+  reportMatchResult(matchId: number, score: string): Observable<any> {
+    return this.http
+      .post<ApiResponse<any>>(`${environment.apiUrl}/brackets/match/${matchId}/report`, { score })
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to report match result');
+        }),
+      );
+  }
 }
