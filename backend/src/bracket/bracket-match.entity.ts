@@ -9,11 +9,11 @@ export class BracketMatch extends BaseEntity {
     @Property()
     number!: number
     @Property()
-    stageId!: number
+    stage_id!: number
     @Property()
-    groupId!: number
+    group_id!: number
     @Property()
-    roundId!: number
+    round_id!: number
     @Property({ type: 'json', nullable: true })
     opponent1?: any
     @Property({ type: 'json', nullable: true })

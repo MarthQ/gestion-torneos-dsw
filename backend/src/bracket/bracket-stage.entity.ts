@@ -4,7 +4,7 @@ import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 @Entity()
 export class BracketStage extends BaseEntity {
     @Property()
-    tournamentId!: number
+    tournament_id!: number
 
     @Property()
     name!: string
@@ -14,4 +14,13 @@ export class BracketStage extends BaseEntity {
 
     @Property()
     number!: number
+
+    // bracket-stage.entity.ts
+    @Property({ type: 'json' })
+    settings!: {
+        seedOrdering?: string[]
+        doubleElimination?: {
+            grandFinal?: string
+        }
+    }
 }

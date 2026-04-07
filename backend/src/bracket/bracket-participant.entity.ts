@@ -6,5 +6,5 @@ export class BracketParticipant extends BaseEntity {
     @Property()
     name!: string
     @Property()
-    tournamentId!: number
+    tournament_id!: number
 }

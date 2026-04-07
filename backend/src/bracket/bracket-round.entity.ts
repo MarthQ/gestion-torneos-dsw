@@ -9,7 +9,7 @@ export class BracketRound extends BaseEntity {
     @Property()
     number!: number
     @Property()
-    stageId!: number
+    stage_id!: number
     @Property()
-    groupId!: number
+    group_id!: number
 }

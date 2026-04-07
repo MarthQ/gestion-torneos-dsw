@@ -14,11 +14,11 @@ export class BracketMatchGame extends BaseEntity {
     @Property()
     status!: number
     @Property()
-    stageId!: number
+    stage_id!: number
     @Property()
-    groupId!: number
+    group_id!: number
     @Property()
-    roundId!: number
+    round_id!: number
     @Property()
-    matchId!: number
+    match_id!: number
 }

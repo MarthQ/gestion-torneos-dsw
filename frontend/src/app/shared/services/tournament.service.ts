@@ -142,7 +142,7 @@ export class TournamentService {
   // Bracket operations
   getTournamentBracket(tournamentId: number): Observable<any> {
     return this.http
-      .get<ApiResponse<any>>(`${environment.apiUrl}/brackets/tournament/${tournamentId}/bracket`)
+      .get<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/bracket`)
       .pipe(
         map((response) => response.data),
         catchError((error) => {
@@ -162,5 +162,11 @@ export class TournamentService {
           return throwError(() => error.error?.message || 'Failed to report match result');
         }),
       );
+  }
+
+  closeInscriptions(tournamentId: string): Observable<any> {
+    return this.http.get<ApiResponse<any>>(
+      `${environment.apiUrl}/tournaments/${tournamentId}/closeInscriptions`,
+    );
   }
 }
