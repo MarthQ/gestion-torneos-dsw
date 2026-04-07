@@ -57,6 +57,20 @@ export class TournamentService {
       );
   }
 
+  createTournament(newTournament: Omit<TournamentFormDTO, 'id'>): Observable<TournamentFormDTO> {
+    return this.http
+      .post<
+        ApiResponse<TournamentFormDTO>
+      >(`${environment.apiUrl}/tournaments/create`, newTournament)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error.message);
+        }),
+      );
+  }
+
   updateTournament(updatedTournament: TournamentFormDTO): Observable<TournamentFormDTO> {
     const { id, ...body } = updatedTournament;
 

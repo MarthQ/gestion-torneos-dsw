@@ -8,12 +8,13 @@ export interface TournamentFormDTO {
   name: string;
   description: string;
   datetimeinit: Date;
-  status: string;
-  creator: number;
+  status?: string;
+  creator?: number;
   game: number;
   location: number;
   maxParticipants: number;
   tags: number[];
+  type?: string;
 }
 
 export interface Tournament {
@@ -27,4 +28,5 @@ export interface Tournament {
   location: Location;
   maxParticipants: number;
   tags: Tag[];
+  type: string;
 }

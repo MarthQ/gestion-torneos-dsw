@@ -20,12 +20,12 @@ import { Region } from '../region/region.entity.js'
 export class Tournament extends BaseEntity {
     @Property({ nullable: false, unique: true })
     name!: string
-    @Property()
+    @Property({ columnType: 'text' })
     description!: string
     @Property()
     datetimeinit!: Date
-    @Property()
-    status!: string
+    @Property({ default: 'inscription_open' })
+    status?: string
     @Property()
     maxParticipants!: number
     //TODO cambiar de tipo string a 'single_elimination' | 'double_elimination'

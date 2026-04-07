@@ -11,6 +11,7 @@ import {
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
+    create,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
@@ -25,6 +26,8 @@ tournamentRouter.get('/userTournaments', authenticationMiddleware, findUserTourn
 tournamentRouter.get('/:id', findOne)
 // Create tournament
 tournamentRouter.post('/', authenticationMiddleware, add)
+// Create tournament
+tournamentRouter.post('/create', authenticationMiddleware, create)
 // Create bracket
 tournamentRouter.post('/:id/start', authenticationMiddleware, createBracket)
 // Find tournament's bracket

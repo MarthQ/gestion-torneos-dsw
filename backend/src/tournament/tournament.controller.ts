@@ -14,7 +14,7 @@ const TournamentSchema = z.object({
     name: z.string({ message: 'Name must be a string' }),
     description: z.string({ message: 'Description must be a string' }),
     datetimeinit: z.coerce.date({ message: 'Date time must be a date' }),
-    status: z.string({ message: 'Status must be a string' }),
+    status: z.string({ message: 'Status must be a string' }).optional(),
     maxParticipants: z
         .number({ message: 'The maximum number of participants should be a number' })
         .gt(1, { message: 'The maximum number of participants should be greater than 1' }),
@@ -132,6 +132,30 @@ async function getTournamentBracket(req: Request, res: Response) {
             message: 'Found Bracket',
             data: { bracketManagerTournament },
         })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+async function create(req: RequestWithUser, res: Response) {
+    try {
+        const user = req.user!
+
+        const tournament = req.body
+
+        tournament.creator = Number(user.id!)
+
+        const sanitizedTournament = TournamentSchema.safeParse(req.body)
+
+        if (!sanitizedTournament.success) {
+            throw fromZodError(sanitizedTournament.error)
+        }
+
+        const tournamentData = em.create(Tournament, tournament)
+
+        await em.flush()
+
+        res.status(201).json({ message: 'Tournament created', data: tournamentData })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
@@ -294,4 +318,5 @@ export {
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
+    create,
 }
