@@ -6,6 +6,7 @@ import { fromZodError } from 'zod-validation-error'
 import { env } from '../config/env.js'
 import { GameMapper } from '../shared/mappers/gameMapper.js'
 import { GameDTO, IGDBGame } from '../shared/interfaces/game.js'
+import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -22,7 +23,9 @@ async function searchIGDB(req: Request, res: Response) {
         const query = req.query.query ? String(req.query.query) : undefined
 
         if (!query) {
-            return res.status(400).json({ message: 'Query is required' })
+            const error = new Error('Query is required')
+            ;(error as any).statusCode = 400
+            throw error
         }
 
         const response = await fetch('https://api.igdb.com/v4/games', {
@@ -36,14 +39,16 @@ async function searchIGDB(req: Request, res: Response) {
         })
 
         if (!response.ok) {
-            return res.status(502).json({ message: 'IGDB API error' })
+            const error = new Error('IGDB API error')
+            ;(error as any).statusCode = 502
+            throw error
         }
 
         const igdbGames: IGDBGame[] = await response.json()
         const data = GameMapper.mapIgdbGameArrayToGameArray(igdbGames)
         res.status(200).json({ message: 'Found IGDB games', data })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -72,7 +77,7 @@ async function findAll(req: Request, res: Response) {
             // meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
         })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -82,7 +87,7 @@ async function findOne(req: Request, res: Response) {
         const game = await em.findOneOrFail(Game, { id })
         res.status(200).json({ message: 'Found game', data: game })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -93,12 +98,16 @@ async function add(req: Request, res: Response) {
         // Checkear usando el findOne que el juego no existe ya en la DB.
 
         if (!igdbId) {
-            return res.status(400).json({ message: 'An IGDB ID is required' })
+            const error = new Error('An IGDB ID is required')
+            ;(error as any).statusCode = 400
+            throw error
         }
 
         const existingGame = await em.findOne(Game, { igdbId })
         if (existingGame) {
-            return res.status(409).json({ message: 'Game already is registered in the database.' })
+            const error = new Error('Game already is registered in the database.')
+            ;(error as any).statusCode = 409
+            throw error
         }
 
         const response = await fetch('https://api.igdb.com/v4/games', {
@@ -112,7 +121,9 @@ async function add(req: Request, res: Response) {
         })
 
         if (!response.ok) {
-            return res.status(502).json({ message: 'IGDB API error' })
+            const error = new Error('IGDB API error')
+            ;(error as any).statusCode = 502
+            throw error
         }
 
         const igdbResponse: IGDBGame[] = await response.json()
@@ -125,8 +136,7 @@ async function add(req: Request, res: Response) {
         await em.flush()
         res.status(201).json({ message: 'Game added to database', data: game })
     } catch (error: any) {
-        console.log(error)
-        res.status(500).json({ message: error })
+        handleHttpError(error, res)
     }
 }
 
@@ -144,7 +154,7 @@ async function update(req: Request, res: Response) {
             res.status(200).json({ message: 'Game updated' })
         }
     } catch (error: any) {
-        res.status(500).json(error.message)
+        handleHttpError(error, res)
     }
 }
 
@@ -155,7 +165,7 @@ async function remove(req: Request, res: Response) {
         await em.removeAndFlush(game)
         res.status(200).send({ message: 'Game deleted' })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 

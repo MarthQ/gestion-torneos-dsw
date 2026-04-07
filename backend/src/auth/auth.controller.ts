@@ -12,6 +12,7 @@ import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { UserMapper } from '../shared/mappers/user.mapper.js'
 import { JWTUtils } from '../shared/auth/jwt.utils.js'
 import { Mailer } from '../shared/mailer/mailer.service.js'
+import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -84,31 +85,7 @@ async function login(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        console.log(error)
-        // Custom error handling
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // Zod Validation Error
-        if (error.name === 'ZodValidationError' || error.details) {
-            return res.status(400).json({
-                message: 'Invalid login request',
-                errors: error.details, // Array de errores de Zod
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: 'Credentials are not valid (email)',
-            })
-        }
-        // 4. Error genérico
-        console.error({ errorName: error.name })
-        return res.status(500).json({
-            message: 'Internal server error',
-        })
+        handleHttpError(error, res)
     }
 }
 
@@ -145,41 +122,7 @@ async function register(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        // General error
-        console.error({
-            name: error.name,
-            message: error.message,
-            code: error.code,
-            detail: error.sqlMessage || error.detail,
-        })
-        // Zod Validation Error
-        if (error.name === 'ZodValidationError' || error.details) {
-            return res.status(400).json({
-                message: 'Invalid register request',
-                errors: error.details, // Array de errores de Zod
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: "Rol user doesn't exist in db",
-            })
-        }
-        // MikroORM Error
-        if (error.sqlMessage.includes('user_name_unique')) {
-            return res.status(409).json({
-                message: `Name already taken`,
-            })
-        }
-        if (error.sqlMessage.includes('user_mail_unique')) {
-            return res.status(409).json({
-                message: `Email already taken`,
-            })
-        }
-
-        return res.status(500).json({
-            message: 'Internal server error',
-        })
+        handleHttpError(error, res)
     }
 }
 
@@ -199,12 +142,7 @@ async function forgotPassword(req: Request, res: Response) {
 
         mailer.sendPasswordReset(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
     } catch (error: any) {
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -244,19 +182,7 @@ async function setupPassword(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        // Custom error handling
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: "User doesn't exist in database",
-            })
-        }
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 

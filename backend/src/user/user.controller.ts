@@ -11,6 +11,7 @@ import { Mailer } from '../shared/mailer/mailer.service.js'
 import { JWTUtils } from '../shared/auth/jwt.utils.js'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { UserMapper } from '../shared/mappers/user.mapper.js'
+import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -67,7 +68,7 @@ async function findAll(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        res.status(404).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -82,7 +83,7 @@ async function findOne(req: Request, res: Response) {
         const { password, ...userData } = user
         res.status(200).json({ message: 'Found user', data: userData })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -93,7 +94,7 @@ async function remove(req: Request, res: Response) {
         await em.removeAndFlush(user)
         res.status(200).send({ message: 'User deleted' })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -112,39 +113,7 @@ async function add(req: Request, res: Response) {
 
         res.status(201).json({ message: 'User created', data: userWithoutPassword })
     } catch (error: any) {
-        console.log({ error })
-
-        // Custom error handling
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // Zod Validation Error
-        if (error.name === 'ZodValidationError' || error.details) {
-            return res.status(400).json({
-                message: 'Invalid login request',
-                errors: error.details, // Array de errores de Zod
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: 'Credentials are not valid (email)',
-            })
-        }
-
-        if (error.sqlMessage.includes('user_name_unique')) {
-            return res.status(409).json({
-                message: `Name already taken`,
-            })
-        }
-        if (error.sqlMessage.includes('user_mail_unique')) {
-            return res.status(409).json({
-                message: `Email already taken`,
-            })
-        }
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -163,20 +132,7 @@ async function sendInvitation(req: Request, res: Response) {
 
         return res.status(200).json({ message: 'An email has been sent successfully to invite the user' })
     } catch (error: any) {
-        console.log(error)
-        // Custom error from mailer
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: "User doesn't exist in database",
-            })
-        }
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -209,18 +165,7 @@ async function changePassword(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: "User doesn't exist in database",
-            })
-        }
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 
     // // Extract email_token
@@ -250,12 +195,7 @@ async function requestResetPassword(req: RequestWithUser, res: Response) {
 
         res.status(200).json(`A reset password mail has been sent to the user's email`)
     } catch (error: any) {
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 //(ADMIN) Update user's data
@@ -273,20 +213,7 @@ async function update(req: Request, res: Response) {
         await em.flush()
         res.status(200).json({ message: 'User updated' })
     } catch (error: any) {
-        console.log({ error })
-
-        // MikroORM Errors
-        if (error.sqlMessage.includes('user_name_unique')) {
-            return res.status(409).json({
-                message: `Name already taken`,
-            })
-        }
-        if (error.sqlMessage.includes('user_mail_unique')) {
-            return res.status(409).json({
-                message: `Email already taken`,
-            })
-        }
-        res.status(500).json(error.message)
+        handleHttpError(error, res)
     }
 }
 

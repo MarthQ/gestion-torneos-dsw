@@ -3,6 +3,7 @@ import { Location } from './location.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -37,7 +38,7 @@ async function findAll(req: Request, res: Response) {
             data: locations,
         })
     } catch (error: any) {
-        res.status(404).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -47,7 +48,7 @@ async function findOne(req: Request, res: Response) {
         const location = await em.findOneOrFail(Location, { id })
         res.status(200).json({ message: 'Found location', data: location })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -63,7 +64,7 @@ async function add(req: Request, res: Response) {
             res.status(201).json({ message: 'Location created', data: location })
         }
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 async function update(req: Request, res: Response) {
@@ -80,7 +81,7 @@ async function update(req: Request, res: Response) {
         }
         res.status(200).json({ message: 'Location updated' })
     } catch (error: any) {
-        res.status(500).json(error.message)
+        handleHttpError(error, res)
     }
 }
 
@@ -91,7 +92,7 @@ async function remove(req: Request, res: Response) {
         await em.removeAndFlush(location)
         res.status(200).send({ message: 'Location deleted' })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 

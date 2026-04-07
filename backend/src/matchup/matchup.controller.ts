@@ -3,6 +3,7 @@ import { Matchup } from './matchup.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -36,7 +37,7 @@ async function findAll(req: Request, res: Response) {
             data: Matchups,
         })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -46,7 +47,7 @@ async function findOne(req: Request, res: Response) {
         const matchup = await em.findOneOrFail(Matchup, { id })
         res.status(200).json({ message: 'Found matchup', data: matchup })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -62,7 +63,7 @@ async function add(req: Request, res: Response) {
             res.status(201).json({ message: 'Matchup added', data: matchup })
         }
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 async function update(req: Request, res: Response) {
@@ -79,7 +80,7 @@ async function update(req: Request, res: Response) {
             res.status(200).json({ message: 'Matchup updated' })
         }
     } catch (error: any) {
-        res.status(500).json(error.message)
+        handleHttpError(error, res)
     }
 }
 
@@ -90,7 +91,7 @@ async function remove(req: Request, res: Response) {
         await em.removeAndFlush(matchup)
         res.status(200).send({ message: 'Matchup deleted' })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 

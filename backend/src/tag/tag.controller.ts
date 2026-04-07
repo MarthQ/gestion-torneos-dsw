@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { Tag } from './tag.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
+import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -39,7 +40,7 @@ async function findAll(req: Request, res: Response) {
             data: tags,
         })
     } catch (error: any) {
-        res.status(404).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -49,7 +50,7 @@ async function findOne(req: Request, res: Response) {
         const tags = await em.findOneOrFail(Tag, { id })
         res.status(200).json({ message: 'Found tag', data: tags })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
@@ -59,7 +60,7 @@ async function add(req: Request, res: Response) {
         await em.flush()
         res.status(201).json({ message: 'Tag created', data: tags })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 async function update(req: Request, res: Response) {
@@ -70,7 +71,7 @@ async function update(req: Request, res: Response) {
         await em.flush()
         res.status(200).json({ message: 'Tag updated' })
     } catch (error: any) {
-        res.status(500).json(error.message)
+        handleHttpError(error, res)
     }
 }
 
@@ -81,7 +82,7 @@ async function remove(req: Request, res: Response) {
         await em.removeAndFlush(tags)
         res.status(200).send({ message: 'Tag deleted' })
     } catch (error: any) {
-        res.status(500).json({ message: error.message })
+        handleHttpError(error, res)
     }
 }
 
