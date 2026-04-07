@@ -4,7 +4,7 @@ import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
-const em = ORM.em
+const getEm = () => ORM.em
 
 const InscriptionSchema = z.object({
     id: z.number().gt(0).optional(),
@@ -29,7 +29,7 @@ async function findAll(req: Request, res: Response) {
         if (user) filter.user = user
 
         if (page && pageSize) {
-            const [inscriptions, total] = await em.findAndCount(Inscription, filter, {
+            const [inscriptions, total] = await getEm().findAndCount(Inscription, filter, {
                 limit: pageSize,
                 offset: (page - 1) * pageSize,
             })
@@ -40,7 +40,7 @@ async function findAll(req: Request, res: Response) {
             })
         }
 
-        const inscriptions = await em.find(Inscription, filter, { populate: ['user', 'tournament'] })
+        const inscriptions = await getEm().find(Inscription, filter, { populate: ['user', 'tournament'] })
         res.status(200).json({
             message: 'Found all inscriptions',
             data: inscriptions,
@@ -53,7 +53,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const inscription = await em.findOneOrFail(Inscription, { id }, { populate: ['user', 'tournament'] })
+        const inscription = await getEm().findOneOrFail(Inscription, { id }, { populate: ['user', 'tournament'] })
         res.status(200).json({ message: 'Found inscription', data: inscription })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
@@ -67,8 +67,8 @@ async function add(req: Request, res: Response) {
         if (!sanitizedInscription.success) {
             throw fromZodError(sanitizedInscription.error)
         } else {
-            const inscription = em.create(Inscription, sanitizedInscription.data)
-            await em.flush()
+            const inscription = getEm().create(Inscription, sanitizedInscription.data)
+            await getEm().flush()
             res.status(201).json({ message: 'Inscription added', data: inscription })
         }
     } catch (error: any) {
@@ -83,9 +83,9 @@ async function update(req: Request, res: Response) {
             throw fromZodError(sanitizedInscription.error)
         } else {
             const id = Number.parseInt(req.params.id)
-            const inscription = em.getReference(Inscription, id)
-            em.assign(inscription, sanitizedInscription.data)
-            await em.flush()
+            const inscription = getEm().getReference(Inscription, id)
+            getEm().assign(inscription, sanitizedInscription.data)
+            await getEm().flush()
             res.status(200).json({ message: 'Inscription updated' })
         }
     } catch (error: any) {
@@ -96,8 +96,8 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const inscription = em.getReference(Inscription, id)
-        await em.removeAndFlush(inscription)
+        const inscription = getEm().getReference(Inscription, id)
+        await getEm().removeAndFlush(inscription)
         res.status(200).send({ message: 'Inscription deleted' })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
