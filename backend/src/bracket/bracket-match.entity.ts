@@ -21,5 +21,5 @@ export class BracketMatch extends BaseEntity {
     @Property()
     status!: number
     @Property()
-    childCount!: number
+    child_count!: number
 }

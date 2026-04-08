@@ -6,7 +6,7 @@ export class BracketMatchGame extends BaseEntity {
     @Property()
     number!: number
     @Property()
-    childCount!: number
+    child_count!: number
     @Property({ type: 'json', nullable: true })
     opponent1?: any
     @Property({ type: 'json', nullable: true })

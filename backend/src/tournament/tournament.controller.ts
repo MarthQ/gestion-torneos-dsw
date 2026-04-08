@@ -296,51 +296,77 @@ async function process(dataset: Dataset) {
     }
 }
 
+// async function closeInscription(req: Request, res: Response) {
+//     const dataset16: Dataset = {
+//         title: '16 competitor tournament',
+//         type: 'double_elimination',
+//         roster: [
+//             { id: 7, name: 'Seed 1' },
+//             { id: 55, name: 'Seed 2' },
+//             { id: 53, name: 'Seed 3' },
+//             { id: 523, name: 'Seed 4' },
+//             { id: 123, name: 'Seed 5' },
+//             { id: 353, name: 'Seed 6' },
+//             { id: 17, name: 'Seed 7' },
+//             { id: 155, name: 'Seed 8' },
+//             { id: 153, name: 'Seed 9' },
+//             { id: 1523, name: 'Seed 10' },
+//             { id: 1123, name: 'Seed 11' },
+//             { id: 1353, name: 'Seed 12' },
+//         ],
+//     }
+
+//     try {
+//         // const id = Number.parseInt(req.params.id)
+
+//         // const tournamentData = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+
+//         // const { id: tournamentId, name, type, inscriptions } = tournamentData
+
+//         // const stage = await manager.create.stage({
+//         //     tournamentId: tournamentId as any,
+//         //     name: name,
+//         //     type: type as any,
+//         //     seeding: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8'],
+//         //     settings: { seedOrdering: ['inner_outer'], matchesChildCount: 0 },
+//         // })
+
+//         // const bracketManagerTournament = await manager.get.tournamentData(stage.tournament_id)
+
+//         console.log('before response')
+//         const response = await process(dataset16)
+//         console.log('after response')
+//         console.log({ response })
+
+//         res.status(200).json({
+//             message: 'Bracket created',
+//             data: response,
+//         })
+//     } catch (error: any) {
+//         console.log(error)
+//         res.status(500).json({ message: error.message })
+//     }
+// }
 async function closeInscription(req: Request, res: Response) {
-    const dataset16: Dataset = {
-        title: '16 competitor tournament',
-        type: 'double_elimination',
-        roster: [
-            { id: 7, name: 'Seed 1' },
-            { id: 55, name: 'Seed 2' },
-            { id: 53, name: 'Seed 3' },
-            { id: 523, name: 'Seed 4' },
-            { id: 123, name: 'Seed 5' },
-            { id: 353, name: 'Seed 6' },
-            { id: 17, name: 'Seed 7' },
-            { id: 155, name: 'Seed 8' },
-            { id: 153, name: 'Seed 9' },
-            { id: 1523, name: 'Seed 10' },
-            { id: 1123, name: 'Seed 11' },
-            { id: 1353, name: 'Seed 12' },
-        ],
-    }
-
     try {
-        // const id = Number.parseInt(req.params.id)
+        const id = Number.parseInt(req.params.id)
 
-        // const tournamentData = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+        const tournamentData = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
 
-        // const { id: tournamentId, name, type, inscriptions } = tournamentData
+        const { id: tournamentId, name, type, inscriptions } = tournamentData
 
-        // const stage = await manager.create.stage({
-        //     tournamentId: tournamentId as any,
-        //     name: name,
-        //     type: type as any,
-        //     seeding: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8'],
-        //     settings: { seedOrdering: ['inner_outer'], matchesChildCount: 0 },
-        // })
+        const stage = await manager.create.stage({
+            tournamentId: tournamentId as any,
+            name: name,
+            type: type as any,
+            seeding: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8'],
+        })
 
-        // const bracketManagerTournament = await manager.get.tournamentData(stage.tournament_id)
-
-        console.log('before response')
-        const response = await process(dataset16)
-        console.log('after response')
-        console.log({ response })
+        const bracketManagerTournament = await manager.get.tournamentData(stage.tournament_id)
 
         res.status(200).json({
             message: 'Bracket created',
-            data: response,
+            data: bracketManagerTournament,
         })
     } catch (error: any) {
         console.log(error)
@@ -383,6 +409,8 @@ async function updateMatchResult(req: Request, res: Response) {
 async function getTournamentBracket(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
+
+        console.log({ id })
 
         const bracketManagerTournament = await manager.get.tournamentData(id)
 
