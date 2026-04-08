@@ -33,7 +33,6 @@ export class Participants {
 
       return this.inscriptionService.getInscriptionsPaginated(tournamentId).pipe(
         tap((response) => this.inscriptionsMeta.set(response.meta)),
-        tap((response) => console.log(response)),
         map((response) => response.data),
       );
     },

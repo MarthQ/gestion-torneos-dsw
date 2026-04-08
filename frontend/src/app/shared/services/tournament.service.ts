@@ -47,6 +47,12 @@ export class TournamentService {
       );
   }
 
+  getTournament(tournamentId: number): Observable<Tournament> {
+    return this.http
+      .get<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}`)
+      .pipe(map((response) => response.data));
+  }
+
   addTournament(newTournament: Omit<TournamentFormDTO, 'id'>): Observable<TournamentFormDTO> {
     return this.http
       .post<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments`, newTournament)

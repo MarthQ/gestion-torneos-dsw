@@ -10,6 +10,7 @@ import { QueryFilter } from '@shared/interfaces/filters';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { RouterLink } from '@angular/router';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
   imports: [DatePipe, SearchBar, Pagination, RouterLink],
@@ -19,6 +20,7 @@ export class MyTournaments {
   private tournamentService = inject(TournamentService);
   tagService = inject(TagService);
   gameService = inject(GameService);
+  getBackgroundStyle = TournamentUtils.GetGameImage;
 
   // API Get parameters (for table)
   query = signal('');
@@ -53,13 +55,5 @@ export class MyTournaments {
   // Visual actions (pagination)
   pageChangedTo(newPage: number) {
     this.page.set(newPage);
-  }
-
-  getBackgroundImageStyle(tournament: Tournament) {
-    if (tournament.game.imgUrl) {
-      return `background-image: url('${tournament.game.imgUrl}');`;
-    } else {
-      return `background-image: url(https://placehold.co/600x400/1e293b/white?text=${tournament.name.replace(' ', '+')});`;
-    }
   }
 }

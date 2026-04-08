@@ -19,6 +19,7 @@ import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
 import { TournamentFormDTO } from '@shared/interfaces/tournament';
 import { Router } from '@angular/router';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
   imports: [ReactiveFormsModule, FormErrorLabel, DatePipe],
@@ -31,6 +32,8 @@ export class Wizard {
   private tournamentService = inject(TournamentService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+
+  getGameImage = TournamentUtils.GetGameImage;
 
   locationResource = rxResource({
     stream: () => this.locationService.getLocations(),

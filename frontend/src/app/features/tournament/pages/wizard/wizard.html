@@ -83,6 +83,11 @@
             <option readonly value="0">Seleccione el juego del torneo</option>
             @for (game of gameResource.value(); track game.id) {
               <option [ngValue]="game.id">
+                <img
+                  [src]="getGameImage(game)"
+                  alt="Foto de {{ game.name }}"
+                  class="w-6 h-6 mr-2"
+                />
                 {{ game.name }}
               </option>
             }

@@ -1,7 +1,3 @@
-import { DataTable } from '@shared/components/data-table/data-table';
-import { TableColumn } from '@shared/interfaces/table-column';
-import { TableAction } from '@shared/interfaces/table-action';
-import { TableState } from '@shared/interfaces/table-state';
 import {
   Component,
   computed,
@@ -24,39 +20,11 @@ import { CrudAction } from '@shared/interfaces/crudAction';
 import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
-  imports: [LocationCrudModal, Pagination, SearchBar, DataTable],
+  imports: [LocationCrudModal, Pagination, SearchBar],
   templateUrl: './location-crud.html',
 })
 export class LocationCrud {
   locationService = inject(LocationService);
-
-  // Table configuration
-  locationColumns: TableColumn<Location>[] = [
-    { key: 'id', label: 'ID', width: '80px' },
-    { key: 'name', label: 'Nombre de la Localidad' },
-  ];
-
-  locationActions: TableAction<Location>[] = [
-    {
-      icon: 'boxicons--edit-filled',
-      label: 'Editar localidad',
-      action: 'edit',
-      color: 'warning',
-    },
-    {
-      icon: 'boxicons--trash',
-      label: 'Eliminar localidad',
-      action: 'delete',
-      color: 'error',
-    },
-  ];
-
-  tableState = computed<TableState>(() => {
-    if (this.locationResource.isLoading()) return 'loading';
-    if (this.locationResource.hasValue() && this.locationResource.value().length === 0)
-      return 'empty';
-    return 'hasData';
-  });
 
   // API Get parameters (for table)
   query = signal<string>('');
@@ -106,7 +74,6 @@ export class LocationCrud {
     this.selectedLocation.set(location);
     this.openModal.set(true);
   }
-
   handleCrudAction(event: CrudAction<Location>) {
     switch (event.actionType) {
       case 'create':
@@ -144,14 +111,6 @@ export class LocationCrud {
             console.error(message);
           },
         });
-    }
-  }
-
-  handleRowAction(event: { action: 'edit' | 'delete'; row: Location }) {
-    if (event.action === 'edit') {
-      this.editLocation(event.row);
-    } else {
-      this.deleteLocation(event.row);
     }
   }
 }

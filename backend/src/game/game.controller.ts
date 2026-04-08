@@ -12,7 +12,7 @@ const em = ORM.em
 const GameSchema = z.object({
     name: z.string({ message: 'Name must be a string' }),
     description: z.string({ message: 'Description must be a string' }),
-    imgUrl: z.string({ message: 'Description must be a string' }),
+    imgId: z.string({ message: 'Img Id must be a string' }),
     igdbId: z.number({ message: 'Description must be a number referencing IGDB DB' }),
     gametype: z.number({ message: 'Gametype must be a number representing a Gametype id' }),
 })
@@ -32,7 +32,7 @@ async function searchIGDB(req: Request, res: Response) {
                 Authorization: `Bearer ${env.igdbAccessToken}`,
                 'Content-Type': 'text/plain',
             },
-            body: `search "${query}"; fields name,cover.url,summary,rating; limit 10;`,
+            body: `search "${query}"; fields name,cover.image_id,summary,rating; limit 10;`,
         })
 
         if (!response.ok) {
@@ -41,6 +41,7 @@ async function searchIGDB(req: Request, res: Response) {
 
         const igdbGames: IGDBGame[] = await response.json()
         const data = GameMapper.mapIgdbGameArrayToGameArray(igdbGames)
+        console.log({ data })
         res.status(200).json({ message: 'Found IGDB games', data })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
@@ -108,7 +109,7 @@ async function add(req: Request, res: Response) {
                 Authorization: `Bearer ${env.igdbAccessToken}`,
                 'Content-Type': 'text/plain',
             },
-            body: `fields name,cover.url,summary,rating; where id = ${igdbId};`,
+            body: `fields name,cover.image_id,summary,rating; where id = ${igdbId};`,
         })
 
         if (!response.ok) {

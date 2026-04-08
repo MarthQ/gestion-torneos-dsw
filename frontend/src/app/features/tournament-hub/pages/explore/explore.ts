@@ -7,20 +7,22 @@ import { GameService } from '@shared/services/game.service';
 import { TagService } from '@shared/services/tag.service';
 import { TournamentService } from '@shared/services/tournament.service';
 
-import { TournamentActionMap, tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament } from '@shared/interfaces/tournament';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { PaginationMeta } from '@shared/interfaces/api-response';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
   imports: [I18nSelectPipe, DatePipe, SearchBar, Pagination],
   templateUrl: './explore.html',
 })
 export class Explore {
-  tournamentActionMap = TournamentActionMap;
-  tournamentStatusMap = tournamentStatusMap;
+  tournamentActionMap = TournamentUtils.tournamentActionMap;
+  tournamentStatusMap = TournamentUtils.tournamentStatusMap;
+  getBackgroundStyle = TournamentUtils.GetGameImage;
+
   tournamentService = inject(TournamentService);
   tagService = inject(TagService);
   gameService = inject(GameService);
@@ -58,13 +60,5 @@ export class Explore {
   // Visual actions (pagination)
   pageChangedTo(newPage: number) {
     this.page.set(newPage);
-  }
-
-  getBackgroundImageStyle(tournament: Tournament) {
-    if (tournament.game.imgUrl) {
-      return `background-image: url('${tournament.game.imgUrl}');`;
-    } else {
-      return `background-image: url(https://placehold.co/600x400/1e293b/white?text=${tournament.name.replace(' ', '+')});`;
-    }
   }
 }

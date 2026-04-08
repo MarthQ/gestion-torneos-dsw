@@ -30,7 +30,10 @@
 
   @for (tournament of tournamentResource.value(); track tournament.id) {
     <div class="tournament-card bg-base-300 rounded-xl overflow-hidden border border-base-300">
-      <div class="h-40 bg-cover bg-center" [style]="getBackgroundImageStyle(tournament)">
+      <div
+        class="h-40 bg-cover bg-center"
+        [style.background-image]="'url(' + getBackgroundStyle(tournament.game!, 'medium') + ')'"
+      >
         <div class="p-4 flex justify-between">
           <span
             class="text-xs text-neutral font-bold px-2 py-1 rounded"
