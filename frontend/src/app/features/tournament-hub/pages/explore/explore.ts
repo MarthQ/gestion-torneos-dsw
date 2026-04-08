@@ -1,4 +1,4 @@
-import { DatePipe, I18nSelectPipe } from '@angular/common';
+import { DatePipe, I18nSelectPipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { map, tap } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -8,19 +8,20 @@ import { TagService } from '@shared/services/tag.service';
 import { TournamentService } from '@shared/services/tournament.service';
 
 import { QueryFilter } from '@shared/interfaces/filters';
-import { Tournament } from '@shared/interfaces/tournament';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [I18nSelectPipe, DatePipe, SearchBar, Pagination],
+  imports: [I18nSelectPipe, DatePipe, SearchBar, Pagination, RouterLink, TitleCasePipe],
   templateUrl: './explore.html',
 })
 export class Explore {
   tournamentActionMap = TournamentUtils.tournamentActionMap;
   tournamentStatusMap = TournamentUtils.tournamentStatusMap;
+  tournamentStatusBadgeMap = TournamentUtils.tournamentStatusBadgeMap;
   getBackgroundStyle = TournamentUtils.GetGameImage;
 
   tournamentService = inject(TournamentService);

@@ -1,4 +1,5 @@
 import { Game } from './game';
+import { Inscription } from './inscription';
 import { Location } from './location';
 import { Tag } from './tag';
 import { User } from './user';
@@ -27,6 +28,7 @@ export interface Tournament {
   game: Game;
   location: Location;
   maxParticipants: number;
+  inscriptions: Inscription[];
   tags: Tag[];
   type: string;
 }

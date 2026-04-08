@@ -8,6 +8,8 @@ import { MikroOrmDatabase } from '../bracket/brackets-mikro-db.js'
 import { BracketsManager } from 'brackets-manager'
 import { User } from '../user/user.entity.js'
 import { StageType } from '../bracket/interfaces/unions.interface.js'
+import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
+import { TournamentStatus } from '../shared/interfaces/status.js'
 
 const em = ORM.em
 
@@ -15,7 +17,7 @@ const TournamentSchema = z.object({
     name: z.string({ message: 'Name must be a string' }),
     description: z.string({ message: 'Description must be a string' }),
     datetimeinit: z.coerce.date({ message: 'Date time must be a date' }),
-    status: z.string({ message: 'Status must be a string' }).optional(),
+    status: z.nativeEnum(TournamentStatus, { message: 'Status must be one of the permitted' }).optional(),
     maxParticipants: z
         .number({ message: 'The maximum number of participants should be a number' })
         .gt(1, { message: 'The maximum number of participants should be greater than 1' }),
@@ -24,8 +26,7 @@ const TournamentSchema = z.object({
     region: z.number({ message: 'Region must be a number representing a region id' }).optional(),
     creator: z.number({ message: 'Creator must be a number representing a user id' }),
     tags: z.array(z.number()),
-    //TODO cambiar de tipo string a 'single_elimination' | 'double_elimination'
-    type: z.string({ message: 'Type must be single_elimination or double_elimination' }),
+    type: z.nativeEnum(TournamentTypeEnum, { message: 'Type must be one of the permitted' }),
 })
 
 const storage = new MikroOrmDatabase()
@@ -109,16 +110,19 @@ async function findOne(req: Request, res: Response) {
         const tournamentData = await em.findOneOrFail(
             Tournament,
             { id },
-            { populate: ['game', 'location', 'creator'] },
+            { populate: ['game', 'location', 'creator', 'inscriptions'] },
         )
 
-        const bracketManagerTournamentData = await manager.get.tournamentData(id)
+        const bracketData = (await storage.select('stage', { tournament_id: id }))
+            ? await manager.get.tournamentData(id)
+            : null
 
         res.status(200).json({
             message: 'Found tournament',
-            data: { tournamentData, bracketManagerTournamentData },
+            data: { tournamentData, bracket: bracketData },
         })
     } catch (error: any) {
+        console.log(error)
         res.status(500).json({ message: error.message })
     }
 }

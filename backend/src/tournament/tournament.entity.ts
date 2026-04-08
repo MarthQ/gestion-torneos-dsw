@@ -7,6 +7,7 @@ import {
     Rel,
     Collection,
     OneToMany,
+    Enum,
 } from '@mikro-orm/core'
 import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 import { Game } from '../game/game.entity.js'
@@ -15,6 +16,8 @@ import { User } from '../user/user.entity.js'
 import { Location } from '../location/location.entity.js'
 import { Tag } from '../tag/tag.entity.js'
 import { Region } from '../region/region.entity.js'
+import { TournamentStatus } from '../shared/interfaces/status.js'
+import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
 
 @Entity()
 export class Tournament extends BaseEntity {
@@ -24,13 +27,16 @@ export class Tournament extends BaseEntity {
     description!: string
     @Property()
     datetimeinit!: Date
-    @Property({ default: 'inscription_open' })
-    status?: string
+    // Open -> Closed -> Running -> Finished -> Canceled
+    @Enum({
+        items: () => TournamentStatus,
+        default: TournamentStatus.OPEN,
+    })
+    status?: TournamentStatus
     @Property()
     maxParticipants!: number
-    //TODO cambiar de tipo string a 'single_elimination' | 'double_elimination'
-    @Property({ default: 'single_elimination' })
-    type!: string
+    @Enum(() => TournamentTypeEnum)
+    type!: TournamentTypeEnum
     @ManyToOne(() => User, { nullable: false })
     creator!: Rel<User>
     @ManyToOne(() => Location, { nullable: false })

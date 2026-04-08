@@ -17,7 +17,6 @@ const userRouter = Router()
 
 userRouter.get('/', findAll)
 userRouter.get('/:id', findOne)
-userRouter.put('/:id', authenticationMiddleware, update)
 userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
 
 //(ADMIN) Create user without password
@@ -30,6 +29,7 @@ userRouter.patch('/password', authenticationMiddleware, changePassword)
 userRouter.get('/change-password', authenticationMiddleware, requestResetPassword)
 
 //(ADMIN) Update user's data
-userRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+userRouter.patch('/:id', update)
+userRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
 
 export { userRouter }

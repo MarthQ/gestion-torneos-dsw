@@ -2,7 +2,7 @@
   @for (tab of tabs; track tab.name) {
     <a
       role="tab"
-      class="tab"
+      class="tab grow hover:bg-primary hover:text-primary-content transition-all ease-in-out duration-400"
       [routerLink]="tab.router"
       routerLinkActive="tab-active text-primary-content bg-primary"
       >{{ tab.name }}</a

@@ -23,13 +23,13 @@
     <div class="tournament-card bg-base-300 rounded-xl overflow-hidden border border-base-300">
       <div
         class="h-40 bg-cover bg-center"
-        [style.background-image]="'url(' + getBackgroundStyle(tournament.game!, 'medium') + ')'"
+        [style.background-image]="'url(' + getBackgroundStyle(tournament.game!, 'big') + ')'"
       >
         <div class="p-4 flex justify-between">
           <span
-            class="text-xs text-neutral font-bold px-2 py-1 rounded"
-            [class]="tournament.status | i18nSelect: tournamentStatusMap"
-            >{{ tournament.status }}</span
+            class="text-xs badge font-bold px-2 py-1 rounded"
+            [class]="tournament.status | i18nSelect: tournamentStatusBadgeMap"
+            >{{ tournament.status | i18nSelect: tournamentStatusMap }}</span
           >
           <span class="bg-black/50 text-xs px-2 py-1 rounded flex"
             ><span class="icon-[fa-solid--users] mr-1.5" style="width: 18px; height: 18px"></span>
@@ -57,7 +57,10 @@
               tournament.datetimeinit | date: 'dd MMMM, HH:mm'
             }}</span>
           </div>
-          <button class="font-bold hover:underline text-sm btn btn-primary">
+          <button
+            class="font-bold hover:underline text-sm btn btn-primary"
+            [routerLink]="['/tournament', tournament.id]"
+          >
             {{ tournament.status | i18nSelect: tournamentActionMap }}
           </button>
         </div>

@@ -47,9 +47,13 @@ export class TournamentService {
       );
   }
 
-  getTournament(tournamentId: number): Observable<Tournament> {
+  getTournament(
+    tournamentId: number,
+  ): Observable<{ tournamentData: Tournament; bracketData: any }> {
     return this.http
-      .get<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}`)
+      .get<
+        ApiResponse<{ tournamentData: Tournament; bracketData: any }>
+      >(`${environment.apiUrl}/tournaments/${tournamentId}`)
       .pipe(map((response) => response.data));
   }
 

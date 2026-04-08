@@ -9,7 +9,6 @@ import { locationRouter } from './location/location.routes.js'
 import { inscriptionRouter } from './inscription/inscription.routes.js'
 import { roleRouter } from './role/role.routes.js'
 import cors from 'cors'
-import { matchupRouter } from './matchup/matchup.routes.js'
 import { tagRouter } from './tag/tag.routes.js'
 import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
@@ -40,7 +39,6 @@ app.use('/api/users', userRouter)
 app.use('/api/locations', locationRouter)
 app.use('/api/regions', regionRouter)
 app.use('/api/inscriptions', inscriptionRouter)
-app.use('/api/matchups', matchupRouter)
 app.use('/api/tags', tagRouter)
 app.use('/api/roles', roleRouter)
 app.use('/api/auth', authRouter)

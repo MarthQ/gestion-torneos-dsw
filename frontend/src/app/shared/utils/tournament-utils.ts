@@ -1,18 +1,28 @@
 import { Game } from '@shared/interfaces/game';
 
 export class TournamentUtils {
-  static tournamentStatusMap: Record<string, string> = {
-    Abierto: 'badge-primary',
-    Cerrado: 'badge-error',
-    'En curso': 'badge-warning',
-    Finalizado: 'badge-secondary',
+  static tournamentStatusBadgeMap: Record<string, string> = {
+    open: 'badge-success',
+    closed: 'badge-warning',
+    running: 'badge-primary',
+    finished: 'badge-secondary',
+    canceled: 'badge-error',
   };
 
   static tournamentActionMap: Record<string, string> = {
-    Abierto: 'Inscribirme',
-    Cerrado: 'Ver podio',
-    Finalizado: 'Ver podio',
-    'En curso': 'Ver Llaves',
+    open: 'Inscribirme',
+    closed: 'Ver torneo',
+    running: 'Ver peleas',
+    finished: 'Ver podio',
+    canceled: 'Ver torneo',
+  };
+
+  static tournamentStatusMap: Record<string, string> = {
+    open: 'Abierto',
+    closed: 'Cerrado',
+    running: 'En Curso',
+    finished: 'Finalizado',
+    canceled: 'Cancelado',
   };
 
   static GetGameImage(game: Game, size = 'thumb'): string {
