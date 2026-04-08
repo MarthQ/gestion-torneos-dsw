@@ -7,5 +7,5 @@ export class BracketGroup extends BaseEntity {
     @Property()
     number!: number
     @Property()
-    stageId!: number
+    stage_id!: number
 }

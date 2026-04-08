@@ -154,12 +154,24 @@ export class TournamentService {
 
   reportMatchResult(matchId: number, score: string): Observable<any> {
     return this.http
-      .post<ApiResponse<any>>(`${environment.apiUrl}/brackets/match/${matchId}/report`, { score })
+      .post<ApiResponse<any>>(`${environment.apiUrl}/tournaments/match/${matchId}`, { score })
       .pipe(
         map((response) => response.data),
         catchError((error) => {
           console.error(error);
           return throwError(() => error.error?.message || 'Failed to report match result');
+        }),
+      );
+  }
+
+  getStageMatches(stageId: number) {
+    return this.http
+      .get<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${stageId}/matches`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to get matches');
         }),
       );
   }
