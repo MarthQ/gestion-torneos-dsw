@@ -7,83 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/Drarig29/brackets-viewer.js@master/dist/brackets-viewer.min.css"
-    />
     <script
       type="text/javascript"
       src="https://cdn.jsdelivr.net/npm/brackets-viewer@latest/dist/brackets-viewer.min.js"
     ></script>
-    <style type="text/css">
-      /* Hint BYEs */
-      .name.bye {
-        font-style: italic;
-        color: var(--hint-color);
-      }
-
-      h1 {
-        display: none;
-      }
-
-      h2 {
-        margin-top: 30px !important;
-        margin-bottom: 40px !important;
-        font-size: 2em !important;
-        color: black !important;
-      }
-
-      h3 {
-        display: none;
-      }
-    </style>
-
-    <style type="text/css" media="print">
-      /* Make sure the content takes the whole page */
-      .brackets-viewer div {
-        width: 100%;
-      }
-
-      /* Break pages between brackets */
-      .bracket {
-        page-break-after: always;
-        break-after: always;
-      }
-
-      /* Prevent round headers to wrap */
-      h3 {
-        white-space: nowrap;
-      }
-
-      /* Let matches grow in width */
-      .round {
-        flex-grow: 1;
-        min-width: 150px;
-        /* max-width: var(--match-width); */
-      }
-
-      /* Get rid of the fixed match width */
-      .match {
-        width: unset !important;
-      }
-
-      /* Force backgrounds */
-      * {
-        -webkit-print-color-adjust: exact !important;
-      }
-
-      /* Front page */
-      @page :right {
-        size: legal landscape;
-        margin: 0;
-      }
-
-      /* Back page */
-      @page :left {
-        size: legal landscape;
-        margin: 0.6cm 0 0 0;
-      }
-    </style>
   </head>
   <body>
     <app-root></app-root>

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
@@ -11,6 +11,8 @@ import { environment } from 'src/environments/environment';
 })
 export class TournamentService {
   private http = inject(HttpClient);
+  private _bracketData = signal<any | null>(null);
+  bracketData = computed(() => this._bracketData());
 
   // Without pagination
   getTournaments(): Observable<Tournament[]> {
@@ -144,7 +146,10 @@ export class TournamentService {
     return this.http
       .get<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/bracket`)
       .pipe(
-        map((response) => response.data),
+        map((response) => {
+          this._bracketData.set(response.data);
+          return response.data;
+        }),
         catchError((error) => {
           console.error(error);
           return throwError(() => error.error?.message || 'Bracket not found');
@@ -176,9 +181,10 @@ export class TournamentService {
       );
   }
 
+  //* Should this method be called "createBracket"?
   closeInscriptions(tournamentId: string): Observable<any> {
-    return this.http.get<ApiResponse<any>>(
-      `${environment.apiUrl}/tournaments/${tournamentId}/closeInscriptions`,
-    );
+    return this.http
+      .post<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/start`, {})
+      .pipe(tap(({ data }) => this._bracketData.set(data)));
   }
 }

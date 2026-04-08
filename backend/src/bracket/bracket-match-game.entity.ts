@@ -4,21 +4,15 @@ import { BaseEntity } from '../shared/db/baseEntity.entity.js'
 @Entity()
 export class BracketMatchGame extends BaseEntity {
     @Property()
+    stage_id!: number
+    @Property()
+    parent_id!: number
+    @Property()
     number!: number
     @Property()
-    child_count!: number
+    status!: number
     @Property({ type: 'json', nullable: true })
     opponent1?: any
     @Property({ type: 'json', nullable: true })
     opponent2?: any
-    @Property()
-    status!: number
-    @Property()
-    stage_id!: number
-    @Property()
-    group_id!: number
-    @Property()
-    round_id!: number
-    @Property()
-    match_id!: number
 }

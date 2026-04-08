@@ -1,5 +1,7 @@
 <div #bracketContainer class="brackets-viewer"></div>
 
-<button class="btn btn-primary mt-4" (click)="addResult()">resultado</button>
-<button class="btn btn-primary mt-4" (click)="getMatches()">getMatches</button>
-<button class="btn btn-primary mt-4" (click)="closeInscription()">CloseInscription</button>
+<div class="mt-4 flex gap-4">
+  <button class="btn btn-primary" (click)="addResult()">resultado</button>
+  <button class="btn btn-primary" (click)="refreshView()">Refrescar vista</button>
+  <button class="btn btn-primary" (click)="refreshView()">Actualizar Bracket</button>
+</div>

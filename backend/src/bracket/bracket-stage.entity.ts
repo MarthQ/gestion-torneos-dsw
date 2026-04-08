@@ -10,17 +10,16 @@ export class BracketStage extends BaseEntity {
     name!: string
 
     @Property()
-    type!: 'single_elimination' | 'double_elimination'
+    type!: string
 
     @Property()
     number!: number
 
-    // bracket-stage.entity.ts
     @Property({ type: 'json' })
     settings!: {
-        seedOrdering?: string[]
-        doubleElimination?: {
-            grandFinal?: string
-        }
+        // seedOrdering?: string[]
+        // doubleElimination?: {
+        //     grandFinal?: string
+        // }
     }
 }

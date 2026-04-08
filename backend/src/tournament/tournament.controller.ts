@@ -5,8 +5,9 @@ import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { MikroOrmDatabase } from '../bracket/brackets-mikro-db.js'
-import { BracketsManager, Database } from 'brackets-manager'
+import { BracketsManager } from 'brackets-manager'
 import { User } from '../user/user.entity.js'
+import { StageType } from '../bracket/interfaces/unions.interface.js'
 
 const em = ORM.em
 
@@ -195,32 +196,61 @@ async function remove(req: Request, res: Response) {
     }
 }
 
+function getNearestPowerOfTwo(input: number): number {
+    return Math.pow(2, Math.ceil(Math.log2(input)))
+}
 // bracket manager
 async function createBracket(req: Request, res: Response) {
     try {
-        const id = Number.parseInt(req.params.id)
+        const tournamentId = Number.parseInt(req.params.id)
 
-        const tournamentData = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+        const foundTournament = await em.findOneOrFail(
+            Tournament,
+            { id: tournamentId },
+            { populate: ['inscriptions'] },
+        )
 
-        const { id: tournamentId, name, type, inscriptions } = tournamentData
+        const { name, type, inscriptions } = foundTournament
 
-        const inscriptionsNicknameOrUserName = inscriptions.map(async (inscription) => {
-            return inscription.nickname ?? (await em.findOneOrFail(User, inscription.user))
+        //? Is there a more efficient way to do this?
+        const displayNicknames = await Promise.all(
+            inscriptions.map(async (inscription) => {
+                return inscription.nickname ?? (await em.findOneOrFail(User, inscription.user)).name
+            }),
+        )
+
+        const mockParticipants = [
+            'Participant 1',
+            'Participant 2',
+            'Participant 3',
+            'Participant 4',
+            'Participant 5',
+            'Participant 6',
+            'Participant 7',
+            'Participant 8',
+            'Participant 9',
+            'Participant 10',
+        ]
+
+        await manager.create.stage({
+            name: 'Torneo de prueba',
+            tournamentId: tournamentId,
+            type: type as StageType,
+            // seeding: displayNicknames,
+            seeding: mockParticipants,
+            settings: {
+                seedOrdering: ['inner_outer'],
+                // size: getNearestPowerOfTwo(displayNicknames.length),
+                size: getNearestPowerOfTwo(mockParticipants.length),
+            },
         })
 
-        const stage = await manager.create.stage({
-            tournamentId: tournamentId as any,
-            name: name,
-            type: type as any,
-            seeding: inscriptionsNicknameOrUserName as any,
-            settings: { seedOrdering: ['natural'] },
-        })
-
-        const bracketManagerTournament = await manager.get.tournamentData(stage.tournament_id)
+        const bracketData = await manager.get.tournamentData(tournamentId)
 
         res.status(200).json({
             message: 'Bracket created',
-            data: { bracketManagerTournament },
+            //? Should we return the data like this or nested as data: { bracketData },
+            data: bracketData,
         })
     } catch (error: any) {
         console.log(error)
@@ -232,12 +262,11 @@ async function getStageMatches(req: Request, res: Response) {
     try {
         const stageId = Number.parseInt(req.params.id)
 
-        const matches = await storage.select('match', 8)
-        const matches2 = await manager.find.match(2, 1, 1)
+        const matches = await storage.select('match', { stage_id: stageId })
 
         res.status(200).json({
             message: 'Stage matches',
-            data: { matches: matches2 ?? [] },
+            data: { matches: matches ?? [] },
         })
     } catch (error: any) {
         console.log(error)
@@ -261,119 +290,6 @@ async function getNextReadyMatches(req: Request, res: Response) {
     }
 }
 
-export declare type StageType = 'round_robin' | 'single_elimination' | 'double_elimination'
-
-interface Dataset {
-    title: string
-    type: StageType
-    roster: { id: number; name: string }[]
-}
-
-function getNearestPowerOfTwo(input: number): number {
-    return Math.pow(2, Math.ceil(Math.log2(input)))
-}
-// bracket manager
-
-async function process(dataset: Dataset) {
-    const stage = await manager.create.stage({
-        name: dataset.title,
-        tournamentId: 0,
-        type: dataset.type,
-        seeding: dataset.roster.map((player) => player.name),
-        settings: {
-            seedOrdering: ['inner_outer'],
-            size: getNearestPowerOfTwo(dataset.roster.length),
-        },
-    })
-
-    const data = await manager.get.stageData(stage.id)
-
-    return {
-        stages: data.stage,
-        matches: data.match,
-        matchGames: data.match_game,
-        participants: data.participant,
-    }
-}
-
-// async function closeInscription(req: Request, res: Response) {
-//     const dataset16: Dataset = {
-//         title: '16 competitor tournament',
-//         type: 'double_elimination',
-//         roster: [
-//             { id: 7, name: 'Seed 1' },
-//             { id: 55, name: 'Seed 2' },
-//             { id: 53, name: 'Seed 3' },
-//             { id: 523, name: 'Seed 4' },
-//             { id: 123, name: 'Seed 5' },
-//             { id: 353, name: 'Seed 6' },
-//             { id: 17, name: 'Seed 7' },
-//             { id: 155, name: 'Seed 8' },
-//             { id: 153, name: 'Seed 9' },
-//             { id: 1523, name: 'Seed 10' },
-//             { id: 1123, name: 'Seed 11' },
-//             { id: 1353, name: 'Seed 12' },
-//         ],
-//     }
-
-//     try {
-//         // const id = Number.parseInt(req.params.id)
-
-//         // const tournamentData = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
-
-//         // const { id: tournamentId, name, type, inscriptions } = tournamentData
-
-//         // const stage = await manager.create.stage({
-//         //     tournamentId: tournamentId as any,
-//         //     name: name,
-//         //     type: type as any,
-//         //     seeding: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8'],
-//         //     settings: { seedOrdering: ['inner_outer'], matchesChildCount: 0 },
-//         // })
-
-//         // const bracketManagerTournament = await manager.get.tournamentData(stage.tournament_id)
-
-//         console.log('before response')
-//         const response = await process(dataset16)
-//         console.log('after response')
-//         console.log({ response })
-
-//         res.status(200).json({
-//             message: 'Bracket created',
-//             data: response,
-//         })
-//     } catch (error: any) {
-//         console.log(error)
-//         res.status(500).json({ message: error.message })
-//     }
-// }
-async function closeInscription(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-
-        const tournamentData = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
-
-        const { id: tournamentId, name, type, inscriptions } = tournamentData
-
-        const stage = await manager.create.stage({
-            tournamentId: tournamentId as any,
-            name: name,
-            type: type as any,
-            seeding: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8'],
-        })
-
-        const bracketManagerTournament = await manager.get.tournamentData(stage.tournament_id)
-
-        res.status(200).json({
-            message: 'Bracket created',
-            data: bracketManagerTournament,
-        })
-    } catch (error: any) {
-        console.log(error)
-        res.status(500).json({ message: error.message })
-    }
-}
-
 async function updateMatchResult(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
@@ -389,10 +305,12 @@ async function updateMatchResult(req: Request, res: Response) {
             throw new Error('Invalid score format. Scores must be numbers')
         }
 
+        //! We need know who opponent win the match to set result: 'win' and result: 'loss'
         const match = await manager.update.match({
             id,
-            opponent1: { score: score1, result: 'win' },
-            opponent2: { score: score2, result: 'loss' },
+            opponent1: { score: score1 },
+            opponent2: { score: score2 },
+            //? Is this neccesary?
             child_count: 0,
         })
 
@@ -407,23 +325,6 @@ async function updateMatchResult(req: Request, res: Response) {
 }
 
 async function getTournamentBracket(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-
-        console.log({ id })
-
-        const bracketManagerTournament = await manager.get.tournamentData(id)
-
-        res.status(200).json({
-            message: 'Found Bracket',
-            data: bracketManagerTournament,
-        })
-    } catch (error: any) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-async function getMatch(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
 
@@ -451,5 +352,4 @@ export {
     getNextReadyMatches,
     updateMatchResult,
     create,
-    closeInscription,
 }

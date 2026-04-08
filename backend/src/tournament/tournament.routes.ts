@@ -12,27 +12,35 @@ import {
     getNextReadyMatches,
     updateMatchResult,
     create,
-    closeInscription,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
 
 const tournamentRouter = Router()
 
+//* Find all users for CRUD TOURNAMENTS admin panel
 // Find all tournaments
 tournamentRouter.get('/', findAll)
+
+//* Find methods for user's tournaments
 // Find user's tournament
 tournamentRouter.get('/userTournaments', authenticationMiddleware, findUserTournaments)
 // Find tournament by id
 tournamentRouter.get('/:id', findOne)
+
+//* Tournament created by admin panel
 // Create tournament
 tournamentRouter.post('/', authenticationMiddleware, add)
+
+//* Tournament created by wizard user panel
 // Create tournament
 tournamentRouter.post('/create', authenticationMiddleware, create)
-// Create bracket
-tournamentRouter.get('/:id/closeInscriptions', authenticationMiddleware, closeInscription)
+
+//* Bracket -> A bracket is generated when the inscriptions has been closed.
 // Create bracket
 tournamentRouter.post('/:id/start', authenticationMiddleware, createBracket)
+
+//* Match
 // Find tournament's bracket
 tournamentRouter.get('/:id/bracket', getTournamentBracket)
 // Find tournament's matches
@@ -43,6 +51,7 @@ tournamentRouter.get('/:id/next', getNextReadyMatches)
 tournamentRouter.post('/match/:id', updateMatchResult)
 // Update match result (2-1)
 tournamentRouter.patch('/match/:id', updateMatchResult)
+
 // Update all tournament
 tournamentRouter.put('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, update)
 // Update tournament partially
