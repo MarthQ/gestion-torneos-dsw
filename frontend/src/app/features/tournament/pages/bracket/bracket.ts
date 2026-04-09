@@ -4,10 +4,10 @@ import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
-import { BracketModal } from '@features/tournament/components/bracketModal/bracketModal';
+import { MatchModal } from '@features/tournament/components/matchModal/matchModal';
 
 @Component({
-  imports: [BracketModal],
+  imports: [MatchModal],
   templateUrl: './bracket.html',
 })
 export class Bracket {

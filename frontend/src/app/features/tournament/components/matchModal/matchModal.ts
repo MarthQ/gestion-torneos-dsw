@@ -1,15 +1,15 @@
-import { JsonPipe, SlicePipe } from '@angular/common';
+import { SlicePipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Toaster } from '@shared/utils/toaster';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 
 @Component({
-  selector: 'bracket-modal',
+  selector: 'match-modal',
   imports: [ReactiveFormsModule, FormsModule, FormErrorLabel, SlicePipe],
-  templateUrl: './bracketModal.html',
+  templateUrl: './matchModal.html',
 })
-export class BracketModal {
+export class MatchModal {
   private fb = inject(FormBuilder);
   isModalOpen = input.required<boolean>();
   isModalClosed = output<void>();
