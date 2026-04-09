@@ -38,6 +38,7 @@
               <button
                 class="btn btn-secondary btn-lg shadow-xl"
                 [attr.disabled]="tournamentResource.value().status !== 'open' ? 'disabled' : null"
+                (click)="closeInscription()"
               >
                 <span class="icon-[vaadin--start-cog]" style="width: 24px; height: 24px"></span>
                 Comenzar Torneo

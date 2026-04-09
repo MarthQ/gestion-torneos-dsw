@@ -15,7 +15,7 @@ import { TournamentUtils } from '@shared/utils/tournament-utils';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [I18nSelectPipe, DatePipe, SearchBar, Pagination, RouterLink, TitleCasePipe],
+  imports: [I18nSelectPipe, DatePipe, SearchBar, Pagination, RouterLink],
   templateUrl: './explore.html',
 })
 export class Explore {
