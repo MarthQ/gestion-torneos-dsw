@@ -192,9 +192,25 @@ export class TournamentService {
   }
 
   //* Should this method be called "createBracket"?
-  closeInscriptions(tournamentId: string): Observable<any> {
+  closeInscriptions(tournamentId: number): Observable<Tournament> {
     return this.http
-      .post<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/start`, {})
-      .pipe(tap(({ data }) => this._bracketData.set(data)));
+      .post<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/close`, {})
+      .pipe(map((response) => response.data));
+  }
+
+  startTournament(tournamentId: number): Observable<Tournament> {
+    return this.http
+      .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/start`, {})
+      .pipe(map((response) => response.data));
+  }
+  endTournament(tournamentId: number): Observable<Tournament> {
+    return this.http
+      .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/finish`, {})
+      .pipe(map((response) => response.data));
+  }
+  cancelTournament(tournamentId: number): Observable<Tournament> {
+    return this.http
+      .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/cancel`, {})
+      .pipe(map((response) => response.data));
   }
 }

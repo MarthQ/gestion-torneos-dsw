@@ -34,37 +34,101 @@
             </p>
           </div>
           <div class="flex gap-3 justify-center items-center md:flex-row flex-col">
-            @if (userIsCreator()) {
-              <button
-                class="btn btn-secondary btn-lg shadow-xl"
-                [attr.disabled]="tournamentResource.value().status !== 'open' ? 'disabled' : null"
-              >
-                <span class="icon-[vaadin--start-cog]" style="width: 24px; height: 24px"></span>
-                Comenzar Torneo
-              </button>
+            @switch (tournamentResource.value().status) {
+              @case ('open') {
+                <!-- Botones del CREADOR -->
+                @if (userIsCreator()) {
+                  <button class="btn btn-warning btn-lg" (click)="closeTournament()">
+                    <span class="icon-[lucide--lock]" style="width: 24px; height: 24px"></span>
+                    Cerrar Inscripciones
+                  </button>
+                  <button class="btn btn-error btn-outline btn-lg" (click)="cancelTournament()">
+                    Cancelar Torneo
+                  </button>
+                  <!-- El creator también puede inscribirse -->
+                  @if (userIsInscribed()) {
+                    <button class="btn btn-warning btn-lg" (click)="openInscriptionModal('delete')">
+                      <span class="icon-[lucide--trash-2]" style="width: 24px; height: 24px"></span>
+                      Borrar Inscripción
+                    </button>
+                  } @else {
+                    <button class="btn btn-primary btn-lg" (click)="openInscriptionModal('add')">
+                      <span
+                        class="icon-[lucide--user-plus]"
+                        style="width: 24px; height: 24px"
+                      ></span>
+                      Inscribirse
+                    </button>
+                  }
+                } @else {
+                  <!-- Usuario normal -->
+                  @if (userIsInscribed()) {
+                    <button class="btn btn-warning btn-lg" (click)="openInscriptionModal('delete')">
+                      <span class="icon-[lucide--trash-2]" style="width: 24px; height: 24px"></span>
+                      Borrar Inscripción
+                    </button>
+                  } @else {
+                    <button class="btn btn-primary btn-lg" (click)="openInscriptionModal('add')">
+                      <span
+                        class="icon-[lucide--user-plus]"
+                        style="width: 24px; height: 24px"
+                      ></span>
+                      Inscribirse
+                    </button>
+                  }
+                }
+              }
+
+              @case ('closed') {
+                @if (userIsCreator()) {
+                  <button class="btn btn-success btn-lg" (click)="startTournament()">
+                    <span class="icon-[lucide--play]" style="width: 24px; height: 24px"></span>
+                    Iniciar Torneo
+                  </button>
+                  <button class="btn btn-error btn-outline btn-lg" (click)="cancelTournament()">
+                    Cancelar Torneo
+                  </button>
+                } @else {
+                  <div class="badge badge-warning badge-lg gap-2">
+                    <span class="icon-[lucide--lock]" style="width: 20px; height: 20px"></span>
+                    Inscripciones cerradas
+                  </div>
+                }
+              }
+
+              @case ('running') {
+                @if (userIsCreator()) {
+                  <button class="btn btn-success btn-lg" (click)="endTournament()">
+                    <span class="icon-[lucide--flag]" style="width: 24px; height: 24px"></span>
+                    Finalizar Torneo
+                  </button>
+                  <button class="btn btn-error btn-outline btn-lg" (click)="cancelTournament()">
+                    Cancelar Torneo
+                  </button>
+                } @else {
+                  <div class="badge badge-success badge-lg gap-2">
+                    <span class="icon-[lucide--zap]" style="width: 20px; height: 20px"></span>
+                    Torneo en curso
+                  </div>
+                }
+              }
+
+              @case ('finished') {
+                <div class="badge badge-neutral badge-lg gap-2">
+                  <span class="icon-[lucide--trophy]" style="width: 20px; height: 20px"></span>
+                  Torneo finalizado
+                </div>
+              }
+
+              @case ('canceled') {
+                <div class="badge badge-error badge-lg gap-2">
+                  <span class="icon-[lucide--x-circle]" style="width: 20px; height: 20px"></span>
+                  Torneo cancelado
+                </div>
+              }
             }
-            @if (tournamentResource.value().status !== 'open' && !userIsInscribed()) {
-              <button class="btn btn-primary btn-lg" disabled>
-                <span
-                  class="icon-[icon-park-outline--error]"
-                  style="width: 24px; height: 24px"
-                ></span>
-                El torneo no está abierto
-              </button>
-            } @else if (userIsInscribed()) {
-              <button class="btn btn-warning btn-lg">
-                <span class="icon-[line-md--edit]" style="width: 24px; height: 24px"></span>
-                Borrar inscripción
-              </button>
-            } @else {
-              <button class="btn btn-primary btn-lg">
-                <span class="icon-[line-md--edit]" style="width: 24px; height: 24px"></span>
-                Inscribirse
-              </button>
-            }
-            <button
-              class="btn btn-outline btn-white border-base-content text-base-content hover:bg-base-content hover:text-base-300"
-            >
+
+            <button class="btn btn-outline btn-lg">
               <span class="icon-[material-symbols--share]" style="width: 18px; height: 18px"></span>
               Compartir
             </button>
@@ -113,7 +177,7 @@
             </h4>
             <div class="flex justify-center items-center gap-4">
               <div
-                class="flex justify-center items-center w-12 h-12 rounded-full bg-primary font-black text-xl"
+                class="flex justify-center items-center w-12 h-12 rounded-full bg-primary text-base-content text-xl"
               >
                 {{
                   tournamentResource.value().creator.name
@@ -162,10 +226,12 @@
       </div>
     </div>
 
-    <!-- <inscription-modal
-      [open]="this.openModal()"
-      (closed)="openModal.set(false)"
-      (confirmInscription)="completeInscription($event)"
-    /> -->
+    <inscription-modal
+      [type]="modalType()"
+      [open]="isModalOpen()"
+      (inscriptionConfirmed)="onInscriptionConfirmed($event)"
+      (deletionConfirmed)="onDeletionConfirmed()"
+      (closed)="isModalOpen.set(false)"
+    />
   </main>
 }

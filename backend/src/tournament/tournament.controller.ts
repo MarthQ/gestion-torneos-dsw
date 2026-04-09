@@ -10,6 +10,8 @@ import { User } from '../user/user.entity.js'
 import { StageType } from '../bracket/interfaces/unions.interface.js'
 import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
 import { TournamentStatus } from '../shared/interfaces/status.js'
+import { Inscription } from '../inscription/inscription.entity.js'
+import { ForeignKeyConstraintViolationException } from '@mikro-orm/core'
 
 const em = ORM.em
 
@@ -110,7 +112,7 @@ async function findOne(req: Request, res: Response) {
         const tournamentData = await em.findOneOrFail(
             Tournament,
             { id },
-            { populate: ['game', 'location', 'creator', 'inscriptions'] },
+            { populate: ['game', 'location', 'creator', 'inscriptions', 'inscriptions.user'] },
         )
 
         const bracketData = (await storage.select('stage', { tournament_id: id }))
@@ -343,6 +345,197 @@ async function getTournamentBracket(req: Request, res: Response) {
     }
 }
 
+async function inscribeToTournament(req: RequestWithUser, res: Response) {
+    try {
+        const tournamentId = req.params.id ? Number(req.params.id) : undefined
+        const nickname = req.body.nickname ? String(req.body.nickname) : req.user!.name
+
+        if (!tournamentId) {
+            const error = new Error('No tournament id has been supplied.')
+            ;(error as any).statusCode = 400
+            throw error
+        }
+
+        const tournament = await em.getReference(Tournament, tournamentId)
+
+        // Checks if the user is not already inscribed
+        const existingInscription = await em.findOne(Inscription, {
+            tournament,
+            user: req.user!.id,
+        })
+
+        if (existingInscription) {
+            const error = new Error('User is already inscribed to tournament.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+
+        const inscription = em.create(Inscription, {
+            nickname,
+            inscriptionDate: new Date(),
+            tournament,
+            user: req.user!,
+        })
+
+        await em.flush()
+        res.status(201).json({ message: 'Inscription added!', data: inscription })
+    } catch (error: any) {
+        // Custom error handling
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        if (error instanceof ForeignKeyConstraintViolationException) {
+            res.status(400).json({ message: 'The tournament id provided has not relation to any tournament' })
+        }
+        res.status(500).json({ message: error.message })
+    }
+}
+
+async function deleteInscription(req: RequestWithUser, res: Response) {
+    try {
+        const tournamentId = req.params.id ? Number(req.params.id) : undefined
+
+        if (!tournamentId) {
+            const error = new Error('No tournament id has been supplied.')
+            ;(error as any).statusCode = 400
+            throw error
+        }
+
+        const tournament = await em.getReference(Tournament, tournamentId)
+
+        const inscription = await em.findOneOrFail(Inscription, { tournament, user: req.user })
+
+        await em.removeAndFlush(inscription)
+        res.status(200).send({ message: 'Inscription deleted' })
+    } catch (error: any) {
+        // Custom error handling
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        if (error instanceof ForeignKeyConstraintViolationException) {
+            res.status(400).json({ message: 'The tournament id provided has not relation to any tournament' })
+        }
+        res.status(500).json({ message: error.message })
+    }
+}
+
+async function closeTournament(req: RequestWithUser, res: Response) {
+    try {
+        const id = Number(req.params.id)
+        const tournament = await em.findOneOrFail(Tournament, { id })
+
+        if (tournament.status !== TournamentStatus.OPEN) {
+            const error = new Error('Tournament is not open.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+
+        tournament.status = TournamentStatus.CLOSED
+        await em.flush()
+        res.status(200).send({ message: 'Tournament has been closed!', data: tournament })
+    } catch (error: any) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: 'Tournament not found',
+            })
+        }
+    }
+}
+async function startTournament(req: RequestWithUser, res: Response) {
+    try {
+        const id = Number(req.params.id)
+        const tournament = await em.findOneOrFail(Tournament, { id })
+
+        if (tournament.status !== TournamentStatus.CLOSED) {
+            const error = new Error('Tournament is not closed.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+
+        tournament.status = TournamentStatus.RUNNING
+        await em.flush()
+        res.status(200).send({ message: 'Tournament is now running!', data: tournament })
+    } catch (error: any) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: 'Tournament not found',
+            })
+        }
+    }
+}
+async function endTournament(req: RequestWithUser, res: Response) {
+    try {
+        const id = Number(req.params.id)
+        const tournament = await em.findOneOrFail(Tournament, { id })
+
+        if (tournament.status !== TournamentStatus.RUNNING) {
+            const error = new Error('Tournament is not running.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+
+        tournament.status = TournamentStatus.FINISHED
+        await em.flush()
+        res.status(200).send({ message: 'The tournament has finished!', data: tournament })
+    } catch (error: any) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: 'Tournament not found!',
+            })
+        }
+    }
+}
+async function cancelTournament(req: RequestWithUser, res: Response) {
+    try {
+        const id = Number(req.params.id)
+        const tournament = await em.findOneOrFail(Tournament, { id })
+
+        if (tournament.status === TournamentStatus.FINISHED) {
+            const error = new Error('Tournament is finished and therefore cannot be cancelled.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+
+        tournament.status = TournamentStatus.CANCELED
+        await em.flush()
+        res.status(200).send({ message: 'The tournament has been canceled.', data: tournament })
+    } catch (error: any) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            })
+        }
+        // MikroORM Error
+        if (error.name === 'NotFoundError') {
+            return res.status(401).json({
+                message: 'Tournament not found',
+            })
+        }
+    }
+}
+
 export {
     findAll,
     findOne,
@@ -356,4 +549,10 @@ export {
     getNextReadyMatches,
     updateMatchResult,
     create,
+    inscribeToTournament,
+    deleteInscription,
+    closeTournament,
+    startTournament,
+    endTournament,
+    cancelTournament,
 }
