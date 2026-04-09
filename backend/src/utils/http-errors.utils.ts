@@ -29,8 +29,8 @@ export function handleHttpError(error: any, res: Response): Response<HttpErrorRe
     }
 
     if (error.name === 'NotFoundError') {
-        return res.status(401).json({
-            message: 'Unauthorized credentials',
+        return res.status(422).json({
+            message: 'Resource not found',
         })
     }
 

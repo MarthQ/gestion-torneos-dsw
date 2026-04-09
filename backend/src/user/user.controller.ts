@@ -114,7 +114,13 @@ async function sendInvitation(req: Request, res: Response) {
 
     const frontendUrl = `${env.frontendURL}${req.query['path']}`
 
-    const user = await em.findOneOrFail(User, { id: userId })
+    const user = await em.findOne(User, { id: userId })
+
+    if (!user) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
 
     const email = user.mail
 
@@ -135,7 +141,13 @@ async function changePassword(req: Request, res: Response) {
 
     const decoded = JWTUtils.verify(mailToken)
 
-    const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
+    const user = await em.findOne(User, { id: decoded.userId }, { populate: ['location', 'role'] })
+
+    if (!user) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
 
     const password = req.body.password
 

@@ -63,11 +63,17 @@ async function login(req: Request, res: Response) {
     const { password, mail } = sanitizedLogin.data
 
     //* Searchs for the user
-    const user = await em.findOneOrFail(User, { mail: mail }, { populate: ['role', 'location'] })
+    const user = await em.findOne(User, { mail: mail }, { populate: ['role', 'location'] })
+
+    if (!user) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
 
     //* if Passwords doesn't match
     if (!compareSync(password, user.password!)) {
-        const error = new Error('Credential is not valid (password)')
+        const error = new Error('Credential is not valid')
         ;(error as any).statusCode = 401
         throw error
     }
@@ -95,7 +101,13 @@ async function register(req: Request, res: Response) {
 
     const { password, ...userData } = newUser
 
-    const userRole = await em.findOneOrFail(Role, { name: USER_ROLE.USER })
+    const userRole = await em.findOne(Role, { name: USER_ROLE.USER })
+
+    if (!userRole) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
 
     const user = em.create(User, {
         ...userData,
@@ -128,7 +140,13 @@ async function forgotPassword(req: Request, res: Response) {
         throw error
     }
 
-    const user = await em.findOneOrFail(User, { mail: reqUser.mail }, { populate: ['location', 'role'] })
+    const user = await em.findOne(User, { mail: reqUser.mail }, { populate: ['location', 'role'] })
+
+    if (!user) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
 
     mailer.sendPasswordReset(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
 }
@@ -145,7 +163,13 @@ async function setupPassword(req: Request, res: Response) {
 
     const decoded = JWTUtils.verify(mailToken)
 
-    const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
+    const user = await em.findOne(User, { id: decoded.userId }, { populate: ['location', 'role'] })
+
+    if (!user) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
 
     const password = req.body.password
 
