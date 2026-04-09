@@ -34,20 +34,57 @@ export function handleHttpError(error: any, res: Response): Response<HttpErrorRe
         })
     }
 
-    if (error.sqlMessage.includes('user_name_unique')) {
+    const sqlMessage = error?.sqlMessage
+
+    if (sqlMessage?.includes('user_name_unique')) {
         return res.status(409).json({
             message: `Name already taken`,
         })
     }
-    if (error.sqlMessage.includes('user_mail_unique')) {
+    if (sqlMessage?.includes('user_mail_unique')) {
         return res.status(409).json({
             message: `Email already taken`,
         })
     }
 
-    if (error.sqlMessage.includes('region_name_unique')) {
+    if (sqlMessage?.includes('region_name_unique')) {
         return res.status(409).json({
             message: `Name already taken`,
+        })
+    }
+
+    if (sqlMessage?.includes('foreign key constraint fails')) {
+        return res.status(409).json({
+            message: 'Invalid reference - related resource does not exist',
+            statusCode: 409,
+        })
+    }
+
+    if (sqlMessage?.includes('cannot delete or update a parent row')) {
+        return res.status(409).json({
+            message: 'Cannot delete - resource is referenced by other data',
+            statusCode: 409,
+        })
+    }
+
+    if (error.code === 'ECONNREFUSED' || sqlMessage?.includes('connection refused')) {
+        return res.status(503).json({
+            message: 'Database temporarily unavailable',
+            statusCode: 503,
+        })
+    }
+
+    if (error.code === 'ER_ACCESS_DENIED_ERROR' || sqlMessage?.includes('access denied')) {
+        return res.status(503).json({
+            message: 'Database access error',
+            statusCode: 503,
+        })
+    }
+
+    if (error.code === 'ETIMEDOUT' || sqlMessage?.includes('timeout')) {
+        return res.status(504).json({
+            message: 'Database query timeout',
+            statusCode: 504,
         })
     }
 
@@ -55,4 +92,14 @@ export function handleHttpError(error: any, res: Response): Response<HttpErrorRe
         message: 'Internal Server Error',
         statusCode: 500,
     })
+}
+
+export function wrapController(fn: (req: any, res: any, next?: any) => Promise<any> | any) {
+    return async (req: any, res: any, next: any) => {
+        try {
+            await fn(req, res, next)
+        } catch (error: any) {
+            next(error)
+        }
+    }
 }

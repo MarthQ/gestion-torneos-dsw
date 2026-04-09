@@ -3,7 +3,6 @@ import { Role } from './role.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
-import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -12,83 +11,63 @@ const RoleSchema = z.object({
 })
 
 async function findAll(req: Request, res: Response) {
-    try {
-        const page = req.query.page ? Number(req.query.page) : 1
-        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-        const offset = (page - 1) * pageSize
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
 
-        const query = req.query.query ? String(req.query.query) : undefined
+    const query = req.query.query ? String(req.query.query) : undefined
 
-        // Filter to check if the query string is in the name
-        const filter = query ? { name: { $like: `%${query}%` } } : {}
+    // Filter to check if the query string is in the name
+    const filter = query ? { name: { $like: `%${query}%` } } : {}
 
-        const [roles, total] = await em.findAndCount(Role, filter, {
-            limit: pageSize,
-            offset,
-            orderBy: { id: 'asc' },
-        })
+    const [roles, total] = await em.findAndCount(Role, filter, {
+        limit: pageSize,
+        offset,
+        orderBy: { id: 'asc' },
+    })
 
-        res.status(200).json({
-            message: 'Found selected roles',
-            data: roles,
-            meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
-        })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    res.status(200).json({
+        message: 'Found selected roles',
+        data: roles,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+    })
 }
 
 async function findOne(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const role = await em.findOneOrFail(Role, { id })
-        res.status(200).json({ message: 'Found role', data: role })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const id = Number.parseInt(req.params.id)
+    const role = await em.findOneOrFail(Role, { id })
+    res.status(200).json({ message: 'Found role', data: role })
 }
 
 async function add(req: Request, res: Response) {
-    try {
-        const sanitizedRole = RoleSchema.safeParse(req.body)
+    const sanitizedRole = RoleSchema.safeParse(req.body)
 
-        if (!sanitizedRole.success) {
-            throw fromZodError(sanitizedRole.error)
-        } else {
-            const role = em.create(Role, sanitizedRole.data)
-            await em.flush()
-            res.status(201).json({ message: 'Role created', data: role })
-        }
-    } catch (error: any) {
-        handleHttpError(error, res)
+    if (!sanitizedRole.success) {
+        throw fromZodError(sanitizedRole.error)
+    } else {
+        const role = em.create(Role, sanitizedRole.data)
+        await em.flush()
+        res.status(201).json({ message: 'Role created', data: role })
     }
 }
 async function update(req: Request, res: Response) {
-    try {
-        const sanitizedPartialRole = RoleSchema.partial().safeParse(req.body)
+    const sanitizedPartialRole = RoleSchema.partial().safeParse(req.body)
 
-        if (!sanitizedPartialRole.success) {
-        } else {
-            const id = Number.parseInt(req.params.id)
-            const role = em.getReference(Role, id)
-            em.assign(role, sanitizedPartialRole.data)
-            await em.flush()
-            res.status(200).json({ message: 'Role updated' })
-        }
-    } catch (error: any) {
-        handleHttpError(error, res)
+    if (!sanitizedPartialRole.success) {
+    } else {
+        const id = Number.parseInt(req.params.id)
+        const role = em.getReference(Role, id)
+        em.assign(role, sanitizedPartialRole.data)
+        await em.flush()
+        res.status(200).json({ message: 'Role updated' })
     }
 }
 
 async function remove(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const role = em.getReference(Role, id)
-        await em.removeAndFlush(role)
-        res.status(200).send({ message: 'Role deleted' })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const id = Number.parseInt(req.params.id)
+    const role = em.getReference(Role, id)
+    await em.removeAndFlush(role)
+    res.status(200).send({ message: 'Role deleted' })
 }
 
 export { findAll, findOne, add, update, remove }

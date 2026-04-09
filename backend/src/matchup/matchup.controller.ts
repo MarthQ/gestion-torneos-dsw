@@ -3,7 +3,6 @@ import { Matchup } from './matchup.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
-import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -30,69 +29,49 @@ const matchupSchema = z.object({
 })
 
 async function findAll(req: Request, res: Response) {
-    try {
-        const Matchups = await em.find(Matchup, {})
-        res.status(200).json({
-            message: 'Found all matchups',
-            data: Matchups,
-        })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const Matchups = await em.find(Matchup, {})
+    res.status(200).json({
+        message: 'Found all matchups',
+        data: Matchups,
+    })
 }
 
 async function findOne(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const matchup = await em.findOneOrFail(Matchup, { id })
-        res.status(200).json({ message: 'Found matchup', data: matchup })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const id = Number.parseInt(req.params.id)
+    const matchup = await em.findOneOrFail(Matchup, { id })
+    res.status(200).json({ message: 'Found matchup', data: matchup })
 }
 
 async function add(req: Request, res: Response) {
-    try {
-        const sanitizedMatchup = matchupSchema.safeParse(req.body)
+    const sanitizedMatchup = matchupSchema.safeParse(req.body)
 
-        if (!sanitizedMatchup.success) {
-            throw fromZodError(sanitizedMatchup.error)
-        } else {
-            const matchup = em.create(Matchup, sanitizedMatchup.data)
-            await em.flush()
-            res.status(201).json({ message: 'Matchup added', data: matchup })
-        }
-    } catch (error: any) {
-        handleHttpError(error, res)
+    if (!sanitizedMatchup.success) {
+        throw fromZodError(sanitizedMatchup.error)
+    } else {
+        const matchup = em.create(Matchup, sanitizedMatchup.data)
+        await em.flush()
+        res.status(201).json({ message: 'Matchup added', data: matchup })
     }
 }
 async function update(req: Request, res: Response) {
-    try {
-        const sanitizedMatchup = matchupSchema.partial().safeParse(req.body)
+    const sanitizedMatchup = matchupSchema.partial().safeParse(req.body)
 
-        if (!sanitizedMatchup.success) {
-            throw fromZodError(sanitizedMatchup.error)
-        } else {
-            const id = Number.parseInt(req.params.id)
-            const matchup = em.getReference(Matchup, id)
-            em.assign(matchup, sanitizedMatchup.data)
-            await em.flush()
-            res.status(200).json({ message: 'Matchup updated' })
-        }
-    } catch (error: any) {
-        handleHttpError(error, res)
+    if (!sanitizedMatchup.success) {
+        throw fromZodError(sanitizedMatchup.error)
+    } else {
+        const id = Number.parseInt(req.params.id)
+        const matchup = em.getReference(Matchup, id)
+        em.assign(matchup, sanitizedMatchup.data)
+        await em.flush()
+        res.status(200).json({ message: 'Matchup updated' })
     }
 }
 
 async function remove(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const matchup = em.getReference(Matchup, id)
-        await em.removeAndFlush(matchup)
-        res.status(200).send({ message: 'Matchup deleted' })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const id = Number.parseInt(req.params.id)
+    const matchup = em.getReference(Matchup, id)
+    await em.removeAndFlush(matchup)
+    res.status(200).send({ message: 'Matchup deleted' })
 }
 
 export { findAll, findOne, add, update, remove }

@@ -3,7 +3,6 @@ import { Tournament } from './tournament.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
-import { handleHttpError } from '../utils/http-errors.utils.js'
 
 const em = ORM.em
 
@@ -25,92 +24,72 @@ const TournamentSchema = z.object({
 })
 
 async function findAll(req: Request, res: Response) {
-    try {
-        const page = req.query.page ? Number(req.query.page) : 1
-        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-        const offset = (page - 1) * pageSize
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
 
-        const query = req.query.query ? String(req.query.query) : undefined
-        const tag = req.query.tag ? Number(req.query.tag) : undefined
-        const location = req.query.location ? Number(req.query.location) : undefined
-        const game = req.query.game ? Number(req.query.game) : undefined
+    const query = req.query.query ? String(req.query.query) : undefined
+    const tag = req.query.tag ? Number(req.query.tag) : undefined
+    const location = req.query.location ? Number(req.query.location) : undefined
+    const game = req.query.game ? Number(req.query.game) : undefined
 
-        const filter: any = {}
+    const filter: any = {}
 
-        if (query) filter.name = { $like: `%${query}%` }
-        if (tag) filter.tags = { $some: { id: tag } }
-        if (location) filter.location = location
-        if (game) filter.game = game
+    if (query) filter.name = { $like: `%${query}%` }
+    if (tag) filter.tags = { $some: { id: tag } }
+    if (location) filter.location = location
+    if (game) filter.game = game
 
-        const Tournaments = await em.find(Tournament, filter, {
-            populate: ['game', 'creator', 'location', 'tags', 'game'],
-        })
-        res.status(200).json({
-            message: 'Found all tournaments',
-            data: Tournaments,
-        })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const Tournaments = await em.find(Tournament, filter, {
+        populate: ['game', 'creator', 'location', 'tags', 'game'],
+    })
+    res.status(200).json({
+        message: 'Found all tournaments',
+        data: Tournaments,
+    })
 }
 
 async function findOne(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const tournament = await em.findOneOrFail(
-            Tournament,
-            { id },
-            { populate: ['game', 'location', 'creator'] },
-        )
-        res.status(200).json({ message: 'Found tournament', data: tournament })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const id = Number.parseInt(req.params.id)
+    const tournament = await em.findOneOrFail(
+        Tournament,
+        { id },
+        { populate: ['game', 'location', 'creator'] },
+    )
+    res.status(200).json({ message: 'Found tournament', data: tournament })
 }
 
 async function add(req: Request, res: Response) {
-    try {
-        const sanitizedTournament = TournamentSchema.safeParse(req.body)
+    const sanitizedTournament = TournamentSchema.safeParse(req.body)
 
-        if (!sanitizedTournament.success) {
-            throw fromZodError(sanitizedTournament.error)
-        } else {
-            const tournament = em.create(Tournament, sanitizedTournament.data)
-            await em.flush()
-            res.status(201).json({ message: 'Tournament created', data: tournament })
-        }
-    } catch (error: any) {
-        handleHttpError(error, res)
+    if (!sanitizedTournament.success) {
+        throw fromZodError(sanitizedTournament.error)
+    } else {
+        const tournament = em.create(Tournament, sanitizedTournament.data)
+        await em.flush()
+        res.status(201).json({ message: 'Tournament created', data: tournament })
     }
 }
 async function update(req: Request, res: Response) {
-    try {
-        const sanitizedTournament = TournamentSchema.partial().safeParse(req.body)
+    const sanitizedTournament = TournamentSchema.partial().safeParse(req.body)
 
-        if (!sanitizedTournament.success) {
-            throw fromZodError(sanitizedTournament.error)
-        } else {
-            const id = Number.parseInt(req.params.id)
-            const tournament = await em.findOneOrFail(Tournament, id)
+    if (!sanitizedTournament.success) {
+        throw fromZodError(sanitizedTournament.error)
+    } else {
+        const id = Number.parseInt(req.params.id)
+        const tournament = await em.findOneOrFail(Tournament, id)
 
-            em.assign(tournament, sanitizedTournament.data)
-            await em.flush()
-        }
-        res.status(200).json({ message: 'Tournament updated' })
-    } catch (error: any) {
-        handleHttpError(error, res)
+        em.assign(tournament, sanitizedTournament.data)
+        await em.flush()
     }
+    res.status(200).json({ message: 'Tournament updated' })
 }
 
 async function remove(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const tournament = em.getReference(Tournament, id)
-        await em.removeAndFlush(tournament)
-        res.status(200).send({ message: 'Tournament deleted' })
-    } catch (error: any) {
-        handleHttpError(error, res)
-    }
+    const id = Number.parseInt(req.params.id)
+    const tournament = em.getReference(Tournament, id)
+    await em.removeAndFlush(tournament)
+    res.status(200).send({ message: 'Tournament deleted' })
 }
 
 export { findAll, findOne, add, update, remove }
