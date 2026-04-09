@@ -225,29 +225,14 @@ async function createBracket(req: Request, res: Response) {
             }),
         )
 
-        const mockParticipants = [
-            'Participant 1',
-            'Participant 2',
-            'Participant 3',
-            'Participant 4',
-            'Participant 5',
-            'Participant 6',
-            'Participant 7',
-            'Participant 8',
-            'Participant 9',
-            'Participant 10',
-        ]
-
         await manager.create.stage({
-            name: 'Torneo de prueba',
+            name: name,
             tournamentId: tournamentId,
             type: type as StageType,
-            // seeding: displayNicknames,
-            seeding: mockParticipants,
+            seeding: displayNicknames,
             settings: {
                 seedOrdering: ['inner_outer'],
-                // size: getNearestPowerOfTwo(displayNicknames.length),
-                size: getNearestPowerOfTwo(mockParticipants.length),
+                size: getNearestPowerOfTwo(displayNicknames.length),
             },
         })
 
@@ -311,11 +296,10 @@ async function updateMatchResult(req: Request, res: Response) {
             throw new Error('Invalid score format. Scores must be numbers')
         }
 
-        //! We need know who opponent win the match to set result: 'win' and result: 'loss'
         const match = await manager.update.match({
             id,
-            opponent1: { score: score1 },
-            opponent2: { score: score2 },
+            opponent1: { score: score1, result: score1 > score2 ? 'win' : 'loss' },
+            opponent2: { score: score2, result: score1 < score2 ? 'win' : 'loss' },
             //? Is this neccesary?
             child_count: 0,
         })

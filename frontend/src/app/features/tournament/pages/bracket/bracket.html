@@ -1,7 +1,10 @@
-<div #bracketContainer class="brackets-viewer"></div>
-
-<div class="mt-4 flex gap-4">
-  <button class="btn btn-primary" (click)="addResult()">resultado</button>
-  <button class="btn btn-primary" (click)="refreshView()">Refrescar vista</button>
-  <button class="btn btn-primary" (click)="refreshView()">Actualizar Bracket</button>
+<div class="flex mx-auto">
+  <div #bracketContainer class="brackets-viewer"></div>
 </div>
+
+<match-modal
+  [isModalOpen]="isModalOpen()"
+  (isModalClosed)="isModalOpen.set(false)"
+  [matchData]="matchData()"
+  (onResultsCharged)="updateMatch($event)"
+/>

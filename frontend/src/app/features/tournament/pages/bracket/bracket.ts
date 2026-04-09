@@ -4,15 +4,18 @@ import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { MatchModal } from '@features/tournament/components/matchModal/matchModal';
 
 @Component({
-  imports: [],
+  imports: [MatchModal],
   templateUrl: './bracket.html',
 })
 export class Bracket {
   private activatedRoute = inject(ActivatedRoute);
-  private tournamentService = inject(TournamentService);
   private tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
+  private tournamentService = inject(TournamentService);
+  isModalOpen = signal<boolean>(false);
+  matchData = signal({});
 
   tournamentResource = rxResource({
     params: () => ({ tournamentId: this.tournamentId() }),
@@ -35,7 +38,9 @@ export class Bracket {
           participants: bracketData.participant || [],
         },
         {
-          onMatchClick: (match: any) => console.log(match),
+          onMatchClick: (match: any) => {
+            this.handleMatchModal(match);
+          },
           clear: true,
           separatedChildCountLabel: true,
         },
@@ -43,6 +48,38 @@ export class Bracket {
     } catch (err) {
       console.error('[Bracket] Render error:', err);
     }
+  }
+
+  handleMatchModal(match: any) {
+    if (match.status !== 2) {
+      Toaster.error('No se puede registrar el resultado de este Match');
+      return;
+    }
+
+    const { participant } = this.tournamentService.bracketData();
+    const opponent1 = participant.find((p: any) => p.id === match.opponent1.id);
+    const opponent2 = participant.find((p: any) => p.id === match.opponent2.id);
+
+    this.matchData.set({
+      matchId: match.id,
+      opponent1,
+      opponent2,
+    });
+
+    this.isModalOpen.set(true);
+  }
+
+  updateMatch(bracketModalResponse: any) {
+    const { matchId, scores } = bracketModalResponse;
+    this.tournamentService.reportMatchResult(matchId, scores).subscribe({
+      next: () => {
+        this.refreshView();
+      },
+      error: (message) => {
+        Toaster.error(message);
+        console.log(message);
+      },
+    });
   }
 
   matchIndex = signal(0);
