@@ -1,32 +1,29 @@
-import { Component, computed, effect, inject, linkedSignal, signal } from '@angular/core';
+import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { TournamentService } from '@shared/services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { DatePipe, I18nSelectPipe } from '@angular/common';
 import { Toaster } from '@shared/utils/toaster';
 import { LocationService } from '@shared/services/location.service';
 import { TagService } from '@shared/services/tag.service';
 import { UserService } from '@shared/services/user.service';
 import { QueryFilter } from '@shared/interfaces/filters';
-import { PaginationMeta } from '@shared/interfaces/api-response';
 import { map, tap } from 'rxjs';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
 import { GameService } from '@shared/services/game.service';
-import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 import { CrudAction } from '@shared/interfaces/crudAction';
-import { DataTable } from '@shared/components/data-table/data-table';
-import { TableColumn } from '@shared/interfaces/table-column';
-import { TableAction } from '@shared/interfaces/table-action';
-import { TableState } from '@shared/interfaces/table-state';
+import { PaginationMeta } from '@shared/interfaces/api-response';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
-  imports: [SearchBar, Pagination, TournamentCrudModal, DataTable],
+  imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe, I18nSelectPipe],
   templateUrl: './tournament-crud.html',
 })
 export class TournamentCrud {
   tournamentService = inject(TournamentService);
-  tournamentStatusMap = tournamentStatusMap;
+  tournamentStatusMap = TournamentUtils.tournamentStatusMap;
 
   userService = inject(UserService);
   locationService = inject(LocationService);
@@ -132,52 +129,6 @@ export class TournamentCrud {
             Toaster.error(message);
           },
         });
-    }
-  }
-
-  // Data Table Configuration
-  tournamentColumns: TableColumn<Tournament>[] = [
-    { key: 'id', label: 'ID', width: '60px' },
-    { key: 'name', label: 'Nombre', width: '180px' },
-    { key: 'description', label: 'Descripción', truncate: true },
-    { key: 'datetimeinit', label: 'Fecha y Hora', width: '150px' },
-    { 
-      key: 'status', 
-      label: 'Estado',
-      width: '120px',
-    },
-    { key: 'maxParticipants', label: 'Cupo Máximo', width: '100px', align: 'center' },
-    { key: 'location.name', label: 'Localidad', width: '120px' },
-    { key: 'creator.name', label: 'Creador', width: '140px' },
-    { key: 'game.name', label: 'Juego', width: '120px' },
-  ];
-
-  tournamentActions: TableAction<Tournament>[] = [
-    {
-      icon: 'boxicons--edit-filled',
-      label: 'Editar torneo',
-      action: 'edit',
-      color: 'warning',
-    },
-    {
-      icon: 'boxicons--trash',
-      label: 'Eliminar torneo',
-      action: 'delete',
-      color: 'error',
-    },
-  ];
-
-  tableState = computed<TableState>(() => {
-    if (this.tournamentResource.isLoading()) return 'loading';
-    if (this.tournamentResource.hasValue() && this.tournamentResource.value().length === 0) return 'empty';
-    return 'hasData';
-  });
-
-  handleRowAction(event: { action: 'edit' | 'delete'; row: Tournament }) {
-    if (event.action === 'edit') {
-      this.editTournament(event.row);
-    } else {
-      this.deleteTournament(event.row);
     }
   }
 }

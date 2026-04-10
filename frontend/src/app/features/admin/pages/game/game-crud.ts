@@ -17,18 +17,16 @@ import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { GameCrudModal } from './game-crud-modal/game-crud-modal';
 import { JsonPipe } from '@angular/common';
-import { DataTable } from '@shared/components/data-table/data-table';
-import { TableColumn } from '@shared/interfaces/table-column';
-import { TableAction } from '@shared/interfaces/table-action';
-import { TableState } from '@shared/interfaces/table-state';
 import { PaginationMeta } from '@shared/interfaces/api-response';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
-  imports: [Pagination, SearchBar, GameCrudModal, DataTable],
+  imports: [Pagination, SearchBar, GameCrudModal],
   templateUrl: './game-crud.html',
 })
 export class GameCrud {
   gameService = inject(GameService);
+  getGameImage = TournamentUtils.GetGameImage;
 
   // ElementRef for resetting the query
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
@@ -90,55 +88,12 @@ export class GameCrud {
     return !!this.gameResource.value()?.find((myGame) => myGame.igdbId === game.igdbId);
   }
 
-  // Table configuration
-  gameColumns: TableColumn<Game>[] = [
-    { key: 'id', label: 'ID', width: '60px' },
-    { key: 'igdbId', label: 'IGDB ID', width: '100px' },
-    { key: 'imgUrl', label: 'Foto', width: '80px', align: 'center', type: 'image', alt: (game) => `Foto de ${game.name}` },
-    { key: 'name', label: 'Nombre del juego' },
-    { key: 'description', label: 'Descripción', truncate: true },
-  ];
-
-  gameActions: TableAction<Game>[] = [
-    {
-      icon: 'boxicons--edit-filled',
-      label: 'Editar juego',
-      action: 'edit',
-      condition: (game) => this.isInDatabase(game),
-      color: 'warning',
-    },
-    {
-      icon: 'boxicons--trash',
-      label: 'Eliminar juego',
-      action: 'delete',
-      condition: (game) => this.isInDatabase(game),
-      color: 'error',
-    },
-    {
-      icon: 'ic--baseline-plus',
-      label: 'Agregar juego',
-      action: 'edit', // Using edit as proxy
-      condition: (game) => !this.isInDatabase(game),
-      color: 'success',
-    },
-  ];
-
-  tableState = computed<TableState>(() => {
-    if (this.gameResource.isLoading()) return 'loading';
-    if (this.gameResource.hasValue() && this.gameResource.value().length === 0) return 'empty';
-    return 'hasData';
-  });
-
-  handleRowAction(event: { action: 'edit' | 'delete'; row: Game }) {
-    if (this.isInDatabase(event.row)) {
-      if (event.action === 'edit') {
-        this.editGame(event.row);
-      } else {
-        this.deleteGame(event.row);
-      }
-    }
+  // CRUD Actions
+  addGame(igdbGame: Game) {
+    this.modalType.set('add');
+    this.selectedGame.set(igdbGame);
+    this.openModal.set(true);
   }
-
   editGame(game: Game) {
     this.modalType.set('edit');
     this.selectedGame.set(game);

@@ -76,3 +76,7 @@
   --depth: 0;
   --noise: 0;
 }
+
+
+@import './app/features/tournament/styles/bracketViewer.css';
+

@@ -1,0 +1,10 @@
+<div class="flex mx-auto">
+  <div #bracketContainer class="brackets-viewer"></div>
+</div>
+
+<match-modal
+  [isModalOpen]="isModalOpen()"
+  (isModalClosed)="isModalOpen.set(false)"
+  [matchData]="matchData()"
+  (onResultsCharged)="updateMatch($event)"
+/>
