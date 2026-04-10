@@ -5,6 +5,7 @@ import { Bracket } from './pages/bracket/bracket';
 import { Configuration } from './pages/configuration/configuration';
 import { Participants } from './pages/participants/participants';
 import { Wizard } from './pages/wizard/wizard';
+import { isCreatorOrAdminGuard } from './guards/isCreatorOrAdmin.guard';
 
 export const TournamentRoutes: Routes = [
   {
@@ -34,6 +35,7 @@ export const TournamentRoutes: Routes = [
       },
       {
         path: 'configuration',
+        canActivate: [isCreatorOrAdminGuard],
         component: Configuration,
       },
     ],

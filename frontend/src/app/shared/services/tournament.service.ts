@@ -3,8 +3,10 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
-import { catchError, map, Observable, tap, throwError } from 'rxjs';
+import { catchError, firstValueFrom, map, Observable, of, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Toaster } from '@shared/utils/toaster';
+import { AuthService } from '@features/auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +14,8 @@ import { environment } from 'src/environments/environment';
 export class TournamentService {
   private http = inject(HttpClient);
   private _bracketData = signal<any | null>(null);
+  private user = inject(AuthService).user;
+
   bracketData = computed(() => this._bracketData());
 
   // Without pagination
@@ -91,9 +95,14 @@ export class TournamentService {
     return this.http
       .patch<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`, body)
       .pipe(
-        map((response) => response.data),
+        map((response) => {
+          Toaster.success('Configuración guardada correctamente');
+          return response.data;
+        }),
         catchError((error) => {
           console.error(error);
+          // Manage Toaster on service
+          Toaster.error(error.error.message);
           return throwError(() => error.error.message);
         }),
       );
@@ -240,5 +249,15 @@ export class TournamentService {
           return throwError(() => error.error?.message || 'Failed to cancel the tournament');
         }),
       );
+  }
+
+  isLoggedUserCreator(tournamentId: number): Observable<boolean> {
+    return this.getTournament(tournamentId).pipe(
+      map((response) => {
+        const userId = this.user()?.id;
+        return response.tournamentData.creator?.id === userId;
+      }),
+      catchError(() => of(false)),
+    );
   }
 }

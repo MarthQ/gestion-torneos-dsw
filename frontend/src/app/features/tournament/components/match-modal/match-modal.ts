@@ -1,13 +1,12 @@
 import { SlicePipe } from '@angular/common';
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Toaster } from '@shared/utils/toaster';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 
 @Component({
   selector: 'match-modal',
   imports: [ReactiveFormsModule, FormsModule, FormErrorLabel, SlicePipe],
-  templateUrl: './matchModal.html',
+  templateUrl: './match-modal.html',
 })
 export class MatchModal {
   private fb = inject(FormBuilder);

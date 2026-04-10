@@ -1,10 +1,10 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
-import { MatchModal } from '@features/tournament/components/matchModal/matchModal';
+import { MatchModal } from '@features/tournament/components/match-modal/match-modal';
 
 @Component({
   imports: [MatchModal],

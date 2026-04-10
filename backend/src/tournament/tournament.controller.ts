@@ -94,7 +94,7 @@ async function findOne(req: Request, res: Response) {
     const tournamentData = await em.findOneOrFail(
         Tournament,
         { id },
-        { populate: ['game', 'location', 'creator', 'inscriptions', 'inscriptions.user'] },
+        { populate: ['game', 'location', 'creator', 'inscriptions', 'tags', 'inscriptions.user'] },
     )
 
     const bracketData = (await storage.select('stage', { tournament_id: id }))

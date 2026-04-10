@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
+import { TournamentService } from '@shared/services/tournament.service';
 
 @Component({
   selector: 'tournament-tabs',
@@ -7,10 +9,27 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './tabs.html',
 })
 export class Tabs {
-  tabs = [
+  private tournamentService = inject(TournamentService);
+  private activatedRoute = inject(ActivatedRoute);
+
+  tournamentId = computed(() => Number(this.activatedRoute.snapshot.paramMap.get('id')));
+  isCreator = toSignal(this.tournamentService.isLoggedUserCreator(this.tournamentId()), {
+    initialValue: false,
+  });
+
+  baseTabs = [
     { name: 'Resumen', router: 'overview' },
     { name: 'Participantes', router: 'participants' },
     { name: 'Llave', router: 'bracket' },
-    { name: 'Configuración', router: 'configuration' },
   ];
+
+  adminTab = { name: 'Configuración', router: 'configuration' };
+
+  // Tabs dinámicos basados en permisos
+  tabs = computed(() => {
+    if (this.isCreator()) {
+      return [...this.baseTabs, this.adminTab];
+    }
+    return this.baseTabs;
+  });
 }
