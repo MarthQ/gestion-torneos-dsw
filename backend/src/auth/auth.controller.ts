@@ -55,7 +55,6 @@ const registerSchema = z.object({
 async function login(req: Request, res: Response) {
     const sanitizedLogin = loginSchema.safeParse(req.body)
     //* DTO
-
     if (!sanitizedLogin.success) {
         throw fromZodError(sanitizedLogin.error)
     }

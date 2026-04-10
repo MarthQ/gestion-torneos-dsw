@@ -1,0 +1,59 @@
+<dialog
+  #results_modal
+  id="my_modal_2"
+  class="modal"
+  (close)="handleClose()"
+  (cancel)="handleClose()"
+>
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <form [formGroup]="resultsForm" (ngSubmit)="onSubmit($event)" class="mt-6">
+      <div class="flex flex-col md:flex-row items-center gap-4">
+        <div class="bg-base-300 p-4 rounded-md flex-1 w-full">
+          <div
+            class="my-4 w-15 h-15 bg-primary mx-auto flex items-center justify-center rounded-full"
+          >
+            <span class="text-xl font-bold">{{ matchData().opponent1.name | slice: 0 : 1 }}</span>
+          </div>
+          <h2 class="text-xl mb-4 text-center">{{ matchData().opponent1.name }}</h2>
+          <input
+            formControlName="score1"
+            type="number"
+            placeholder="Resultado"
+            min="0"
+            step="1"
+            class="input input-bordered w-full max-w-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+          <form-error-label [control]="resultsForm.get('score1')!" />
+        </div>
+        <span class="text-md font-bold flex-none">vs</span>
+        <div class="bg-base-300 p-4 rounded-md flex-1 w-full">
+          <div
+            class="my-4 w-15 h-15 bg-primary mx-auto flex items-center justify-center rounded-full"
+          >
+            <span class="text-xl font-bold">{{ matchData().opponent2.name | slice: 0 : 1 }}</span>
+          </div>
+          <h2 class="text-xl mb-4 text-center">{{ matchData().opponent2.name }}</h2>
+          <input
+            formControlName="score2"
+            type="number"
+            placeholder="Resultado"
+            min="0"
+            step="1"
+            class="input input-bordered w-full max-w-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+          <form-error-label [control]="resultsForm.get('score2')!" />
+        </div>
+      </div>
+      <div class="">
+        <button class="btn btn-primary mt-4 w-full" type="submit">Registrar</button>
+      </div>
+    </form>
+  </div>
+
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

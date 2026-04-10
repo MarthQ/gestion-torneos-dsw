@@ -18,7 +18,6 @@ const userRouter = Router()
 
 userRouter.get('/', wrapController(findAll))
 userRouter.get('/:id', wrapController(findOne))
-userRouter.put('/:id', authenticationMiddleware, wrapController(update))
 userRouter.delete(
     '/:id',
     authenticationMiddleware,
@@ -42,5 +41,6 @@ userRouter.patch(
     authorizeMiddleware(USER_ROLE.ADMIN),
     wrapController(update),
 )
+userRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 export { userRouter }

@@ -72,6 +72,11 @@ export class Sidebar {
 
   sidebarButtons = signal([
     {
+      name: 'Mis torneos',
+      routerPath: '/my-tournaments',
+      icon: `icon-[boxicons--crown]`,
+    },
+    {
       name: 'Explorar Torneos',
       routerPath: '/explore',
       icon: `icon-[material-symbols--explore]`,

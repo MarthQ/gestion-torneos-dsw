@@ -65,6 +65,7 @@
       <option selected value="0">Cualquier Juego</option>
       @for (game of filters()?.games; track game.id) {
         <option [value]="game.id">
+          <img [src]="getGameImage(game)" alt="Foto de {{ game.name }}" class="w-6 h-6 mr-2" />
           {{ game.name }}
         </option>
       }

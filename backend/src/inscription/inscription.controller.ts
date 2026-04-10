@@ -30,6 +30,7 @@ async function findAll(req: Request, res: Response) {
         const [inscriptions, total] = await em.findAndCount(Inscription, filter, {
             limit: pageSize,
             offset: (page - 1) * pageSize,
+            populate: ['user'],
         })
         return res.status(200).json({
             message: 'Found paginated inscriptions',
