@@ -24,12 +24,9 @@ export const isCreatorOrAdminGuard: CanActivateFn = (route: ActivatedRouteSnapsh
 
   // If the logged user is the creator of the tournament, access to configuration is permitted. If not, it gets redirected to overview
   // * Change doing a http request to saving the tournament in cache
-  return tournamentService.getTournament(tournamentId).pipe(
-    map((tournament) => tournament.bracketData),
-    map((tournament) =>
-      tournament.creator.id === user.id
-        ? true
-        : router.createUrlTree(['/tournament', tournamentId, 'overview']),
+  return tournamentService.isLoggedUserCreator(tournamentId).pipe(
+    map((isCreator) =>
+      isCreator ? true : router.createUrlTree(['/tournament', tournamentId, 'overview']),
     ),
     catchError(() => of(router.createUrlTree(['/tournament', tournamentId, 'overview']))),
   );
