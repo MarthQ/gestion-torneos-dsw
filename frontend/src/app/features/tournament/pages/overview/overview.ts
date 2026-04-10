@@ -1,5 +1,5 @@
 import { DatePipe, I18nSelectPipe, JsonPipe, TitleCasePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@features/auth/services/auth.service';
@@ -10,9 +10,10 @@ import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
 import { map, tap } from 'rxjs';
+import { ConfirmModal } from '@features/tournament/components/confirm-modal/confirm-modal';
 
 @Component({
-  imports: [I18nSelectPipe, DatePipe, TitleCasePipe, InscriptionModal],
+  imports: [I18nSelectPipe, DatePipe, TitleCasePipe, InscriptionModal, ConfirmModal],
   templateUrl: './overview.html',
 })
 export class Overview {
@@ -26,6 +27,10 @@ export class Overview {
   // Inscription modal
   isModalOpen = signal(false);
   modalType = signal<'add' | 'delete'>('add');
+
+  // Confirm transition status modal
+  confirmModalType = signal<'close' | 'start' | 'end' | 'cancel'>('close');
+  isConfirmModalOpen = signal<boolean>(false);
 
   private tournamentService = inject(TournamentService);
   private inscriptionService = inject(InscriptionService);
@@ -103,6 +108,11 @@ export class Overview {
     this.isModalOpen.set(true);
   }
 
+  openConfirmationModal(type: 'close' | 'start' | 'end' | 'cancel') {
+    this.confirmModalType.set(type);
+    this.isConfirmModalOpen.set(true);
+  }
+
   onInscriptionConfirmed(data: { nickname: string }) {
     const tournamentId = this.tournamentResource.value()!.id;
 
@@ -128,45 +138,46 @@ export class Overview {
     });
   }
 
-  // Tournament status transition methods
-  closeTournament() {
+  onConfirm() {
+    this.isConfirmModalOpen.set(false);
     if (this.tournamentResource.hasValue()) {
-      this.tournamentService.closeInscriptions(this.tournamentResource.value().id).subscribe({
-        next: () => {
-          Toaster.success('El torneo ha cerrado sus inscripciones!');
-          this.tournamentResource.reload();
-        },
-      });
-    }
-  }
-  startTournament() {
-    if (this.tournamentResource.hasValue()) {
-      this.tournamentService.startTournament(this.tournamentResource.value().id).subscribe({
-        next: () => {
-          Toaster.success('El torneo ha comenzado!');
-          this.tournamentResource.reload();
-        },
-      });
-    }
-  }
-  endTournament() {
-    if (this.tournamentResource.hasValue()) {
-      this.tournamentService.endTournament(this.tournamentResource.value().id).subscribe({
-        next: () => {
-          Toaster.success('El torneo ha finalizado!');
-          this.tournamentResource.reload();
-        },
-      });
-    }
-  }
-  cancelTournament() {
-    if (this.tournamentResource.hasValue()) {
-      this.tournamentService.cancelTournament(this.tournamentResource.value().id).subscribe({
-        next: () => {
-          Toaster.success('El torneo ha sido cancelado');
-          this.tournamentResource.reload();
-        },
-      });
+      switch (this.confirmModalType()) {
+        case 'close':
+          this.tournamentService.closeInscriptions(this.tournamentResource.value().id).subscribe({
+            next: () => {
+              Toaster.success('El torneo ha cerrado sus inscripciones!');
+              this.tournamentResource.reload();
+            },
+            error: (msg) => Toaster.error(msg),
+          });
+          break;
+        case 'start':
+          this.tournamentService.startTournament(this.tournamentResource.value().id).subscribe({
+            next: () => {
+              Toaster.success('El torneo ha comenzado!');
+              this.tournamentResource.reload();
+            },
+            error: (msg) => Toaster.error(msg),
+          });
+          break;
+        case 'end':
+          this.tournamentService.endTournament(this.tournamentResource.value().id).subscribe({
+            next: () => {
+              Toaster.success('El torneo ha finalizado!');
+              this.tournamentResource.reload();
+            },
+            error: (msg) => Toaster.error(msg),
+          });
+          break;
+        case 'cancel':
+          this.tournamentService.cancelTournament(this.tournamentResource.value().id).subscribe({
+            next: () => {
+              Toaster.success('El torneo ha sido cancelado');
+              this.tournamentResource.reload();
+            },
+            error: (msg) => Toaster.error(msg),
+          });
+      }
     }
   }
 }

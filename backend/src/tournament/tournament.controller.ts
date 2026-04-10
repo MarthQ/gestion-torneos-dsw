@@ -205,42 +205,48 @@ async function remove(req: Request, res: Response) {
 function getNearestPowerOfTwo(input: number): number {
     return Math.pow(2, Math.ceil(Math.log2(input)))
 }
-// bracket manager
-async function createBracket(req: Request, res: Response) {
-    try {
-        const tournamentId = Number.parseInt(req.params.id)
 
-        const foundTournament = await em.findOneOrFail(
-            Tournament,
-            { id: tournamentId },
-            { populate: ['inscriptions'] },
-        )
+async function closeInscriptions(req: Request, res: Response) {
+    try {
+        const id = Number.parseInt(req.params.id)
+        const tournament = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+
+        if (tournament.status !== TournamentStatus.OPEN) {
+            const error = new Error('Tournament is not open.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+
+        if (tournament.inscriptions.length < 2) {
+            const error = new Error('Tournament must have at least 2 inscriptions to close.')
+            ;(error as any).statusCode = 400
+            throw error
+        }
+
+        tournament.status = TournamentStatus.CLOSED
+        await em.flush()
+
+        const foundTournament = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
 
         const { name, type, inscriptions } = foundTournament
 
-        //? Is there a more efficient way to do this?
-        const displayNicknames = await Promise.all(
-            inscriptions.map(async (inscription) => {
-                return inscription.nickname ?? (await em.findOneOrFail(User, inscription.user)).name
-            }),
-        )
+        const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
 
         await manager.create.stage({
             name: name,
-            tournamentId: tournamentId,
+            tournamentId: id,
             type: type as StageType,
-            seeding: displayNicknames,
+            seeding: inscriptionNicknames,
             settings: {
                 seedOrdering: ['inner_outer'],
-                size: getNearestPowerOfTwo(displayNicknames.length),
+                size: getNearestPowerOfTwo(inscriptionNicknames.length),
             },
         })
 
-        const bracketData = await manager.get.tournamentData(tournamentId)
+        const bracketData = await manager.get.tournamentData(id)
 
         res.status(200).json({
             message: 'Bracket created',
-            //? Should we return the data like this or nested as data: { bracketData },
             data: bracketData,
         })
     } catch (error: any) {
@@ -283,6 +289,16 @@ async function getNextReadyMatches(req: Request, res: Response) {
 
 async function updateMatchResult(req: Request, res: Response) {
     try {
+        const tournamentId = Number.parseInt(req.params.tournamentId)
+
+        const tournament = await em.findOneOrFail(Tournament, { id: tournamentId })
+
+        if (tournament.status !== TournamentStatus.RUNNING) {
+            const error = new Error(`Tournament is not running therefore matches can't be updated.`)
+            ;(error as any).statusCode = 409
+            throw error
+        }
+
         const id = Number.parseInt(req.params.id)
         const { score } = req.body
 
@@ -387,7 +403,7 @@ async function deleteInscription(req: RequestWithUser, res: Response) {
             throw error
         }
 
-        const tournament = await em.getReference(Tournament, tournamentId)
+        const tournament = em.getReference(Tournament, tournamentId)
 
         const inscription = await em.findOneOrFail(Inscription, { tournament, user: req.user })
 
@@ -527,7 +543,6 @@ export {
     update,
     remove,
     findUserTournaments,
-    createBracket,
     getTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
@@ -535,7 +550,7 @@ export {
     create,
     inscribeToTournament,
     deleteInscription,
-    closeTournament,
+    closeInscriptions,
     startTournament,
     endTournament,
     cancelTournament,

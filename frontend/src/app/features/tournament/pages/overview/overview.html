@@ -38,11 +38,14 @@
               @case ('open') {
                 <!-- Botones del CREADOR -->
                 @if (userIsCreator()) {
-                  <button class="btn btn-warning btn-lg" (click)="closeTournament()">
+                  <button class="btn btn-warning btn-lg" (click)="openConfirmationModal('close')">
                     <span class="icon-[lucide--lock]" style="width: 24px; height: 24px"></span>
                     Cerrar Inscripciones
                   </button>
-                  <button class="btn btn-error btn-outline btn-lg" (click)="cancelTournament()">
+                  <button
+                    class="btn btn-error btn-outline btn-lg"
+                    (click)="openConfirmationModal('cancel')"
+                  >
                     Cancelar Torneo
                   </button>
                   <!-- El creator también puede inscribirse -->
@@ -81,11 +84,14 @@
 
               @case ('closed') {
                 @if (userIsCreator()) {
-                  <button class="btn btn-success btn-lg" (click)="startTournament()">
+                  <button class="btn btn-success btn-lg" (click)="openConfirmationModal('start')">
                     <span class="icon-[lucide--play]" style="width: 24px; height: 24px"></span>
                     Iniciar Torneo
                   </button>
-                  <button class="btn btn-error btn-outline btn-lg" (click)="cancelTournament()">
+                  <button
+                    class="btn btn-error btn-outline btn-lg"
+                    (click)="openConfirmationModal('cancel')"
+                  >
                     Cancelar Torneo
                   </button>
                 } @else {
@@ -98,11 +104,14 @@
 
               @case ('running') {
                 @if (userIsCreator()) {
-                  <button class="btn btn-success btn-lg" (click)="endTournament()">
+                  <button class="btn btn-success btn-lg" (click)="openConfirmationModal('end')">
                     <span class="icon-[lucide--flag]" style="width: 24px; height: 24px"></span>
                     Finalizar Torneo
                   </button>
-                  <button class="btn btn-error btn-outline btn-lg" (click)="cancelTournament()">
+                  <button
+                    class="btn btn-error btn-outline btn-lg"
+                    (click)="openConfirmationModal('cancel')"
+                  >
                     Cancelar Torneo
                   </button>
                 } @else {
@@ -233,5 +242,13 @@
       (deletionConfirmed)="onDeletionConfirmed()"
       (closed)="isModalOpen.set(false)"
     />
+    @if (userIsCreator()) {
+      <confirm-modal
+        [type]="confirmModalType()"
+        [open]="isConfirmModalOpen()"
+        (confirmed)="onConfirm()"
+        (cancelled)="isConfirmModalOpen.set(false)"
+      />
+    }
   </main>
 }

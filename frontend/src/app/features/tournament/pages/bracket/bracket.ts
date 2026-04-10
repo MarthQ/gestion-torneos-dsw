@@ -71,35 +71,17 @@ export class Bracket {
 
   updateMatch(bracketModalResponse: any) {
     const { matchId, scores } = bracketModalResponse;
-    this.tournamentService.reportMatchResult(matchId, scores).subscribe({
-      next: () => {
-        this.refreshView();
-      },
-      error: (message) => {
-        Toaster.error(message);
-        console.log(message);
-      },
-    });
-  }
-
-  matchIndex = signal(0);
-
-  addResult() {
-    const matchsId = this.tournamentService
-      .bracketData()
-      .match.filter((m: any) => m.status === 2)
-      .map((m: any) => m.id);
-    this.tournamentService.reportMatchResult(matchsId[this.matchIndex()], '2-1').subscribe({
-      next: () => {
-        //TODO refresh the view? I think we should implement "WebSockets" to render the view before a change like this
-        this.matchIndex.set(this.matchIndex() + 1);
-        this.refreshView();
-      },
-      error: (message) => {
-        Toaster.error(message);
-        console.log(message);
-      },
-    });
+    this.tournamentService
+      .reportMatchResult(Number(this.tournamentId()), matchId, scores)
+      .subscribe({
+        next: () => {
+          this.refreshView();
+        },
+        error: (message) => {
+          Toaster.error(message);
+          console.log(message);
+        },
+      });
   }
 
   refreshView() {

@@ -6,7 +6,6 @@ import {
     update,
     remove,
     findUserTournaments,
-    createBracket,
     getTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
@@ -15,7 +14,7 @@ import {
     inscribeToTournament,
     deleteInscription,
     startTournament,
-    closeTournament,
+    closeInscriptions,
     endTournament,
     cancelTournament,
 } from './tournament.controller.js'
@@ -43,8 +42,6 @@ tournamentRouter.post('/', authenticationMiddleware, add)
 tournamentRouter.post('/create', authenticationMiddleware, create)
 
 //* Bracket -> A bracket is generated when the inscriptions has been closed.
-// The owner or admin starts the tournament. Bracket gets created
-// tournamentRouter.post('/:id/start', authenticationMiddleware, createBracket)
 
 //* Match
 // Find tournament's bracket
@@ -54,9 +51,9 @@ tournamentRouter.get('/:id/matches', getStageMatches)
 // Find tournament's next ready matches
 tournamentRouter.get('/:id/next', getNextReadyMatches)
 // Create match result (2-1)
-tournamentRouter.post('/match/:id', updateMatchResult)
+tournamentRouter.post('/:tournamentId/match/:id', updateMatchResult)
 // Update match result (2-1)
-tournamentRouter.patch('/match/:id', updateMatchResult)
+tournamentRouter.patch('/:tournamentId/match/:id', updateMatchResult)
 
 //* Inscriptions
 // Inscribe to tournament
@@ -66,8 +63,8 @@ tournamentRouter.delete('/:id/inscriptions', authenticationMiddleware, deleteIns
 
 //* Tournament status transitions
 // The owner or admin closes the inscriptions of the tournament
-tournamentRouter.post('/:id/close', authenticationMiddleware, isOwnerOrAdminMiddleware, closeTournament)
-// The owner or admin starts the tournament
+tournamentRouter.post('/:id/close', authenticationMiddleware, isOwnerOrAdminMiddleware, closeInscriptions)
+// The owner or admin starts the tournament. Bracket gets created
 tournamentRouter.post('/:id/start', authenticationMiddleware, isOwnerOrAdminMiddleware, startTournament)
 // The owner or admin notifies end of the tournament
 tournamentRouter.post('/:id/finish', authenticationMiddleware, isOwnerOrAdminMiddleware, endTournament)

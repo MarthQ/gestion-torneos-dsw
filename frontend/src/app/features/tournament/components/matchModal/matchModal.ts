@@ -53,6 +53,5 @@ export class MatchModal {
     });
     this.handleClose();
     this.resultsForm.reset();
-    Toaster.success('Match Actualizada');
   }
 }

@@ -167,9 +167,11 @@ export class TournamentService {
       );
   }
 
-  reportMatchResult(matchId: number, score: string): Observable<any> {
+  reportMatchResult(tournamentId: number, matchId: number, score: string): Observable<any> {
     return this.http
-      .post<ApiResponse<any>>(`${environment.apiUrl}/tournaments/match/${matchId}`, { score })
+      .post<
+        ApiResponse<any>
+      >(`${environment.apiUrl}/tournaments/${tournamentId}/match/${matchId}`, { score })
       .pipe(
         map((response) => response.data),
         catchError((error) => {
@@ -195,22 +197,48 @@ export class TournamentService {
   closeInscriptions(tournamentId: number): Observable<Tournament> {
     return this.http
       .post<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/close`, {})
-      .pipe(map((response) => response.data));
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to close inscriptions');
+        }),
+      );
   }
 
   startTournament(tournamentId: number): Observable<Tournament> {
     return this.http
       .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/start`, {})
-      .pipe(map((response) => response.data));
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to start the tournament');
+        }),
+      );
   }
+
   endTournament(tournamentId: number): Observable<Tournament> {
     return this.http
       .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/finish`, {})
-      .pipe(map((response) => response.data));
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to end the tournament');
+        }),
+      );
   }
+
   cancelTournament(tournamentId: number): Observable<Tournament> {
     return this.http
       .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/cancel`, {})
-      .pipe(map((response) => response.data));
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to cancel the tournament');
+        }),
+      );
   }
 }
