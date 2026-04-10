@@ -162,14 +162,6 @@ async function changePassword(req: Request, res: Response) {
             token: JWTUtils.getJWT({ userId: user.id! }),
         },
     })
-
-    // // Extract email_token
-    // // Verify email_token expiraton
-    // // Extract userEmail from token
-    // // Verify if userEmail belongs to a user
-    // // Extract & Hash password from req.body
-    // // Update user password
-    // // Return status
 }
 //(USER) Generate token & send mail with link to setup the new password
 async function requestResetPassword(req: RequestWithUser, res: Response) {
