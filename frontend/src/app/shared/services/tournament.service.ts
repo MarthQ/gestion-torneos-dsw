@@ -5,6 +5,7 @@ import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Toaster } from '@shared/utils/toaster';
 
 @Injectable({
   providedIn: 'root',
@@ -91,9 +92,14 @@ export class TournamentService {
     return this.http
       .patch<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`, body)
       .pipe(
-        map((response) => response.data),
+        map((response) => {
+          Toaster.success('Configuración guardada correctamente');
+          return response.data;
+        }),
         catchError((error) => {
           console.error(error);
+          // Manage Toaster on service
+          Toaster.error(error.error.message);
           return throwError(() => error.error.message);
         }),
       );

@@ -11,9 +11,10 @@ import { Pagination } from '@shared/components/pagination/pagination';
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { RouterLink } from '@angular/router';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
+import { IGDB_SIZE, GameImagePipe } from '@shared/pipes/game-image.pipe';
 
 @Component({
-  imports: [DatePipe, SearchBar, Pagination, RouterLink],
+  imports: [DatePipe, SearchBar, Pagination, RouterLink, GameImagePipe],
   templateUrl: './myTournaments.html',
 })
 export class MyTournaments {
@@ -21,6 +22,7 @@ export class MyTournaments {
   tagService = inject(TagService);
   gameService = inject(GameService);
   getBackgroundStyle = TournamentUtils.GetGameImage;
+  IGDB_SIZE = IGDB_SIZE;
 
   // API Get parameters (for table)
   query = signal('');
