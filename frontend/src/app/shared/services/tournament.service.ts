@@ -90,8 +90,6 @@ export class TournamentService {
   updateTournament(updatedTournament: TournamentFormDTO): Observable<TournamentFormDTO> {
     const { id, ...body } = updatedTournament;
 
-    console.log(body);
-
     return this.http
       .patch<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`, body)
       .pipe(

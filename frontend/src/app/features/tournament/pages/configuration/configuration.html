@@ -82,18 +82,62 @@
           <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
         </fieldset>
 
-        <fieldset class="fieldset">
-          <legend class="fieldset-legend">Localidad</legend>
-          <select class="select w-full" formControlName="location">
-            <option readonly value="0">Seleccione la localidad</option>
-            @for (location of locationResource.value(); track location.id) {
-              <option [ngValue]="location.id">
-                {{ location.name }}
-              </option>
-            }
-          </select>
-          <form-error-label [control]="tournamentForm.get('location')!"></form-error-label>
-        </fieldset>
+        @if (eventType() === 'virtual' || eventType() === null) {
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Region</legend>
+            <select class="select w-full" formControlName="region">
+              <option readonly value="0">Seleccione la region</option>
+              @for (region of regionResource.value(); track region.id) {
+                <option [ngValue]="region.id">
+                  {{ region.name }}
+                </option>
+              }
+            </select>
+            <form-error-label [control]="tournamentForm.get('region')!"></form-error-label>
+          </fieldset>
+        }
+
+        @if (eventType() === 'presencial') {
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Localidad</legend>
+            <select class="select w-full" formControlName="location">
+              <option readonly value="0">Seleccione la localidad</option>
+              @for (location of locationResource.value(); track location.id) {
+                <option [ngValue]="location.id">
+                  {{ location.name }}
+                </option>
+              }
+            </select>
+            <form-error-label [control]="tournamentForm.get('location')!"></form-error-label>
+          </fieldset>
+        }
+
+        @if (eventType() === 'mixed') {
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Localidad</legend>
+            <select class="select w-full" formControlName="location">
+              <option readonly value="0">Seleccione la localidad</option>
+              @for (location of locationResource.value(); track location.id) {
+                <option [ngValue]="location.id">
+                  {{ location.name }}
+                </option>
+              }
+            </select>
+            <form-error-label [control]="tournamentForm.get('location')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Region</legend>
+            <select class="select w-full" formControlName="region">
+              <option readonly value="0">Seleccione la region</option>
+              @for (region of regionResource.value(); track region.id) {
+                <option [ngValue]="region.id">
+                  {{ region.name }}
+                </option>
+              }
+            </select>
+            <form-error-label [control]="tournamentForm.get('region')!"></form-error-label>
+          </fieldset>
+        }
 
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Cupo Máximo</legend>
