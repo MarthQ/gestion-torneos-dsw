@@ -24,7 +24,7 @@ const TournamentSchema = z.object({
         .number({ message: 'The maximum number of participants should be a number' })
         .gt(1, { message: 'The maximum number of participants should be greater than 1' }),
     game: z.number({ message: 'Game must be a number representing a game id' }),
-    location: z.number({ message: 'Location must be a number representing a location id' }),
+    location: z.number({ message: 'Location must be a number representing a location id' }).optional(),
     region: z.number({ message: 'Region must be a number representing a region id' }).optional(),
     creator: z.number({ message: 'Creator must be a number representing a user id' }),
     tags: z.array(z.number()),
@@ -52,8 +52,9 @@ async function findAll(req: Request, res: Response) {
     if (game) filter.game = game
 
     const Tournaments = await em.find(Tournament, filter, {
-        populate: ['game', 'creator', 'location', 'tags', 'game'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
     })
+
     res.status(200).json({
         message: 'Found all tournaments',
         data: Tournaments,
@@ -70,22 +71,26 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     const query = req.query.query ? String(req.query.query) : undefined
     const tag = req.query.tag ? Number(req.query.tag) : undefined
     const location = req.query.location ? Number(req.query.location) : undefined
+    const region = req.query.region ? Number(req.query.region) : undefined
     const game = req.query.game ? Number(req.query.game) : undefined
 
-    const filter: any = { $some: { creator: user.id } }
+    const filter: any = { creator: user.id }
 
     if (query) filter.name = { $like: `%${query}%` }
     if (tag) filter.tags = { $some: { id: tag } }
     if (location) filter.location = location
+    if (region) filter.region = region
     if (game) filter.game = game
 
-    const tournaments = await em.find(Tournament, filter)
+    const Tournaments = await em.find(Tournament, filter, {
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+    })
+
+    console.log(Tournaments)
 
     res.status(200).json({
         message: 'Found all user tournaments',
-        data: {
-            tournaments,
-        },
+        data: Tournaments,
     })
 }
 
@@ -94,7 +99,7 @@ async function findOne(req: Request, res: Response) {
     const tournamentData = await em.findOneOrFail(
         Tournament,
         { id },
-        { populate: ['game', 'location', 'creator', 'inscriptions', 'tags', 'inscriptions.user'] },
+        { populate: ['game', 'location', 'region', 'creator', 'inscriptions', 'tags', 'inscriptions.user'] },
     )
 
     const bracketData = (await storage.select('stage', { tournament_id: id }))

@@ -151,7 +151,9 @@ export class TournamentService {
     if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
     return this.http
-      .get<ApiResponse<Tournament[]>>(`${environment.apiUrl}/tournaments`, { params })
+      .get<
+        ApiResponse<Tournament[]>
+      >(`${environment.apiUrl}/tournaments/userTournaments`, { params })
       .pipe(
         map((response) => response.data),
         catchError((error) => {

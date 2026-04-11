@@ -42,18 +42,34 @@
           />
           <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
         </fieldset>
-        <fieldset class="fieldset">
-          <legend class="fieldset-legend">Localidad del torneo</legend>
-          <select class="select w-full" formControlName="location">
-            <option readonly value="0">Seleccione la localidad del torneo</option>
-            @for (location of locationResource.value(); track location.id) {
-              <option [ngValue]="location.id">
-                {{ location.name }}
-              </option>
-            }
-          </select>
-          <span class="label">Obligatorio</span>
-        </fieldset>
+        @if (eventType() === 'presencial') {
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Localidad del torneo</legend>
+            <select class="select w-full" formControlName="location">
+              <option readonly value="0">Seleccione la localidad del torneo</option>
+              @for (location of locationResource.value(); track location.id) {
+                <option [ngValue]="location.id">
+                  {{ location.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+        }
+        @if (eventType() === 'virtual') {
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Region del torneo</legend>
+            <select class="select w-full" formControlName="region">
+              <option readonly value="0">Seleccione la region del torneo</option>
+              @for (region of regionResource.value(); track region.id) {
+                <option [ngValue]="region.id">
+                  {{ region.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+        }
         <fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-4 col-span-2">
           <legend class="fieldset-legend">Etiquetas del torneo</legend>
           <div class="flex flex-col gap-3">
@@ -160,18 +176,34 @@
             />
             <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
           </fieldset>
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">Ubicacion</legend>
-            <input
-              readonly
-              type="text"
-              class="input"
-              [placeholder]="
-                tournamentForm.value.location ? locationResource.value()!.find((location) => location.id === tournamentForm.value.location)?.name  : 'Sin valor'
-              "
-            />
-            <form-error-label [control]="tournamentForm.get('location')!"></form-error-label>
-          </fieldset>
+          @if (eventType() === 'virtual') {
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend">Region</legend>
+              <input
+                readonly
+                type="text"
+                class="input"
+                [placeholder]="
+                  tournamentForm.value.region !== 0 ? regionResource.value()!.find((region) => region.id === tournamentForm.value.region)?.name  : 'Sin valor'
+                "
+              />
+              <form-error-label [control]="tournamentForm.get('region')!"></form-error-label>
+            </fieldset>
+          }
+          @if (eventType() === 'presencial') {
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend">Ubicacion</legend>
+              <input
+                readonly
+                type="text"
+                class="input"
+                [placeholder]="
+                  tournamentForm.value.location !==0 ? locationResource.value()!.find((location) => location.id === tournamentForm.value.location)?.name  : 'Sin valor'
+                "
+              />
+              <form-error-label [control]="tournamentForm.get('location')!"></form-error-label>
+            </fieldset>
+          }
           <fieldset class="fieldset col-span-2">
             <legend class="fieldset-legend">Juego</legend>
             <input
