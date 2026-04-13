@@ -4,7 +4,7 @@ import { ORM } from '../shared/db/orm.js'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
-const em = ORM.em
+const getEm = () => ORM.em
 
 // TODO: Declare zod status literals
 
@@ -41,7 +41,7 @@ async function findAll(req: Request, res: Response) {
         if (location) filter.location = location
         if (game) filter.game = game
 
-        const Tournaments = await em.find(Tournament, filter, {
+        const Tournaments = await getEm().find(Tournament, filter, {
             populate: ['game', 'creator', 'location', 'tags', 'game'],
         })
         res.status(200).json({
@@ -56,7 +56,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const tournament = await em.findOneOrFail(
+        const tournament = await getEm().findOneOrFail(
             Tournament,
             { id },
             { populate: ['game', 'location', 'creator'] },
@@ -74,8 +74,8 @@ async function add(req: Request, res: Response) {
         if (!sanitizedTournament.success) {
             throw fromZodError(sanitizedTournament.error)
         } else {
-            const tournament = em.create(Tournament, sanitizedTournament.data)
-            await em.flush()
+            const tournament = getEm().create(Tournament, sanitizedTournament.data)
+            await getEm().flush()
             res.status(201).json({ message: 'Tournament created', data: tournament })
         }
     } catch (error: any) {
@@ -90,10 +90,10 @@ async function update(req: Request, res: Response) {
             throw fromZodError(sanitizedTournament.error)
         } else {
             const id = Number.parseInt(req.params.id)
-            const tournament = await em.findOneOrFail(Tournament, id)
+            const tournament = await getEm().findOneOrFail(Tournament, id)
 
-            em.assign(tournament, sanitizedTournament.data)
-            await em.flush()
+            getEm().assign(tournament, sanitizedTournament.data)
+            await getEm().flush()
         }
         res.status(200).json({ message: 'Tournament updated' })
     } catch (error: any) {
@@ -104,8 +104,8 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id)
-        const tournament = em.getReference(Tournament, id)
-        await em.removeAndFlush(tournament)
+        const tournament = getEm().getReference(Tournament, id)
+        await getEm().removeAndFlush(tournament)
         res.status(200).send({ message: 'Tournament deleted' })
     } catch (error: any) {
         res.status(500).json({ message: error.message })

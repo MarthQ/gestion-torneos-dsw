@@ -16,7 +16,8 @@ import { authRouter } from './auth/auth.routes.js'
 import { seedRoles, seedLocations, seedTags } from './db/seeds.js'
 import { env } from './config/env.js'
 
-const app = express()
+export const app = express()
+
 app.use(express.json())
 app.use(
     cors({
