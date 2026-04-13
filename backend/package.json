@@ -5,7 +5,9 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env ./dist/app.js \""
+        "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env ./dist/app.js \"",
+        "test:unit": "npx jest --testPathPatterns='src/tests/.*\\.controller\\.test\\.ts'",
+        "test:integration": "cross-env NODE_ENV=test node --import tsx/esm node_modules/vitest/dist/cli.js run src/tests/inscription.integration.test.ts"
     },
     "keywords": [],
     "author": "",
@@ -29,13 +31,19 @@
         "@types/express": "4.17.21",
         "@types/jest": "^30.0.0",
         "@types/jsonwebtoken": "^9.0.10",
-        "@types/node": "20.12.7",
+        "@types/node": "25.5.2",
         "@types/nodemailer": "^7.0.11",
+        "@types/supertest": "^7.2.0",
         "bcrypt": "^6.0.0",
+        "cross-env": "^10.1.0",
+        "dotenv": "^17.4.2",
         "jest": "^30.3.0",
         "jsonwebtoken": "^9.0.3",
+        "supertest": "^7.2.2",
         "ts-jest": "^29.4.9",
         "tsc-watch": "6.2.0",
-        "typescript": "5.4.5"
+        "tsx": "^4.21.0",
+        "typescript": "5.4.5",
+        "vitest": "^4.1.3"
     }
 }
