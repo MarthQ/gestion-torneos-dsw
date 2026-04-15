@@ -1,27 +1,10 @@
 import { Request, Response } from 'express'
 import { Tournament } from './tournament.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { TournamentSchema } from './tournament.schema.js';
 
 const em = ORM.em
-
-// TODO: Declare zod status literals
-
-const TournamentSchema = z.object({
-    id: z.number().gt(0).optional(),
-    name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
-    datetimeinit: z.coerce.date({ message: 'Date time must be a date' }),
-    status: z.string({ message: 'Status must be a string' }),
-    maxParticipants: z
-        .number({ message: 'The maximum number of participants should be a number' })
-        .gt(1, { message: 'The maximum number of participants should be greater than 1' }),
-    game: z.number({ message: 'Game must be a number representing a game id' }),
-    location: z.number({ message: 'Location must be a number representing a location id' }),
-    creator: z.number({ message: 'Creator must be a number representing a user id' }),
-    tags: z.array(z.number()),
-})
 
 async function findAll(req: Request, res: Response) {
     try {

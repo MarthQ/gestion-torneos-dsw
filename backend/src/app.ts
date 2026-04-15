@@ -1,4 +1,5 @@
 import 'reflect-metadata'
+import './shared/swagger/patch-zod.js';
 import express from 'express'
 import { ORM, syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
@@ -15,7 +16,10 @@ import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
 import { seedRoles, seedLocations, seedTags } from './db/seeds.js'
 import { env } from './config/env.js'
+import swaggerUi from 'swagger-ui-express'
+import { createSwaggerSpec } from './shared/swagger/swagger.config.js'
 
+const swaggerSpec = createSwaggerSpec()
 const app = express()
 app.use(express.json())
 app.use(
@@ -42,6 +46,7 @@ app.use('/api/matchups', matchupRouter)
 app.use('/api/tags', tagRouter)
 app.use('/api/roles', roleRouter)
 app.use('/api/auth', authRouter)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
