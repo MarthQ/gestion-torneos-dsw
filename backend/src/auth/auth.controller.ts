@@ -12,6 +12,7 @@ import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { UserMapper } from '../shared/mappers/user.mapper.js'
 import { JWTUtils } from '../shared/auth/jwt.utils.js'
 import { Mailer } from '../shared/mailer/mailer.service.js'
+import { loginSchema, registerSchema, forgotPasswordSchema, setupPasswordSchema, setupPasswordQuerySchema } from './auth.schema.js';
 
 const em = ORM.em
 
@@ -37,19 +38,6 @@ function clearJwtCookie(res: Response) {
         path: '/',
     })
 }
-
-//* VALIDATORS
-const loginSchema = z.object({
-    mail: z.string({ message: 'Mail must be a string' }).email({ message: 'Mail must be a valid email' }),
-    password: z.string({ message: 'Password must be a string.' }),
-})
-
-const registerSchema = z.object({
-    name: z.string({ message: 'Username must be a string' }),
-    password: z.string({ message: 'Password must be a string.' }),
-    mail: z.string({ message: 'Mail must be a string' }).email({ message: 'Mail must be a valid email' }),
-    location: z.number({ message: 'Location must be valid number.' }),
-})
 
 //* PUBLIC METHODS
 async function login(req: Request, res: Response) {
@@ -184,56 +172,56 @@ async function register(req: Request, res: Response) {
 }
 
 //TODO (USER) Reset password from "Forgot your password?"
+//In Documentation branch -> changed this method to be sanitized 
 async function forgotPassword(req: Request, res: Response) {
     try {
-        const reqUser: User = req.body
-        const frontendUrl = env.frontendURL
-
-        if (!reqUser) {
-            const error = new Error('No user has been provided')
-            ;(error as any).statusCode = 401
-            throw error
+        const sanitized = forgotPasswordSchema.safeParse(req.body)
+        
+        if (!sanitized.success) {
+            return res.status(400).json({ message: fromZodError(sanitized.error).message })
         }
 
-        const user = await em.findOneOrFail(User, { mail: reqUser.mail }, { populate: ['location', 'role'] })
+        const frontendUrl = env.frontendURL
+        const user = await em.findOneOrFail(User, { mail: sanitized.data.mail }, { populate: ['location', 'role'] })
 
         mailer.sendPasswordReset(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
+        
+        res.status(200).json({ message: 'Password reset email sent' })
     } catch (error: any) {
         if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
+            return res.status(error.statusCode).json({ message: error.message })
+        }
+        if (error.name === 'NotFoundError') {
+            return res.status(404).json({ message: 'User not found' })
         }
         res.status(500).json({ message: error.message })
     }
 }
 
-//TODO (USER) Setup password
 async function setupPassword(req: Request, res: Response) {
     try {
-        const mailToken = String(req.query.mailToken)
+        const queryValidation = setupPasswordQuerySchema.safeParse(req.query)
 
-        if (!mailToken) {
-            const error = new Error('No token has been supplied')
-            ;(error as any).statusCode = 400
-            throw error
+        if (!queryValidation.success) {
+            return res.status(400).json({ message: fromZodError(queryValidation.error).message })
         }
 
-        const decoded = JWTUtils.verify(mailToken)
+        const sanitized = setupPasswordSchema.safeParse(req.body)
+
+        if (!sanitized.success) {
+            return res.status(400).json({ message: fromZodError(sanitized.error).message })
+        }
+
+        const decoded = JWTUtils.verify(queryValidation.data.mailToken)
 
         const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
-        const password = req.body.password
-
-        console.log(`La password que estamos cargando es: -${password}-`)
-
         const userWithNewPassword = em.assign(user, {
-            password: hashSync(password, Number(env.defaultSaltRounds)),
+            password: hashSync(sanitized.data.password, Number(env.defaultSaltRounds)),
         })
 
         await em.persistAndFlush(userWithNewPassword)
 
-        // Generate JWT and set as HttpOnly cookie
         const token = JWTUtils.getJWT({ userId: user.id! })
         setJwtCookie(res, token)
 
@@ -244,17 +232,11 @@ async function setupPassword(req: Request, res: Response) {
             },
         })
     } catch (error: any) {
-        // Custom error handling
         if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
+            return res.status(error.statusCode).json({ message: error.message })
         }
-        // MikroORM Error
         if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: "User doesn't exist in database",
-            })
+            return res.status(401).json({ message: "User doesn't exist in database" })
         }
         res.status(500).json({ message: error.message })
     }

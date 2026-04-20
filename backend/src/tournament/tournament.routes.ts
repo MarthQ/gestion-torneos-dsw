@@ -75,7 +75,7 @@ tournamentRouter.post('/', authenticationMiddleware, add)
  * @swagger
  * /tournaments/{id}:
  *   put:
- *     summary: Actualiza un torneo existente
+ *     summary: Actualiza totalmente un torneo existente
  *     tags: [Tournaments]
  *     security:
  *       - cookieAuth: []
@@ -96,15 +96,75 @@ tournamentRouter.post('/', authenticationMiddleware, add)
  *         description: Torneo actualizado exitosamente
  *       400:
  *         description: Datos de entrada inválidos
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Sin permisos
  *       404:
  *         description: Torneo no encontrado
  */
 tournamentRouter.put('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, update)
 
-
+/**
+ * @swagger
+ * /tournaments/{id}:
+ *   patch:
+ *     summary: Actualiza parcialmente un torneo existente
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Tournament'
+ *     responses:
+ *       200:
+ *         description: Torneo actualizado exitosamente
+ *       400:
+ *         description: Datos de entrada inválidos
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Sin permisos
+ *       404:
+ *         description: Torneo no encontrado
+ */
 tournamentRouter.patch('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, update)
 
-
+/**
+ * @swagger
+ * /tournaments/{id}:
+ *   delete:
+ *     summary: Borra un torneo existente
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Torneo borrado exitosamente
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Sin permisos
+ *       404:
+ *         description: Torneo no encontrado
+ *       500:
+ *         description: Error interno
+ */
 tournamentRouter.delete('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, remove)
 
 

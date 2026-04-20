@@ -1,10 +1,8 @@
 import { z } from 'zod';
 import { registry } from '../shared/swagger/swagger-registry.js';
 
-export const TournamentStatus = ['open', 'in_progress', 'finished', 'cancelled'] as const;
-
 export const TournamentSchema = registry.register(
-    'Tournament', // El nombre que verá Swagger
+    'Tournament',
     z.object({
         id: z
             .number()
@@ -26,7 +24,7 @@ export const TournamentSchema = registry.register(
         
         status: z
             .string({ message: 'Status must be a string' })
-            .openapi({ example: 'open' }),
+            .openapi({ example: 'Abierto' }),
         
         maxParticipants: z
             .number({ message: 'The maximum number of participants should be a number' })
@@ -43,7 +41,7 @@ export const TournamentSchema = registry.register(
         
         creator: z
             .number({ message: 'Creator must be a number representing a user id' })
-            .openapi({ description: 'ID del usuario creador', example: 1 }),
+            .openapi({ description: 'ID del usuario creador', example: 4 }),
         
         tags: z
             .array(z.number())
