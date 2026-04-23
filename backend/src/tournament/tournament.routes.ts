@@ -14,10 +14,6 @@ const tournamentRouter = Router()
  *     responses:
  *       200:
  *         description: Se recuperaron todos los torneos
- *       401:
- *         description: No autenticado
- *       403:
- *         description: Sin permisos
  *       501:
  *         description: Servicio no disponible
  */

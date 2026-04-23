@@ -1,15 +1,10 @@
 import { Request, Response } from 'express'
 import { Role } from './role.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { RoleSchema } from './role.schema.js'
 
 const em = ORM.em
-
-const RoleSchema = z.object({
-    id: z.number().gt(0).optional(),
-    name: z.string({ message: 'Name must be a string' }),
-})
 
 async function findAll(req: Request, res: Response) {
     try {

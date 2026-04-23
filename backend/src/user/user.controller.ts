@@ -1,6 +1,4 @@
 import { Request, Response } from 'express'
-
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { hashSync } from 'bcrypt'
 
@@ -11,21 +9,12 @@ import { Mailer } from '../shared/mailer/mailer.service.js'
 import { JWTUtils } from '../shared/auth/jwt.utils.js'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { UserMapper } from '../shared/mappers/user.mapper.js'
+import { UserSchema } from './user.schema.js'
+
 
 const em = ORM.em
 
 const mailer = new Mailer()
-
-const UserSchema = z.object({
-    id: z.number().gt(0).optional(),
-    name: z.string({ message: 'Name must be a string' }),
-    password: z.string({ message: 'Password must be a string' }).optional(),
-    mail: z.string({ message: 'Mail must be a string' }),
-    location: z.number({
-        message: 'Location must be a number representing a location id',
-    }),
-    role: z.number({ message: 'Role must be a number representing a role id' }),
-})
 
 async function findAll(req: Request, res: Response) {
     try {
@@ -181,9 +170,11 @@ async function sendInvitation(req: Request, res: Response) {
     }
 }
 
+//! Deprecated
 //(USER) Change password
 async function changePassword(req: Request, res: Response) {
     try {
+        //! Has to be req.query
         const mailToken = req.params.mailToken
 
         if (!mailToken) {
@@ -196,8 +187,10 @@ async function changePassword(req: Request, res: Response) {
 
         const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
+        //! Needs to be sanitized
         const password = req.body.password
 
+        //! No em.flush()
         const userWithNewPassword = em.assign(user, {
             password: hashSync(password, Number(env.defaultSaltRounds)),
         })
@@ -232,6 +225,8 @@ async function changePassword(req: Request, res: Response) {
     // // Update user password
     // // Return status
 }
+
+//! Deprecated
 //(USER) Generate token & send mail with link to setup the new password
 async function requestResetPassword(req: RequestWithUser, res: Response) {
     //* The user is already authenticated by going through the authenticated middleware

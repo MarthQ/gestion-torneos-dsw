@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { compareSync, hashSync } from 'bcrypt'
 

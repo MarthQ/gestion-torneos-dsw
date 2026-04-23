@@ -1,15 +1,10 @@
 import { Request, Response } from 'express'
 import { Tag } from './tag.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
+import { TagSchema } from './tag.schema.js'
+import { fromZodError } from 'zod-validation-error'
 
 const em = ORM.em
-
-const TagSchema = z.object({
-    id: z.number().gt(0).optional(),
-    name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
-})
 
 async function findAll(req: Request, res: Response) {
     try {
@@ -56,18 +51,37 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
     try {
-        const tags = em.create(Tag, req.body)
+        const sanitized = TagSchema.safeParse(req.body)
+
+        if (!sanitized.success) {
+            return res.status(400).json({
+                message: 'Validation error',
+                errors: fromZodError(sanitized.error).details
+            })
+        }
+
+        const tags = em.create(Tag, sanitized.data)
         await em.flush()
         res.status(201).json({ message: 'Tag created', data: tags })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }
 }
+
 async function update(req: Request, res: Response) {
     try {
+        const sanitized = TagSchema.partial().safeParse(req.body)
+
+        if (!sanitized.success) {
+            return res.status(400).json({
+                message: 'Validation error',
+                errors: fromZodError(sanitized.error).details
+            })
+        }
+
         const id = Number.parseInt(req.params.id)
         const tags = em.getReference(Tag, id)
-        em.assign(tags, req.body)
+        em.assign(tags, sanitized.data)
         await em.flush()
         res.status(200).json({ message: 'Tag updated' })
     } catch (error: any) {
