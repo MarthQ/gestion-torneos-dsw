@@ -54,7 +54,7 @@ export class TournamentCrudModal {
   fb = inject(FormBuilder);
 
   private readonly EXCLUSIVE_GROUPS: readonly string[][] = [
-    [EVENT_TAGS.VIRTUAL.name, EVENT_TAGS.PRESENTIAL.name],
+    [EVENT_TAGS.VIRTUAL.name, EVENT_TAGS.IN_PERSON.name],
     [EVENT_TAGS.HAS_PRIZE.name, EVENT_TAGS.NO_PRIZE.name],
   ];
 
@@ -144,7 +144,7 @@ export class TournamentCrudModal {
       (t) => t.name === EVENT_TAGS.VIRTUAL.name && tagIds.includes(t.id),
     );
     const hasPresencial = allTags.some(
-      (t) => t.name === EVENT_TAGS.PRESENTIAL.name && tagIds.includes(t.id),
+      (t) => t.name === EVENT_TAGS.IN_PERSON.name && tagIds.includes(t.id),
     );
     if (hasVirtual && hasPresencial) return 'mixed';
     if (hasVirtual) return 'virtual';
