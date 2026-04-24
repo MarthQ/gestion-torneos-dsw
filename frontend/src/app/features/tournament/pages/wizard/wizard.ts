@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -20,7 +20,8 @@ import { Toaster } from '@shared/utils/toaster';
 import { TournamentFormDTO } from '@shared/interfaces/tournament';
 import { Router } from '@angular/router';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
-import { debounceTime } from 'rxjs';
+import { RegionService } from '@shared/services/region.service';
+import { debounceTime, EMPTY } from 'rxjs';
 
 @Component({
   imports: [ReactiveFormsModule, FormErrorLabel, DatePipe],
@@ -30,6 +31,7 @@ export class Wizard implements OnInit {
   private locationService = inject(LocationService);
   private tagService = inject(TagService);
   private gameService = inject(GameService);
+  private regionService = inject(RegionService);
   private tournamentService = inject(TournamentService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -44,6 +46,9 @@ export class Wizard implements OnInit {
   });
   gameResource = rxResource({
     stream: () => this.gameService.getGames(),
+  });
+  regionResource = rxResource({
+    stream: () => this.regionService.getRegions(),
   });
 
   tournamentTypes = signal([
@@ -76,9 +81,57 @@ export class Wizard implements OnInit {
     datetimeinit: [new Date(), Validators.required],
     game: [0, [Validators.required, Validators.min(1)]],
     maxParticipants: [2, [Validators.required, Validators.min(2)]],
-    location: [0, [Validators.required, Validators.min(1)]],
+    location: [0],
+    region: [0],
     type: ['single_elimination', [Validators.required]],
     tags: this.fb.array<FormControl<number>>([]),
+  });
+
+  tagsValue = toSignal(
+    this.tournamentForm.get('tags')?.valueChanges.pipe(debounceTime(300)) ?? EMPTY,
+  );
+
+  dynamicValidatorsEffect = effect(() => {
+    const type = this.eventType();
+
+    const locationControl = this.tournamentForm.get('location');
+    const regionControl = this.tournamentForm.get('region');
+    // Location: si es virtual, limpiar el valor
+    if (locationControl) {
+      if (type === 'virtual' || type === null) {
+        locationControl.reset(); // Reset a null/initial
+      }
+      locationControl.setValidators(
+        type === 'presencial' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      locationControl.updateValueAndValidity();
+    }
+    // Region: si es presencial, limpiar el valor
+    if (regionControl) {
+      if (type === 'presencial' || type === null) {
+        regionControl.reset();
+      }
+      regionControl.setValidators(
+        type === 'virtual' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      regionControl.updateValueAndValidity();
+    }
+  });
+
+  eventType = computed(() => {
+    const tagIds = this.tagsValue();
+    const allTags = this.tagResource.value();
+    if (!tagIds || !allTags) return null;
+    const hasVirtual = allTags.some(
+      (t) => t.name === EVENT_TAGS.VIRTUAL.name && tagIds.includes(t.id),
+    );
+    const hasPresencial = allTags.some(
+      (t) => t.name === EVENT_TAGS.IN_PERSON.name && tagIds.includes(t.id),
+    );
+    if (hasVirtual && hasPresencial) return 'mixed';
+    if (hasVirtual) return 'virtual';
+    if (hasPresencial) return 'presencial';
+    return null;
   });
 
   get tournamentTags() {
@@ -197,7 +250,17 @@ export class Wizard implements OnInit {
       return;
     }
 
+    const type = this.eventType();
+
     const tournament = this.tournamentForm.value as TournamentFormDTO;
+
+    if (type === 'virtual' || type === null) {
+      delete tournament.location;
+    }
+
+    if (type === 'presencial' || type === null) {
+      delete tournament.region;
+    }
 
     this.tournamentService.createTournament(tournament).subscribe({
       next: (createdTournament) => {

@@ -29,8 +29,14 @@
               {{ tournamentResource.value().name }}
             </h1>
             <p class="flex items-center gap-1 text-primary font-bold text-lg my-1">
-              <span class="icon-[mdi--location]" style="width: 24px; height: 24px"></span
-              >{{ tournamentResource.value().location.name }}
+              <span class="icon-[mdi--location]" style="width: 24px; height: 24px"></span>
+              @if (tournamentResource.value().region) {
+                {{ tournamentResource.value().region.name }}
+              }
+              <!--  -->
+              @else if (tournamentResource.value().location) {
+                {{ tournamentResource.value().location.name }}
+              }
             </p>
           </div>
           <div class="flex gap-3 justify-center items-center md:flex-row flex-col">
