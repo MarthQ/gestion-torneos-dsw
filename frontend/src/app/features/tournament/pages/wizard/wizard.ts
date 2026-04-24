@@ -214,8 +214,6 @@ export class Wizard {
   onSubmit(event: Event) {
     event.preventDefault();
 
-    console.log(this.tournamentForm.value);
-
     if (this.tournamentForm.invalid) {
       this.tournamentForm.markAllAsTouched();
       return;

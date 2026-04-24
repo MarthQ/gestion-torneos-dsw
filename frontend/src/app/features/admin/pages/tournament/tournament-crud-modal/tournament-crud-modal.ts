@@ -1,5 +1,14 @@
 import { I18nSelectPipe } from '@angular/common';
-import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -18,6 +27,9 @@ import { Location } from '@shared/interfaces/location';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, EMPTY } from 'rxjs';
+import { Region } from '@shared/interfaces/region';
 
 @Component({
   selector: 'tournament-crud-modal',
@@ -35,6 +47,7 @@ export class TournamentCrudModal {
   gameResource = input.required<Game[]>();
   tagResource = input.required<Tag[]>();
   userResource = input.required<User[]>();
+  regionResource = input.required<Region[]>();
 
   tournamentModal = viewChild.required<ElementRef<HTMLDialogElement>>('tournamentModal');
 
@@ -59,10 +72,15 @@ export class TournamentCrudModal {
     status: ['', Validators.required],
     maxParticipants: [0, [Validators.required, Validators.min(2)]],
     creator: [0, [Validators.required, Validators.min(1)]],
-    location: [0, [Validators.required, Validators.min(1)]],
+    location: [0],
+    region: [0],
     game: [0, [Validators.required, Validators.min(1)]],
     tags: this.fb.array<FormControl<number>>([]),
   });
+
+  tagsValue = toSignal(
+    this.tournamentForm.get('tags')?.valueChanges.pipe(debounceTime(300)) ?? EMPTY,
+  );
 
   setTagValidatorEffect = effect(() => {
     if (this.tagResource()?.length) {
@@ -90,6 +108,49 @@ export class TournamentCrudModal {
       return hasConflict ? { tagsNotCoherent: true } : null;
     };
   }
+
+  dynamicValidatorsEffect = effect(() => {
+    const type = this.eventType();
+
+    const locationControl = this.tournamentForm.get('location');
+    const regionControl = this.tournamentForm.get('region');
+    // Location: si es virtual, limpiar el valor
+    if (locationControl) {
+      if (type === 'virtual' || type === null) {
+        locationControl.reset(); // Reset a null/initial
+      }
+      locationControl.setValidators(
+        type === 'presencial' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      locationControl.updateValueAndValidity();
+    }
+    // Region: si es presencial, limpiar el valor
+    if (regionControl) {
+      if (type === 'presencial' || type === null) {
+        regionControl.reset();
+      }
+      regionControl.setValidators(
+        type === 'virtual' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      regionControl.updateValueAndValidity();
+    }
+  });
+
+  eventType = computed(() => {
+    const tagIds = this.tagsValue();
+    const allTags = this.tagResource();
+    if (!tagIds || !allTags) return null;
+    const hasVirtual = allTags.some(
+      (t) => t.name === EVENT_TAGS.VIRTUAL.name && tagIds.includes(t.id),
+    );
+    const hasPresencial = allTags.some(
+      (t) => t.name === EVENT_TAGS.IN_PERSON.name && tagIds.includes(t.id),
+    );
+    if (hasVirtual && hasPresencial) return 'mixed';
+    if (hasVirtual) return 'virtual';
+    if (hasPresencial) return 'presencial';
+    return null;
+  });
 
   get tournamentTags() {
     return this.tournamentForm.get('tags') as FormArray;
@@ -150,6 +211,7 @@ export class TournamentCrudModal {
         maxParticipants: this.tournament().maxParticipants ?? 10,
         creator: this.tournament().creator?.id ?? 0,
         location: this.tournament().location?.id ?? 0,
+        region: this.tournament().region?.id ?? 0,
         game: this.tournament().game?.id ?? 0,
       });
     } else {
@@ -162,34 +224,29 @@ export class TournamentCrudModal {
   }
   emitTournament() {
     if (this.tournamentForm.valid) {
-      const {
-        name,
-        description,
-        datetimeinit,
-        status,
-        maxParticipants,
-        creator,
-        location,
-        game,
-        tags,
-      } = this.tournamentForm.getRawValue();
+      const type = this.eventType();
+
+      const tournament = this.tournamentForm.value as Omit<TournamentFormDTO, 'id'>;
+
+      console.log(`El torneo antes es: ${JSON.stringify(tournament)}`);
+
+      if (type === 'virtual' || type === null) {
+        tournament.region = this.tournamentForm.value.region;
+        tournament.location = undefined;
+      }
+      if (type === 'presencial' || type === null) {
+        tournament.location = this.tournamentForm.value.location;
+        tournament.region = undefined;
+      }
       const id = this.tournament()?.id;
+
+      console.log(`El torneo despues es: ${JSON.stringify(tournament)}`);
 
       switch (this.type()) {
         case 'add':
           this.confirmAction.emit({
             actionType: 'create',
-            data: {
-              name,
-              description,
-              datetimeinit,
-              status,
-              maxParticipants,
-              creator,
-              location,
-              game,
-              tags,
-            },
+            data: tournament,
           });
           break;
         case 'edit':
@@ -197,15 +254,7 @@ export class TournamentCrudModal {
             actionType: 'update',
             data: {
               id: id!,
-              name,
-              description,
-              datetimeinit,
-              status,
-              maxParticipants,
-              creator,
-              location,
-              game,
-              tags,
+              ...tournament,
             },
           });
           break;

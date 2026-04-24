@@ -227,7 +227,7 @@ export class Configuration {
       game: tournament.game?.id ?? 0,
       maxParticipants: tournament.maxParticipants,
       location: tournament.location?.id ?? 0,
-      region: (tournament as any).region?.id ?? 0,
+      region: tournament.region?.id ?? 0,
       type: tournament.type,
     } as any);
 

@@ -78,10 +78,18 @@
               </div>
             </td>
             <td>
-              <div class="font-bold badge badge-info h-max">
-                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
-                {{ tournament.location.name }}
-              </div>
+              @if (tournament.location) {
+                <div class="font-bold badge badge-info h-max">
+                  <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
+                  {{ tournament.location.name }}
+                </div>
+              }
+              @if (tournament.region) {
+                <div class="font-bold badge badge-info h-max">
+                  <span class="icon-[mdi--world]" style="width: 18px; height: 18px"></span>
+                  {{ tournament.region.name }}
+                </div>
+              }
             </td>
             <td>
               <div class="text-sm text-center">
@@ -140,7 +148,8 @@
   gameResource.hasValue() &&
   locationResource.hasValue() &&
   userResource.hasValue() &&
-  tagResource.hasValue()
+  tagResource.hasValue() &&
+  regionResource.hasValue()
 ) {
   <tournament-crud-modal
     [tournament]="selectedTournament()"
@@ -150,6 +159,7 @@
     [locationResource]="locationResource.value()"
     [userResource]="userResource.value()"
     [tagResource]="tagResource.value()"
+    [regionResource]="regionResource.value()"
     (closed)="openModal.set(false)"
     (confirmAction)="handleCrudAction($event)"
   />

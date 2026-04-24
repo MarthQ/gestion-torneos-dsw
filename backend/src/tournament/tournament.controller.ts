@@ -144,11 +144,20 @@ async function add(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response) {
+    console.log(JSON.stringify(req.body))
+
     const sanitizedTournament = TournamentSchema.partial().safeParse(req.body)
 
     if (!sanitizedTournament.success) {
         throw fromZodError(sanitizedTournament.error)
     } else {
+        if (sanitizedTournament.data.region) {
+            sanitizedTournament.data.location = undefined
+        }
+        if (sanitizedTournament.data.location) {
+            sanitizedTournament.data.region = undefined
+        }
+
         const id = Number.parseInt(req.params.id)
         const tournament = await em.findOneOrFail(Tournament, id)
 
