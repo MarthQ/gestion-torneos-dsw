@@ -39,8 +39,8 @@ export class Tournament extends BaseEntity {
     type!: TournamentTypeEnum
     @ManyToOne(() => User, { nullable: false })
     creator!: Rel<User>
-    @ManyToOne(() => Location, { nullable: false })
-    location!: Rel<Location>
+    @ManyToOne(() => Location, { nullable: true })
+    location?: Rel<Location>
     @ManyToOne(() => Region, { nullable: true })
     region?: Rel<Region>
     @ManyToOne(() => Game, { nullable: false })

@@ -17,6 +17,7 @@ import {
     closeInscriptions,
     endTournament,
     cancelTournament,
+    reshuffleBracket,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
@@ -43,6 +44,12 @@ tournamentRouter.post('/', authenticationMiddleware, wrapController(add))
 tournamentRouter.post('/create', authenticationMiddleware, wrapController(create))
 
 //* Bracket -> A bracket is generated when the inscriptions has been closed.
+tournamentRouter.post(
+    '/:id/bracket/change',
+    authenticationMiddleware,
+    isOwnerOrAdminMiddleware,
+    wrapController(reshuffleBracket),
+)
 
 //* Match
 // Find tournament's bracket

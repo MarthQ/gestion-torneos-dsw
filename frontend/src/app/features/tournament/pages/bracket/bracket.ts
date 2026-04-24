@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { map, tap } from 'rxjs';
 import { MatchModal } from '@features/tournament/components/match-modal/match-modal';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   imports: [MatchModal],
@@ -17,7 +18,24 @@ export class Bracket {
   isModalOpen = signal<boolean>(false);
   matchData = signal({});
 
+  isCreator = toSignal(this.tournamentService.isLoggedUserCreator(Number(this.tournamentId())), {
+    initialValue: false,
+  });
+
   tournamentResource = rxResource({
+    params: () => ({ id: this.tournamentId() }),
+    stream: ({ params }) => {
+      const tournamentId = Number(params.id);
+
+      return this.tournamentService
+        .getTournament(tournamentId)
+        .pipe(map((response) => response.tournamentData));
+    },
+  });
+
+  isClosed = computed(() => this.tournamentResource.value()?.status === 'closed');
+
+  bracketResource = rxResource({
     params: () => ({ tournamentId: this.tournamentId() }),
     stream: ({ params }) => {
       return this.tournamentService
@@ -87,6 +105,14 @@ export class Bracket {
   refreshView() {
     console.log(this.tournamentService.bracketData().match.filter((m: any) => m.status !== 0));
     this.tournamentService.getTournamentBracket(+this.tournamentId()!).subscribe({
+      next: (data) => {
+        this.renderBracket(data);
+      },
+    });
+  }
+
+  reshuffleBracket() {
+    this.tournamentService.refreshBracket(+this.tournamentId()!).subscribe({
       next: (data) => {
         this.renderBracket(data);
       },
