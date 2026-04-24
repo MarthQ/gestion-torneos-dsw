@@ -2,7 +2,7 @@ import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { TournamentService } from '../../../../shared/services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Tournament } from '@shared/interfaces/tournament';
-import { DatePipe, I18nSelectPipe } from '@angular/common';
+import { DatePipe, I18nSelectPipe, JsonPipe } from '@angular/common';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { TagService } from '@shared/services/tag.service';
 import { GameService } from '@shared/services/game.service';

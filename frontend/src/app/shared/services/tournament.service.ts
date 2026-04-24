@@ -90,8 +90,6 @@ export class TournamentService {
   updateTournament(updatedTournament: TournamentFormDTO): Observable<TournamentFormDTO> {
     const { id, ...body } = updatedTournament;
 
-    console.log(body);
-
     return this.http
       .patch<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`, body)
       .pipe(
@@ -151,7 +149,9 @@ export class TournamentService {
     if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
     return this.http
-      .get<ApiResponse<Tournament[]>>(`${environment.apiUrl}/tournaments`, { params })
+      .get<
+        ApiResponse<Tournament[]>
+      >(`${environment.apiUrl}/tournaments/userTournaments`, { params })
       .pipe(
         map((response) => response.data),
         catchError((error) => {
