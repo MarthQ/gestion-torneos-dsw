@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -27,7 +27,7 @@ import { debounceTime, EMPTY } from 'rxjs';
   imports: [ReactiveFormsModule, FormErrorLabel, DatePipe],
   templateUrl: './wizard.html',
 })
-export class Wizard {
+export class Wizard implements OnInit {
   private locationService = inject(LocationService);
   private tagService = inject(TagService);
   private gameService = inject(GameService);
@@ -68,7 +68,7 @@ export class Wizard {
     { name: 'Confirmación', isActive: signal<boolean>(false) },
   ];
 
-  stepActive = signal<number>(1);
+  stepActive = signal<number>(0);
 
   private readonly EXCLUSIVE_GROUPS: readonly string[][] = [
     [EVENT_TAGS.VIRTUAL.name, EVENT_TAGS.IN_PERSON.name],
@@ -202,13 +202,44 @@ export class Wizard {
   }
 
   nextStep() {
-    this.steps.at(this.stepActive())?.isActive.set(true);
     this.stepActive.set(this.stepActive() + 1);
+    this.steps.at(this.stepActive())?.isActive.set(true);
   }
 
   backStep() {
-    this.stepActive.set(this.stepActive() - 1);
     this.steps.at(this.stepActive())?.isActive.set(false);
+    this.stepActive.set(this.stepActive() - 1);
+  }
+
+  persistStep = effect(() => {
+    localStorage.setItem('currentStep', this.stepActive().toString());
+    console.log({ effectStep: this.stepActive().toString() });
+  });
+
+  formValue = toSignal(this.tournamentForm.valueChanges.pipe(debounceTime(500)));
+  persistTournament = effect(() => {
+    const value = this.formValue();
+    if (value) {
+      localStorage.setItem('partialTournament', JSON.stringify(value));
+    }
+  });
+
+  ngOnInit(): void {
+    const storedTournament = localStorage.getItem('partialTournament');
+    if (!storedTournament) return;
+
+    const parsedTournament = JSON.parse(storedTournament);
+    this.tournamentForm.reset(parsedTournament);
+
+    const tagIds = parsedTournament.tags ?? [];
+    tagIds.forEach((tagId: number) => this.tournamentTags.push(this.fb.control(tagId)));
+
+    const savedStep = localStorage.getItem('currentStep');
+    if (!savedStep) return;
+
+    const step = +savedStep;
+    this.stepActive.set(step);
+    this.steps.forEach((s, i) => s.isActive.set(i <= step));
   }
 
   onSubmit(event: Event) {
@@ -234,6 +265,8 @@ export class Wizard {
     this.tournamentService.createTournament(tournament).subscribe({
       next: (createdTournament) => {
         Toaster.success('Torneo creado correctamente');
+        localStorage.removeItem('currentStep');
+        localStorage.removeItem('partialTournament');
         this.router.navigate(['/tournament', createdTournament.id, 'overview']);
       },
       error: (message) => {

@@ -12,7 +12,7 @@
     (ngSubmit)="onSubmit($event)"
   >
     @switch (stepActive()) {
-      @case (1) {
+      @case (0) {
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Nombre del Torneo</legend>
           <input
@@ -92,7 +92,7 @@
           </button>
         </div>
       }
-      @case (2) {
+      @case (1) {
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Juego del torneo</legend>
           <select class="select w-full" formControlName="game">
@@ -138,7 +138,7 @@
           <button type="button" class="btn btn-primary" (click)="nextStep()">Continuar</button>
         </div>
       }
-      @case (3) {
+      @case (2) {
         <div class="grid grid-cols-2 gap-4">
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre</legend>

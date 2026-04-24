@@ -144,8 +144,6 @@ async function add(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response) {
-    console.log(JSON.stringify(req.body))
-
     const sanitizedTournament = TournamentSchema.partial().safeParse(req.body)
 
     if (!sanitizedTournament.success) {
