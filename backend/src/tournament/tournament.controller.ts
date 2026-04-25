@@ -34,6 +34,15 @@ const TournamentSchema = z.object({
 const storage = new MikroOrmDatabase()
 const manager = new BracketsManager(storage)
 
+// Array shuffling using Fisher-Yates algorithm
+function shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1))
+        ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+}
+
 async function findAll(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : 1
     const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
@@ -210,6 +219,51 @@ async function closeInscriptions(req: Request, res: Response) {
         settings: {
             seedOrdering: ['inner_outer'],
             size: getNearestPowerOfTwo(inscriptionNicknames.length),
+        },
+    })
+
+    const bracketData = await manager.get.tournamentData(id)
+
+    res.status(200).json({
+        message: 'Bracket created',
+        data: bracketData,
+    })
+}
+
+async function reshuffleBracket(req: RequestWithUser, res: Response) {
+    const id = Number.parseInt(req.params.id)
+    const tournament = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+
+    if (tournament.status !== TournamentStatus.CLOSED) {
+        const error = new Error('Tournament is not closed.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    const { name, type, inscriptions } = tournament
+    const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
+
+    const stages = await storage.select('stage', { tournament_id: id })
+
+    if (!stages?.length) {
+        const error = new Error(`There's no bracket available for this tournament.`)
+        ;(error as any).statusCode = 500
+        throw error
+    }
+    const stageId = stages[0].id
+
+    await manager.delete.stage(stageId)
+
+    const shuffledInscription = shuffleArray(inscriptionNicknames)
+
+    await manager.create.stage({
+        name: tournament.name,
+        tournamentId: id,
+        type: tournament.type as StageType,
+        seeding: shuffledInscription,
+        settings: {
+            seedOrdering: ['inner_outer'],
+            size: getNearestPowerOfTwo(shuffledInscription.length),
         },
     })
 
@@ -420,4 +474,5 @@ export {
     startTournament,
     endTournament,
     cancelTournament,
+    reshuffleBracket,
 }

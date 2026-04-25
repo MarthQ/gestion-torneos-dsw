@@ -260,4 +260,12 @@ export class TournamentService {
       catchError(() => of(false)),
     );
   }
+
+  refreshBracket(tournamentId: number): Observable<any> {
+    return this.http
+      .post<
+        ApiResponse<any>
+      >(`${environment.apiUrl}/tournaments/${tournamentId}/bracket/change`, {})
+      .pipe(map((response) => response.data));
+  }
 }
