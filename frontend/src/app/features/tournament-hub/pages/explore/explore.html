@@ -20,7 +20,7 @@
   <!-- Card 1 -->
 
   @for (tournament of tournamentResource.value(); track tournament.id) {
-    <tournament-card [tournament]="tournament"> </tournament-card>
+    <tournament-card [tournament]="tournament" (hasClicked)="clickedTournament(tournament)" />
   }
 </div>
 

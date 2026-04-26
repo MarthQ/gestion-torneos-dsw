@@ -1,6 +1,7 @@
 import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { map, tap } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 import { GameService } from '@shared/services/game.service';
 import { TagService } from '@shared/services/tag.service';
@@ -11,15 +12,20 @@ import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { TournamentCard } from '@features/tournament-hub/components/tournament-card/tournament-card';
+import { Tournament } from '@shared/interfaces/tournament';
+import { SidebarService } from '@features/tournament-hub/services/sidebarService.service';
 
 @Component({
   imports: [SearchBar, Pagination, TournamentCard],
   templateUrl: './explore.html',
 })
 export class Explore {
+  router = inject(Router);
   tournamentService = inject(TournamentService);
   tagService = inject(TagService);
   gameService = inject(GameService);
+
+  sidebarService = inject(SidebarService);
 
   // API Get parameters (for table)
   query = signal('');
@@ -50,6 +56,11 @@ export class Explore {
         );
     },
   });
+
+  clickedTournament(tournament: Tournament) {
+    this.sidebarService.updateRecentTournaments(tournament);
+    this.router.navigate(['/tournament', tournament.id]);
+  }
 
   // Visual actions (pagination)
   pageChangedTo(newPage: number) {

@@ -40,7 +40,7 @@
       </div>
       <button
         class="font-bold hover:underline text-sm btn btn-primary"
-        [routerLink]="['/tournament', tournament().id]"
+        (click)="hasClicked.emit(tournament())"
       >
         {{ tournament().status | i18nSelect: tournamentActionMap }}
       </button>

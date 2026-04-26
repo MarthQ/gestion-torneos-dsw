@@ -1,6 +1,6 @@
 import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { TournamentService } from '../../../../shared/services/tournament.service';
 import { GameService } from '@shared/services/game.service';
@@ -11,6 +11,8 @@ import { QueryFilter } from '@shared/interfaces/filters';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { TournamentCard } from '@features/tournament-hub/components/tournament-card/tournament-card';
+import { Tournament } from '@shared/interfaces/tournament';
+import { SidebarService } from '@features/tournament-hub/services/sidebarService.service';
 
 @Component({
   imports: [SearchBar, Pagination, RouterLink, TournamentCard],
@@ -18,6 +20,9 @@ import { TournamentCard } from '@features/tournament-hub/components/tournament-c
 })
 export class MyTournaments {
   private tournamentService = inject(TournamentService);
+  private sidebarService = inject(SidebarService);
+  private router = inject(Router);
+
   tagService = inject(TagService);
   gameService = inject(GameService);
 
@@ -50,6 +55,11 @@ export class MyTournaments {
       );
     },
   });
+
+  clickedTournament(tournament: Tournament) {
+    this.sidebarService.updateRecentTournaments(tournament);
+    this.router.navigate(['/tournament', tournament.id]);
+  }
 
   // Visual actions (pagination)
   pageChangedTo(newPage: number) {

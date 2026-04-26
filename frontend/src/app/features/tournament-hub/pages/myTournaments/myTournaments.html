@@ -29,7 +29,7 @@
   <!-- Card 1 -->
   @if (tournamentResource.hasValue()) {
     @for (tournament of tournamentResource.value(); track tournament.id) {
-      <tournament-card [tournament]="tournament" />
+      <tournament-card [tournament]="tournament" (hasClicked)="clickedTournament(tournament)" />
     }
   }
 </div>

@@ -64,23 +64,46 @@
           }
           <hr class="opacity-75 my-2" />
         }
-        @if (authService.user()) {
+        @if (recentTournaments().length > 0) {
+          <div class="flex flex-col justify-center items-center">
+            <span
+              class="icon-[material-symbols--history] my-1.5 inline-block size-4"
+              style="width: 18px; height: 18px"
+            ></span>
+          </div>
+          @for (tournament of recentTournaments(); track tournament.id) {
+            <li class="my-0.5">
+              <button
+                class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10 bg-cover hover:shadow-lg shadow-primary"
+                [attr.data-tip]="tournament.name"
+                (click)="clickedTournament(tournament)"
+                [style.background-image]="
+                  'url(' + getBackgroundStyle(tournament.game!, 'cover_small') + ')'
+                "
+              >
+                <span class="is-drawer-close:hidden">{{ tournament.name }}</span>
+              </button>
+            </li>
+          }
+          <hr class="opacity-75 my-2" />
+        }
+        @if (user) {
           <li class="mt-auto">
             <button
               class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-              [attr.data-tip]="authService.user()?.name"
+              [attr.data-tip]="user.name"
               routerLink="/profile"
               routerLinkActive="bg-primary text-primary-content"
             >
               <div class="flex items-center justify-center font-bold">
-                <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
+                <span>{{ user.name | slice: 0 : 1 }} </span>
               </div>
               <div class="flex flex-col ml-2 justify-center" routerLinkActive="font-bold">
                 <span class="is-drawer-close:hidden">
-                  {{ authService.user()?.name }}
+                  {{ user.name }}
                 </span>
                 <span class="is-drawer-close:hidden text-xs font-mono truncate max-w-x"
-                  >{{ authService.user()?.mail }}
+                  >{{ user.mail }}
                 </span>
               </div>
             </button>
