@@ -265,6 +265,7 @@ async function reshuffleBracket(req: RequestWithUser, res: Response) {
         settings: {
             seedOrdering: ['inner_outer'],
             size: getNearestPowerOfTwo(shuffledInscription.length),
+            grandFinal: type === 'double_elimination' ? 'double' : 'simple',
         },
     })
 
