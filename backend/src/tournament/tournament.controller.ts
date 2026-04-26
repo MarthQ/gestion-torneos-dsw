@@ -356,7 +356,17 @@ async function inscribeToTournament(req: RequestWithUser, res: Response) {
         throw error
     }
 
-    const tournament = await em.getReference(Tournament, tournamentId)
+    const tournament = await em.findOneOrFail(
+        Tournament,
+        { id: tournamentId },
+        { populate: ['inscriptions'] },
+    )
+
+    if (tournament!.inscriptions.length >= tournament!.maxParticipants) {
+        const error = new Error('Tournament has reached its maximum capacity.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
 
     // Checks if the user is not already inscribed
     const existingInscription = await em.findOne(Inscription, {
