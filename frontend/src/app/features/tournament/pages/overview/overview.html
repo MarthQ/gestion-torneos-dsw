@@ -61,7 +61,11 @@
                       Borrar Inscripción
                     </button>
                   } @else {
-                    <button class="btn btn-primary btn-lg" (click)="openInscriptionModal('add')">
+                    <button
+                      class="btn btn-primary btn-lg"
+                      (click)="openInscriptionModal('add')"
+                      [disabled]="participantsLeft() <= 0 ? true : ''"
+                    >
                       <span
                         class="icon-[lucide--user-plus]"
                         style="width: 24px; height: 24px"
@@ -73,11 +77,18 @@
                   <!-- Usuario normal -->
                   @if (userIsInscribed()) {
                     <button class="btn btn-warning btn-lg" (click)="openInscriptionModal('delete')">
-                      <span class="icon-[lucide--trash-2]" style="width: 24px; height: 24px"></span>
+                      <span
+                        class="icon-[lucide-f-trash-2]"
+                        style="width: 24px; height: 24px"
+                      ></span>
                       Borrar Inscripción
                     </button>
                   } @else {
-                    <button class="btn btn-primary btn-lg" (click)="openInscriptionModal('add')">
+                    <button
+                      class="btn btn-primary btn-lg"
+                      (click)="openInscriptionModal('add')"
+                      [disabled]="participantsLeft() <= 0 ? true : ''"
+                    >
                       <span
                         class="icon-[lucide--user-plus]"
                         style="width: 24px; height: 24px"
@@ -209,7 +220,11 @@
           </div>
         </div>
 
-        @if (participantsLeft() <= 5) {
+        @if (
+          participantsLeft() <= 5 &&
+          participantsLeft() > 0 &&
+          tournamentResource.value().status === 'open'
+        ) {
           <!-- Notificaciones rápidas -->
           <div class="alert bg-warning border border-warning-content text-warning-content text-sm">
             <span

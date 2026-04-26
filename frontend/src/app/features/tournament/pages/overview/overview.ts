@@ -61,18 +61,6 @@ export class Overview {
     },
   });
 
-  // closeInscription() {
-  //   if (!this.tournamentId()) return;
-  //   this.tournamentService.closeInscriptions(this.tournamentId()!).subscribe({
-  //     next: (bracketManagerTournament) => {
-  //       Toaster.success(`Bracket generated succesfully`);
-  //     },
-  //     error: (message) => {
-  //       Toaster.error(message);
-  //     },
-  //   });
-  // }
-
   userIsCreator(): boolean {
     if (this.tournamentResource.hasValue() && this.user) {
       return this.user.id === this.tournamentResource.value().creator.id;
