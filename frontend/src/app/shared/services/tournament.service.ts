@@ -239,6 +239,18 @@ export class TournamentService {
       );
   }
 
+  reopenTournament(tournamentId: number): Observable<Tournament> {
+    return this.http
+      .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/reopen`, {})
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to end the tournament');
+        }),
+      );
+  }
+
   cancelTournament(tournamentId: number): Observable<Tournament> {
     return this.http
       .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/cancel`, {})

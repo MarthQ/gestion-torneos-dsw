@@ -120,7 +120,7 @@
               }
 
               @case ('running') {
-                @if (userIsCreator()) {
+                <!-- @if (userIsCreator()) {
                   <button class="btn btn-success btn-lg" (click)="openConfirmationModal('end')">
                     <span class="icon-[lucide--flag]" style="width: 24px; height: 24px"></span>
                     Finalizar Torneo
@@ -136,10 +136,25 @@
                     <span class="icon-[lucide--zap]" style="width: 20px; height: 20px"></span>
                     Torneo en curso
                   </div>
-                }
+                } -->
+                <div class="badge badge-success badge-lg gap-2">
+                  <span class="icon-[lucide--zap]" style="width: 20px; height: 20px"></span>
+                  Torneo en curso
+                </div>
               }
 
               @case ('finished') {
+                @if (userIsCreator()) {
+                  <button class="btn btn-success btn-lg" (click)="openConfirmationModal('reopen')">
+                    <span class="icon-[lucide--flag]" style="width: 24px; height: 24px"></span>
+                    Reabrir torneo
+                  </button>
+                } @else {
+                  <div class="badge badge-success badge-lg gap-2">
+                    <span class="icon-[lucide--zap]" style="width: 20px; height: 20px"></span>
+                    Torneo en curso
+                  </div>
+                }
                 <div class="badge badge-neutral badge-lg gap-2">
                   <span class="icon-[lucide--trophy]" style="width: 20px; height: 20px"></span>
                   Torneo finalizado

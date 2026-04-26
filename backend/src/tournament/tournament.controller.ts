@@ -196,11 +196,11 @@ async function closeInscriptions(req: Request, res: Response) {
         throw error
     }
 
-    if (tournament.inscriptions.length < 2) {
-        const error = new Error('Tournament must have at least 2 inscriptions to close.')
-        ;(error as any).statusCode = 400
-        throw error
-    }
+    // if (tournament.inscriptions.length < 2) {
+    //     const error = new Error('Tournament must have at least 2 inscriptions to close.')
+    //     ;(error as any).statusCode = 400
+    //     throw error
+    // }
 
     tournament.status = TournamentStatus.CLOSED
     await em.flush()
@@ -209,7 +209,8 @@ async function closeInscriptions(req: Request, res: Response) {
 
     const { name, type, inscriptions } = foundTournament
 
-    const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
+    // const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
+    const inscriptionNicknames = ['Participant 1', 'Participant 2', 'Participant 3']
 
     await manager.create.stage({
         name: name,
@@ -219,6 +220,7 @@ async function closeInscriptions(req: Request, res: Response) {
         settings: {
             seedOrdering: ['inner_outer'],
             size: getNearestPowerOfTwo(inscriptionNicknames.length),
+            grandFinal: type === 'double_elimination' ? 'double' : 'simple',
         },
     })
 
@@ -299,6 +301,15 @@ async function getNextReadyMatches(req: Request, res: Response) {
 
 async function updateMatchResult(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.tournamentId)
+    const id = Number.parseInt(req.params.id)
+    const { score } = req.body
+    if (!score || typeof score !== 'string' || !score.includes('-')) {
+        throw new Error('Invalid score format. Use "X-Y" format (e.g., "3-1")')
+    }
+    const [score1, score2] = score.split('-').map(Number)
+    if (isNaN(score1) || isNaN(score2)) {
+        throw new Error('Invalid score format. Scores must be numbers')
+    }
 
     const tournament = await em.findOneOrFail(Tournament, { id: tournamentId })
 
@@ -308,30 +319,42 @@ async function updateMatchResult(req: Request, res: Response) {
         throw error
     }
 
-    const id = Number.parseInt(req.params.id)
-    const { score } = req.body
-
-    if (!score || typeof score !== 'string' || !score.includes('-')) {
-        throw new Error('Invalid score format. Use "X-Y" format (e.g., "3-1")')
-    }
-
-    const [score1, score2] = score.split('-').map(Number)
-
-    if (isNaN(score1) || isNaN(score2)) {
-        throw new Error('Invalid score format. Scores must be numbers')
-    }
-
     const match = await manager.update.match({
         id,
         opponent1: { score: score1, result: score1 > score2 ? 'win' : 'loss' },
         opponent2: { score: score2, result: score1 < score2 ? 'win' : 'loss' },
-        //? Is this neccesary?
+
         child_count: 0,
     })
 
+    const nextMatches = await manager.find.nextMatches(id)
+    console.log({ nextMatches })
+    if (nextMatches.length === 0) {
+        tournament.status = TournamentStatus.FINISHED
+        await em.flush()
+        console.log('CAMBIANDO ESTADO DE TORNEO A FINALIZADO')
+    }
+
+    if (tournament.type === 'double_elimination' && nextMatches.length !== 0) {
+        const currentStage = await manager.get.currentStage(tournamentId)
+        if (currentStage) {
+            const stageData = await manager.get.stageData(currentStage.id)
+            const allMatches = stageData.match as any[]
+            if (allMatches[allMatches.length - 2].id === id) {
+                if (score1 > score2) {
+                    tournament.status = TournamentStatus.FINISHED
+                    await em.flush()
+                    console.log('CAMBIANDO ESTADO DE TORNEO A FINALIZADO')
+                }
+            }
+        }
+    }
+
     res.status(200).json({
         message: 'Match updated',
-        data: { match },
+        data: {
+            match,
+        },
     })
 }
 
@@ -451,6 +474,22 @@ async function endTournament(req: RequestWithUser, res: Response) {
     await em.flush()
     res.status(200).send({ message: 'The tournament has finished!', data: tournament })
 }
+
+async function reopenTournament(req: RequestWithUser, res: Response) {
+    const id = Number(req.params.id)
+    const tournament = await em.findOneOrFail(Tournament, { id })
+
+    if (tournament.status !== TournamentStatus.FINISHED) {
+        const error = new Error('Tournament is not finished.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    tournament.status = TournamentStatus.RUNNING
+    await em.flush()
+    res.status(200).send({ message: 'The tournament has been reopen!', data: tournament })
+}
+
 async function cancelTournament(req: RequestWithUser, res: Response) {
     const id = Number(req.params.id)
     const tournament = await em.findOneOrFail(Tournament, { id })
@@ -485,4 +524,5 @@ export {
     endTournament,
     cancelTournament,
     reshuffleBracket,
+    reopenTournament,
 }

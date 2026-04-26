@@ -18,6 +18,7 @@ import {
     endTournament,
     cancelTournament,
     reshuffleBracket,
+    reopenTournament,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
@@ -90,6 +91,12 @@ tournamentRouter.post(
     authenticationMiddleware,
     isOwnerOrAdminMiddleware,
     wrapController(endTournament),
+)
+tournamentRouter.post(
+    '/:id/reopen',
+    authenticationMiddleware,
+    isOwnerOrAdminMiddleware,
+    wrapController(reopenTournament),
 )
 // The owner or admin notifies cancelation of the tournament
 tournamentRouter.post(
