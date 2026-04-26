@@ -29,7 +29,7 @@ export class Overview {
   modalType = signal<'add' | 'delete'>('add');
 
   // Confirm transition status modal
-  confirmModalType = signal<'close' | 'start' | 'end' | 'cancel'>('close');
+  confirmModalType = signal<'close' | 'start' | 'end' | 'cancel' | 'reopen'>('close');
   isConfirmModalOpen = signal<boolean>(false);
 
   private tournamentService = inject(TournamentService);
@@ -96,7 +96,7 @@ export class Overview {
     this.isModalOpen.set(true);
   }
 
-  openConfirmationModal(type: 'close' | 'start' | 'end' | 'cancel') {
+  openConfirmationModal(type: 'close' | 'start' | 'end' | 'cancel' | 'reopen') {
     this.confirmModalType.set(type);
     this.isConfirmModalOpen.set(true);
   }
@@ -152,6 +152,15 @@ export class Overview {
           this.tournamentService.endTournament(this.tournamentResource.value().id).subscribe({
             next: () => {
               Toaster.success('El torneo ha finalizado!');
+              this.tournamentResource.reload();
+            },
+            error: (msg) => Toaster.error(msg),
+          });
+          break;
+        case 'reopen':
+          this.tournamentService.reopenTournament(this.tournamentResource.value().id).subscribe({
+            next: () => {
+              Toaster.success('El torneo se ha reabierto!');
               this.tournamentResource.reload();
             },
             error: (msg) => Toaster.error(msg),

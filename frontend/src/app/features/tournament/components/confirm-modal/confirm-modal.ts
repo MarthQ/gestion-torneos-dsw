@@ -7,7 +7,7 @@ import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel
   templateUrl: './confirm-modal.html',
 })
 export class ConfirmModal {
-  type = input.required<'close' | 'start' | 'end' | 'cancel'>();
+  type = input.required<'close' | 'start' | 'end' | 'cancel' | 'reopen'>();
   open = input.required<boolean>();
   confirmed = output<void>();
   cancelled = output<void>();
@@ -32,6 +32,7 @@ export class ConfirmModal {
       start: 'Iniciar Torneo',
       end: 'Finalizar Torneo',
       cancel: 'Cancelar Torneo',
+      reopen: 'Reabrir Torneo',
     };
     return titles[this.type()];
   }
@@ -42,6 +43,7 @@ export class ConfirmModal {
       start: '¿Estás seguro de que querés iniciar el torneo?',
       end: '¿Estás seguro de que querés finalizar el torneo? Esta acción no se puede deshacer.',
       cancel: 'Esta acción cancelará el torneo de forma permanente.',
+      reopen: '¿Estás seguro de que querés reabir el torneo?',
     };
     return messages[this.type()];
   }
