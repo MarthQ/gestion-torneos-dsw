@@ -1,0 +1,49 @@
+<div class="tournament-card bg-base-300 rounded-xl overflow-hidden border border-base-300">
+  <div
+    class="h-40 bg-cover bg-center"
+    [style.background-image]="'url(' + getBackgroundStyle(tournament().game!, 'big') + ')'"
+  >
+    <div class="p-4 flex justify-between">
+      <span
+        class="text-xs badge font-bold px-2 py-1 rounded"
+        [class]="tournament().status | i18nSelect: tournamentStatusBadgeMap"
+        >{{ tournament().status | i18nSelect: tournamentStatusMap }}</span
+      >
+      <span class="bg-black/50 text-xs px-2 py-1 rounded flex"
+        ><span class="icon-[fa-solid--users] mr-1.5" style="width: 18px; height: 18px"></span> ... /
+        {{ tournament().maxParticipants }}</span
+      >
+    </div>
+  </div>
+  <div class="flex flex-col p-5">
+    <h3 class="text-lg font-bold">{{ tournament().name }}</h3>
+    <div class="badge badge-primary mb-2">
+      <span class="icon-[mdi--location] mr-0.5" style="width: 18px; height: 18px"></span>
+      @if (tournament().region) {
+        {{ tournament().region.name }}
+      }
+      <!--  -->
+      @else if (tournament().location) {
+        {{ tournament().location.name }}
+      }
+    </div>
+    <div class="badge badge-primary mb-2">
+      <span class="icon-[boxicons--joystick-filled] mr-0.5" style="width: 18px; height: 18px"></span
+      >{{ tournament().game.name }}
+    </div>
+    <div class="flex justify-between pt-4 border-t border-base-300">
+      <div class="flex items-center bg-info-content rounded-2xl px-4 text-info">
+        <span class="icon-[formkit--datetime] mr-2"></span>
+        <span class="text-xs font-bold">{{
+          tournament().datetimeinit | date: 'dd MMMM, HH:mm'
+        }}</span>
+      </div>
+      <button
+        class="font-bold hover:underline text-sm btn btn-primary"
+        [routerLink]="['/tournament', tournament().id]"
+      >
+        {{ tournament().status | i18nSelect: tournamentActionMap }}
+      </button>
+    </div>
+  </div>
+</div>
