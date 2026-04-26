@@ -69,7 +69,7 @@ export class Bracket {
   }
 
   handleMatchModal(match: any) {
-    if (match.status !== 2) {
+    if (match.status !== 2 && match.status !== 4) {
       Toaster.error('No se puede registrar el resultado de este Match');
       return;
     }
