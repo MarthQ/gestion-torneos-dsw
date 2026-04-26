@@ -219,6 +219,7 @@ async function closeInscriptions(req: Request, res: Response) {
         settings: {
             seedOrdering: ['inner_outer'],
             size: getNearestPowerOfTwo(inscriptionNicknames.length),
+            grandFinal: type === 'double_elimination' ? 'double' : 'simple',
         },
     })
 
