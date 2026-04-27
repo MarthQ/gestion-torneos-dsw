@@ -1,5 +1,7 @@
 <div class="drawer lg:drawer-open">
   <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+
+  <!-- CONTENT -->
   <div class="drawer-content flex flex-col min-h-screen">
     <!-- Navbar -->
     <nav class="navbar w-full bg-base-300">
@@ -9,7 +11,6 @@
         class="btn btn-square btn-ghost"
         (click)="toggleSidebar()"
       >
-        <!-- Sidebar toggle icon -->
         <span
           id="sidebar-toggle"
           class="icon-[weui--arrow-filled] my-1.5 inline-block size-6"
@@ -18,52 +19,58 @@
       </label>
       <div class="px-4"><h1 id="navbar-title">Okizeme</h1></div>
     </nav>
-    <!-- Page content here -->
+
+    <!-- Page content -->
     <main class="flex-1 p-4">
       <router-outlet />
     </main>
+
     <app-footer />
   </div>
 
+  <!-- SIDEBAR -->
   <div class="drawer-side is-drawer-close:overflow-visible">
-    <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-    <div
-      class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64"
-    >
-      <ul class="menu w-full grow">
-        <!-- List item -->
+    <label for="my-drawer-4" class="drawer-overlay"></label>
 
-        @for (button of sidebarButtons(); track button.name) {
-          <li>
-            <button
-              class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10"
-              [attr.data-tip]="button.name"
-              [routerLink]="button.routerPath"
-              routerLinkActive="bg-primary text-primary-content font-bold"
-            >
-              <span class="{{ button.icon }} my-1.5 inline-block size-4"></span>
-              <span class="is-drawer-close:hidden">{{ button.name }}</span>
-            </button>
-          </li>
-        }
-        <hr class="opacity-75 my-2" />
-
-        @if (isAdmin()) {
-          @for (adminButton of adminSidebarButtons(); track adminButton.name) {
+    <div class="flex flex-col h-full bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
+      <div class="flex flex-col h-full w-full">
+        <!-- Main buttons (user & admin) -->
+        <ul class="menu w-full pb-0">
+          @for (button of sidebarButtons(); track button.name) {
             <li>
               <button
                 class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10"
-                [attr.data-tip]="adminButton.name"
-                [routerLink]="adminButton.routerPath"
+                [attr.data-tip]="button.name"
+                [routerLink]="button.routerPath"
                 routerLinkActive="bg-primary text-primary-content font-bold"
               >
-                <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span>
-                <span class="is-drawer-close:hidden">{{ adminButton.name }}</span>
+                <span class="{{ button.icon }} my-1.5 inline-block size-4"></span>
+                <span class="is-drawer-close:hidden">{{ button.name }}</span>
               </button>
             </li>
           }
+
           <hr class="opacity-75 my-2" />
-        }
+
+          @if (isAdmin()) {
+            @for (adminButton of adminSidebarButtons(); track adminButton.name) {
+              <li>
+                <button
+                  class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10"
+                  [attr.data-tip]="adminButton.name"
+                  [routerLink]="adminButton.routerPath"
+                  routerLinkActive="bg-primary text-primary-content font-bold"
+                >
+                  <span class="{{ adminButton.icon }} my-1.5 inline-block size-4"></span>
+                  <span class="is-drawer-close:hidden">{{ adminButton.name }}</span>
+                </button>
+              </li>
+            }
+            <hr class="opacity-75 my-2" />
+          }
+        </ul>
+
+        <!-- Recent tournaments (scrollable) -->
         @if (recentTournaments().length > 0) {
           <div class="flex flex-col justify-center items-center">
             <span
@@ -71,56 +78,66 @@
               style="width: 18px; height: 18px"
             ></span>
           </div>
-          @for (tournament of recentTournaments(); track tournament.id) {
-            <li class="my-0.5">
+          <div class="flex-1 overflow-y-auto overflow-x-hidden" style="scrollbar-width: none">
+            <ul class="menu w-full py-0">
+              @for (tournament of recentTournaments(); track tournament.id) {
+                <li class="my-0.5">
+                  <button
+                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10 bg-cover hover:shadow-lg shadow-primary"
+                    [attr.data-tip]="tournament.name"
+                    (click)="clickedTournament(tournament)"
+                    [style.background-image]="
+                      'url(' + getBackgroundStyle(tournament.game!, 'cover_small') + ')'
+                    "
+                  >
+                    <span class="is-drawer-close:hidden">
+                      {{ tournament.name }}
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        <!-- Profile button -->
+        <ul class="menu w-full shrink-0 mt-auto">
+          @if (authService.user()) {
+            <li>
               <button
-                class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10 bg-cover hover:shadow-lg shadow-primary"
-                [attr.data-tip]="tournament.name"
-                (click)="clickedTournament(tournament)"
-                [style.background-image]="
-                  'url(' + getBackgroundStyle(tournament.game!, 'cover_small') + ')'
-                "
+                class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                [attr.data-tip]="authService.user()!.name"
+                routerLink="/profile"
+                routerLinkActive="bg-primary text-primary-content"
               >
-                <span class="is-drawer-close:hidden">{{ tournament.name }}</span>
+                <div class="flex items-center justify-center font-bold">
+                  <span>{{ authService.user()!.name | slice: 0 : 1 }}</span>
+                </div>
+
+                <div class="flex flex-col ml-2 justify-center">
+                  <span class="is-drawer-close:hidden">
+                    {{ authService.user()!.name }}
+                  </span>
+                  <span class="is-drawer-close:hidden text-xs font-mono truncate">
+                    {{ authService.user()!.mail }}
+                  </span>
+                </div>
+              </button>
+            </li>
+          } @else {
+            <li>
+              <button
+                class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                data-tip="Login"
+                routerLink="/auth/login"
+              >
+                <span class="icon-[material-symbols--login] my-1.5 inline-block size-4"></span>
+                <span class="is-drawer-close:hidden">Loguearse</span>
               </button>
             </li>
           }
-          <hr class="opacity-75 my-2" />
-        }
-        @if (authService.user()) {
-          <li class="mt-auto">
-            <button
-              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-              [attr.data-tip]="authService.user()!.name"
-              routerLink="/profile"
-              routerLinkActive="bg-primary text-primary-content"
-            >
-              <div class="flex items-center justify-center font-bold">
-                <span>{{ authService.user()!.name | slice: 0 : 1 }} </span>
-              </div>
-              <div class="flex flex-col ml-2 justify-center" routerLinkActive="font-bold">
-                <span class="is-drawer-close:hidden">
-                  {{ authService.user()!.name }}
-                </span>
-                <span class="is-drawer-close:hidden text-xs font-mono truncate max-w-x"
-                  >{{ authService.user()!.mail }}
-                </span>
-              </div>
-            </button>
-          </li>
-        } @else {
-          <li class="mt-auto">
-            <button
-              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-              data-tip="Login"
-              routerLink="/auth/login"
-            >
-              <span class="icon-[material-symbols--login] my-1.5 inline-block size-4"></span>
-              <span class="is-drawer-close:hidden">Loguearse</span>
-            </button>
-          </li>
-        }
-      </ul>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
