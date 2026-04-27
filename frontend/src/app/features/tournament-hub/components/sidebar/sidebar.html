@@ -48,7 +48,7 @@
         }
         <hr class="opacity-75 my-2" />
 
-        @if (isAdmin) {
+        @if (isAdmin()) {
           @for (adminButton of adminSidebarButtons(); track adminButton.name) {
             <li>
               <button
@@ -87,23 +87,23 @@
           }
           <hr class="opacity-75 my-2" />
         }
-        @if (user) {
+        @if (authService.user()) {
           <li class="mt-auto">
             <button
               class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-              [attr.data-tip]="user.name"
+              [attr.data-tip]="authService.user()!.name"
               routerLink="/profile"
               routerLinkActive="bg-primary text-primary-content"
             >
               <div class="flex items-center justify-center font-bold">
-                <span>{{ user.name | slice: 0 : 1 }} </span>
+                <span>{{ authService.user()!.name | slice: 0 : 1 }} </span>
               </div>
               <div class="flex flex-col ml-2 justify-center" routerLinkActive="font-bold">
                 <span class="is-drawer-close:hidden">
-                  {{ user.name }}
+                  {{ authService.user()!.name }}
                 </span>
                 <span class="is-drawer-close:hidden text-xs font-mono truncate max-w-x"
-                  >{{ user.mail }}
+                  >{{ authService.user()!.mail }}
                 </span>
               </div>
             </button>

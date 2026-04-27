@@ -29,12 +29,16 @@ import { TournamentUtils } from '@shared/utils/tournament-utils';
 })
 export class Sidebar {
   private sidebarService = inject(SidebarService);
-  user = inject(AuthService).user();
+  authService = inject(AuthService);
   router = inject(Router);
 
   getBackgroundStyle = TournamentUtils.GetGameImage;
 
-  isAdmin = this.user?.role.name === USER_ROLE.ADMIN;
+  isAdmin = computed(() => {
+    const user = this.authService.user();
+
+    return user?.role.name === USER_ROLE.ADMIN;
+  });
 
   isSidebarToggled = signal(false);
 
@@ -103,7 +107,9 @@ export class Sidebar {
   ]);
 
   sidebarButtons = computed(() => {
-    return this.user
+    const user = this.authService.user();
+
+    return user
       ? this.publicSidebarButtons().concat(this.userSidebarButtons())
       : this.publicSidebarButtons();
   });
