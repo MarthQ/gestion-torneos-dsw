@@ -1,4 +1,5 @@
 import { Game } from './game';
+import { Inscription } from './inscription';
 import { Location } from './location';
 import { Tag } from './tag';
 import { User } from './user';
@@ -8,12 +9,13 @@ export interface TournamentFormDTO {
   name: string;
   description: string;
   datetimeinit: Date;
-  status: string;
-  creator: number;
+  status?: string;
+  creator?: number;
   game: number;
   location: number;
   maxParticipants: number;
   tags: number[];
+  type?: string;
 }
 
 export interface Tournament {
@@ -26,5 +28,7 @@ export interface Tournament {
   game: Game;
   location: Location;
   maxParticipants: number;
+  inscriptions: Inscription[];
   tags: Tag[];
+  type: string;
 }

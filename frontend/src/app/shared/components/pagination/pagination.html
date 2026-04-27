@@ -1,26 +1,64 @@
 <!-- Paginación -->
-<div class="flex justify-center mt-6">
+<div class="flex flex-col items-center gap-3 mt-6">
   <div class="join">
-    <button class="join-item btn btn-sm" [disabled]="page() === 1" (click)="moveToPreviousPage()">
+    <!-- First page -->
+    <button
+      class="join-item btn btn-sm"
+      [disabled]="page() === 1"
+      (click)="moveToFirstPage()"
+      aria-label="Primera página"
+    >
       <span class="icon-[icon-park-outline--double-left]"></span>
     </button>
 
-    @for (p of totalPages(); track p) {
-      <button
-        class="join-item btn btn-sm font-bold"
-        [class.btn-primary]="page() === p"
-        (click)="moveToPage(p)"
-      >
-        {{ p }}
-      </button>
+    <!-- Previous page -->
+    <button
+      class="join-item btn btn-sm"
+      [disabled]="page() === 1"
+      (click)="moveToPreviousPage()"
+      aria-label="Página anterior"
+    >
+      <span class="icon-[icon-park-outline--left]"></span>
+    </button>
+
+    <!-- Page numbers with ellipsis -->
+    @for (p of visiblePages(); track $index) {
+      @if (p.ellipsis) {
+        <button class="join-item btn btn-sm cursor-default" disabled>...</button>
+      } @else {
+        <button
+          class="join-item btn btn-sm font-bold"
+          [class.btn-primary]="page() === p.n"
+          (click)="moveToPage(p.n)"
+        >
+          {{ p.n }}
+        </button>
+      }
     }
 
+    <!-- Next page -->
     <button
       class="join-item btn btn-sm"
       [disabled]="page() === entityMeta()?.totalPages || noPages()"
       (click)="moveToNextPage()"
+      aria-label="Página siguiente"
+    >
+      <span class="icon-[icon-park-outline--right]"></span>
+    </button>
+
+    <!-- Last page -->
+    <button
+      class="join-item btn btn-sm"
+      [disabled]="page() === entityMeta()?.totalPages || noPages()"
+      (click)="moveToLastPage()"
+      aria-label="Última página"
     >
       <span class="icon-[icon-park-outline--double-right]"></span>
     </button>
   </div>
+
+  <!-- Info text -->
+  @if (infoText()) {
+    <p class="text-sm text-base-content/60">{{ infoText() }}</p>
+  }
 </div>

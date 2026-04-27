@@ -11,6 +11,6 @@ export const LocationSchema = registry.register(
             .openapi({ example: 55 }),
         name: z
             .string({ message: 'Name must be a string' })
-            .openapi({ example: 'Racoon City' })
+            .openapi({ example: 'Racoon City local game store' })
     })
 );

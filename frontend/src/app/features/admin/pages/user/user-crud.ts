@@ -12,6 +12,7 @@ import { LocationService } from '@shared/services/location.service';
 import { RoleService } from '@features/admin/services/role.service';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   imports: [Pagination, SearchBar, UserCrudModal],

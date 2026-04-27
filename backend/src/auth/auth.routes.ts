@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { checkAuthStatus, login, register, forgotPassword, setupPassword, logout } from './auth.controller.js'
 import { authenticationMiddleware } from './middlewares/authentication.middleware.js'
+import { wrapController } from '../utils/http-errors.utils.js'
 
 const authRouter = Router()
 
@@ -26,7 +27,7 @@ const authRouter = Router()
  *       500:
  *         description: Error interno
  */
-authRouter.post('/register', register)
+authRouter.post('/register', wrapController(register))
 
 /**
  * @swagger
@@ -50,7 +51,7 @@ authRouter.post('/register', register)
  *       500:
  *         description: Error interno
  */
-authRouter.post('/login', login)
+authRouter.post('/login', wrapController(login))
 
 /**
  * @swagger
@@ -66,7 +67,7 @@ authRouter.post('/login', login)
  *       500:
  *         description: Error interno
  */
-authRouter.get('/check-status', authenticationMiddleware, checkAuthStatus)
+authRouter.get('/check-status', authenticationMiddleware, wrapController(checkAuthStatus))
 
 /**
  * @swagger
@@ -82,7 +83,7 @@ authRouter.get('/check-status', authenticationMiddleware, checkAuthStatus)
  *       500:
  *         description: Error interno
  */
-authRouter.post('/logout', logout)
+authRouter.post('/logout', wrapController(logout))
 
 /**
  * @swagger
@@ -104,7 +105,7 @@ authRouter.post('/logout', logout)
  *       500:
  *         description: Error interno
  */
-authRouter.post('/forgot-password', forgotPassword)
+authRouter.post('/forgot-password', wrapController(forgotPassword))
 
 /**
  * @swagger
@@ -135,6 +136,6 @@ authRouter.post('/forgot-password', forgotPassword)
  *       500:
  *         description: Error interno
  */
-authRouter.post('/setup-password', setupPassword)
+authRouter.post('/setup-password', wrapController(setupPassword))
 
 export { authRouter }

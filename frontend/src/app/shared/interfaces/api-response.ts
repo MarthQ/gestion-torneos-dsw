@@ -1,14 +1,14 @@
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
   message: string;
   data: T;
   meta?: PaginationMeta;
 }
 
-interface PaginationMeta {
+export interface PaginationMeta {
   total: number;
   page: number;
   pageSize: number;
   totalPages: number;
 }
 
-type PaginatedApiResponse<T> = Required<ApiResponse<T[]>>;
+export type PaginatedApiResponse<T> = Required<ApiResponse<T[]>>;

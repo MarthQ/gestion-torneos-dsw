@@ -1,0 +1,228 @@
+<div class="md:max-w-8/12 mx-auto">
+  <div class="py-4 mb-4">
+    <ul class="steps w-full">
+      @for (step of steps; track step.name) {
+        <li class="step" [class.step-primary]="step.isActive()">{{ step.name }}</li>
+      }
+    </ul>
+  </div>
+  <form
+    [formGroup]="tournamentForm"
+    class="bg-base-300 p-4 rounded max-w-lg mx-auto"
+    (ngSubmit)="onSubmit($event)"
+  >
+    @switch (stepActive()) {
+      @case (1) {
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Nombre del Torneo</legend>
+          <input
+            type="text"
+            class="input input-primary border-base-300 input-bordered w-full"
+            placeholder="Ingrese el nombre del torneo"
+            formControlName="name"
+          />
+          <form-error-label [control]="tournamentForm.get('name')!"></form-error-label>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Descripción del Torneo</legend>
+          <textarea
+            type="textarea"
+            class="textarea textarea-bordered focus:textarea-primary w-full"
+            placeholder="Ingrese la descripción del juego"
+            formControlName="description"
+          ></textarea>
+          <form-error-label [control]="tournamentForm.get('description')!"></form-error-label>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Fecha y Hora del torneo</legend>
+          <input
+            type="datetime-local"
+            class="input input-primary border-base-300 input-bordered w-full"
+            formControlName="datetimeinit"
+          />
+          <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Localidad del torneo</legend>
+          <select class="select w-full" formControlName="location">
+            <option readonly value="0">Seleccione la localidad del torneo</option>
+            @for (location of locationResource.value(); track location.id) {
+              <option [ngValue]="location.id">
+                {{ location.name }}
+              </option>
+            }
+          </select>
+          <span class="label">Obligatorio</span>
+        </fieldset>
+        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-4 col-span-2">
+          <legend class="fieldset-legend">Etiquetas del torneo</legend>
+          <div class="flex flex-col gap-3">
+            @for (tag of tagResource.value(); track tag.id) {
+              <div>
+                <input
+                  type="checkbox"
+                  class="checkbox checked:checkbox-primary mr-2"
+                  (click)="toggleTag(tag.id)"
+                  [checked]="tournamentForm.get('tags')?.value?.includes(tag.id)"
+                />
+                {{ tag.name }}
+              </div>
+            }
+          </div>
+        </fieldset>
+        <div class="flex">
+          <button type="button" class="mt-4 btn btn-primary ml-auto" (click)="nextStep()">
+            Continuar
+          </button>
+        </div>
+      }
+      @case (2) {
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Juego del torneo</legend>
+          <select class="select w-full" formControlName="game">
+            <option readonly value="0">Seleccione el juego del torneo</option>
+            @for (game of gameResource.value(); track game.id) {
+              <option [ngValue]="game.id">
+                <img
+                  [src]="getGameImage(game)"
+                  alt="Foto de {{ game.name }}"
+                  class="w-6 h-6 mr-2"
+                />
+                {{ game.name }}
+              </option>
+            }
+          </select>
+          <form-error-label [control]="tournamentForm.get('game')!"></form-error-label>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Tipo de torneo</legend>
+          <select class="select w-full" formControlName="type">
+            <option readonly value="0">Seleccione el tipo de torneo</option>
+            @for (tournamentType of tournamentTypes(); track tournamentType.value) {
+              <option [ngValue]="tournamentType.value">
+                {{ tournamentType.name }}
+              </option>
+            }
+          </select>
+          <form-error-label [control]="tournamentForm.get('game')!"></form-error-label>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Cupo Máximo</legend>
+          <input
+            type="number"
+            min="2"
+            class="input input-primary border-base-300 input-bordered w-full"
+            placeholder="Ingrese el cupo máximo"
+            formControlName="maxParticipants"
+          />
+          <form-error-label [control]="tournamentForm.get('maxParticipants')!"></form-error-label>
+        </fieldset>
+        <div class="flex mt-4 justify-between">
+          <button type="button" class="btn btn-primary" (click)="backStep()">Volver</button>
+          <button type="button" class="btn btn-primary" (click)="nextStep()">Continuar</button>
+        </div>
+      }
+      @case (3) {
+        <div class="grid grid-cols-2 gap-4">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Nombre</legend>
+            <input
+              readonly
+              type="text"
+              class="input"
+              [placeholder]="tournamentForm.value.name ? tournamentForm.value.name : 'Sin valor'"
+            />
+            <form-error-label [control]="tournamentForm.get('name')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset col-span-2">
+            <legend class="fieldset-legend">Descripcion</legend>
+            <textarea
+              readonly
+              type="textarea"
+              class="textarea textarea-bordered focus:textarea-primary w-full field-sizing-content resize-none"
+              [placeholder]="
+                tournamentForm.value.description ? tournamentForm.value.description : 'Sin valor'
+              "
+            ></textarea>
+            <form-error-label [control]="tournamentForm.get('description')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Fecha de inicio</legend>
+            <input
+              readonly
+              type="text"
+              class="input"
+              [placeholder]="
+                tournamentForm.value.datetimeinit
+                  ? (tournamentForm.value.datetimeinit | date: 'medium')
+                  : 'Sin valor'
+              "
+            />
+            <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Ubicacion</legend>
+            <input
+              readonly
+              type="text"
+              class="input"
+              [placeholder]="
+                tournamentForm.value.location ? locationResource.value()!.find((location) => location.id === tournamentForm.value.location)?.name  : 'Sin valor'
+              "
+            />
+            <form-error-label [control]="tournamentForm.get('location')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset col-span-2">
+            <legend class="fieldset-legend">Juego</legend>
+            <input
+              readonly
+              type="text"
+              class="input w-full"
+              [placeholder]="tournamentForm.value.game ? gameResource.value()!.find((game) => game.id === tournamentForm.value.game)?.name : 'Sin valor'"
+            />
+            <form-error-label [control]="tournamentForm.get('game')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Maxima cantidad de participantes</legend>
+            <input
+              readonly
+              type="text"
+              class="input"
+              [placeholder]="
+                tournamentForm.value.maxParticipants
+                  ? tournamentForm.value.maxParticipants
+                  : 'Sin valor'
+              "
+            />
+            <form-error-label [control]="tournamentForm.get('maxParticipants')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Tipo</legend>
+            <input
+              readonly
+              type="text"
+              class="input"
+              [placeholder]="tournamentForm.value.type ? tournamentTypes().find((type) => type.value === tournamentForm.value.type)?.name  : 'Sin valor'"
+            />
+            <form-error-label [control]="tournamentForm.get('type')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset col-span-2 mb-4">
+            <legend class="fieldset-legend">Tags</legend>
+            <div class="flex gap-2">
+              @for (tag of tournamentForm.value.tags; track $index) {
+                <div class="badge badge-soft badge-info">
+                  {{tagResource.value()?.find((tagl) => tagl.id === tag)?.name}}
+                </div>
+              }
+            </div>
+            <form-error-label [control]="tournamentForm.get('tag')!"></form-error-label>
+          </fieldset>
+        </div>
+        <div class="flex mt-4 justify-between">
+          <button type="button" class="btn btn-primary" (click)="backStep()">Volver</button>
+          <button type="submit" class="btn btn-secondary">Confirmar</button>
+        </div>
+      }
+    }
+  </form>
+</div>

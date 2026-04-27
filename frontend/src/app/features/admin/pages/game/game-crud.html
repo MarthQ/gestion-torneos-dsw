@@ -23,7 +23,7 @@
       <tbody>
         @for (game of gameData(); track game.name) {
           <tr
-            class="hover:bg-neutral hover:text-neutral-content transition-colors"
+            class="hover:bg-neutral hover:text-neutral-content transition ease-in-out duration-300"
             [class.opacity-50]="!game.id"
             [class.hover:opacity-100]="!game.id"
           >
@@ -40,7 +40,7 @@
             <td>
               <div class="avatar">
                 <div class="w-16 rounded">
-                  <img [src]="game.imgUrl" alt="Foto de {{ game.name }}" />
+                  <img [src]="getGameImage(game)" alt="Foto de {{ game.name }}" />
                 </div>
               </div>
             </td>

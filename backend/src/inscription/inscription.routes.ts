@@ -3,6 +3,7 @@ import { findAll, findOne, add, update, remove } from './inscription.controller.
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
+import { wrapController } from '../utils/http-errors.utils.js'
 
 const inscriptionRouter = Router()
 
@@ -18,7 +19,7 @@ const inscriptionRouter = Router()
  *       501:
  *         description: Servicio no disponible
  */
-inscriptionRouter.get('/', findAll)
+inscriptionRouter.get('/', wrapController(findAll))
 
 /**
  * @swagger
@@ -42,7 +43,9 @@ inscriptionRouter.get('/', findAll)
  *       500:
  *         description: Error interno
  */
-inscriptionRouter.get('/:id', findOne)
+inscriptionRouter.get('/:id', wrapController(findOne))
+
+//! Deprecated
 
 /**
  * @swagger
@@ -66,7 +69,9 @@ inscriptionRouter.get('/:id', findOne)
  *       401:
  *         description: No autenticado
  */
-inscriptionRouter.post('/', authenticationMiddleware, add)
+inscriptionRouter.post('/', authenticationMiddleware, wrapController(add))
+
+//! Deprecated
 
 /**
  * @swagger
@@ -101,7 +106,9 @@ inscriptionRouter.post('/', authenticationMiddleware, add)
  *       404:
  *         description: Inscripcion no encontrada
  */
-inscriptionRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+inscriptionRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
+
+//! Deprecated
 
 /**
  * @swagger
@@ -136,7 +143,9 @@ inscriptionRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER
  *       404:
  *         description: Inscripcion no encontrada
  */
-inscriptionRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+inscriptionRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
+
+//! Deprecated
 
 /**
  * @swagger
@@ -165,6 +174,6 @@ inscriptionRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(US
  *       500:
  *         description: Error interno
  */
-inscriptionRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
+inscriptionRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(remove))
 
 export { inscriptionRouter }

@@ -3,6 +3,7 @@ import { findAll, searchIGDB, findOne, add, update, remove } from './game.contro
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
+import { wrapController } from '../utils/http-errors.utils.js'
 
 const gameRouter = Router()
 
@@ -31,7 +32,7 @@ const gameRouter = Router()
  *       500:
  *         description: Error interno
  */
-gameRouter.get('/search', authenticationMiddleware, searchIGDB)
+gameRouter.get('/search', authenticationMiddleware, wrapController(searchIGDB))
 
 /**
  * @swagger
@@ -45,7 +46,7 @@ gameRouter.get('/search', authenticationMiddleware, searchIGDB)
  *       501:
  *         description: Servicio no disponible
  */
-gameRouter.get('/', findAll)
+gameRouter.get('/', wrapController(findAll))
 
 /**
  * @swagger
@@ -69,7 +70,7 @@ gameRouter.get('/', findAll)
  *       500:
  *         description: Error interno
  */
-gameRouter.get('/:id', findOne)
+gameRouter.get('/:id', wrapController(findOne))
 
 /**
  * @swagger
@@ -94,7 +95,7 @@ gameRouter.get('/:id', findOne)
  *       401:
  *         description: No autenticado
  */
-gameRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), add)
+gameRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(add))
 
 /**
  * @swagger
@@ -129,7 +130,7 @@ gameRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADM
  *       404:
  *         description: Juego no encontrado
  */
-gameRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+gameRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 /**
  * @swagger
@@ -164,7 +165,7 @@ gameRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.A
  *       404:
  *         description: Juego no encontrado
  */
-gameRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+gameRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 /**
  * @swagger
@@ -193,6 +194,6 @@ gameRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE
  *       500:
  *         description: Error interno
  */
-gameRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
+gameRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(remove))
 
 export { gameRouter }

@@ -1,0 +1,88 @@
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold">Gestión de Etiquetas</h1>
+    <h2 class="text-base-content/60">
+      Administra el catálogo de etiquetas disponibles para torneos.
+    </h2>
+  </div>
+  <button class="btn btn-primary shadow-lg" routerLink="/tournament/create">
+    <span class="icon-[ic--baseline-plus] mr-2"></span>
+    Nueva Torneo
+  </button>
+</div>
+<br />
+<hr class="opacity-25" stroke="currentColor" />
+<br />
+
+<app-search-bar
+  [filters]="{
+    games: gameResource.value(),
+    tags: tagResource.value(),
+  }"
+  (queryChanged)="query.set($event)"
+  (clear)="query.set('')"
+  (queryFiltered)="queryFilters.set($event)"
+/>
+
+<!-- Grid de torneos -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
+  <!-- Card 1 -->
+
+  @for (tournament of tournamentResource.value(); track tournament.id) {
+    <div class="tournament-card bg-base-300 rounded-xl overflow-hidden border border-base-300">
+      <div
+        class="h-40 bg-cover bg-center"
+        [style.background-image]="`url(${(tournament.game.imgId | gameImage: IGDB_SIZE.BANNER)})`"
+      >
+        <div class="p-4 flex justify-between">
+          <span
+            class="text-xs text-neutral font-bold px-2 py-1 rounded"
+            [class]="tournament.status"
+            >{{ tournament.status }}</span
+          >
+          <span class="bg-black/50 text-xs px-2 py-1 rounded flex"
+            ><span class="icon-[fa-solid--users] mr-1.5" style="width: 18px; height: 18px"></span>
+            ... / {{ tournament.maxParticipants }}</span
+          >
+        </div>
+      </div>
+      <div class="flex flex-col p-5">
+        <h3 class="text-lg font-bold">{{ tournament.name }}</h3>
+        <div class="badge badge-primary mb-2">
+          <span class="icon-[mdi--location] mr-0.5" style="width: 18px; height: 18px"></span
+          >{{ tournament.location.name }}
+        </div>
+        <div class="badge badge-primary mb-2">
+          <span
+            class="icon-[boxicons--joystick-filled] mr-0.5"
+            style="width: 18px; height: 18px"
+          ></span
+          >{{ tournament.game.name }}
+        </div>
+        <div class="flex justify-between pt-4 border-t border-base-300">
+          <div class="flex items-center bg-info-content rounded-2xl px-4 text-info">
+            <span class="icon-[formkit--datetime] mr-2"></span>
+            <span class="text-xs font-bold">{{
+              tournament.datetimeinit | date: 'dd MMMM, HH:mm'
+            }}</span>
+          </div>
+          <button
+            class="font-bold hover:underline text-sm btn btn-primary"
+            [routerLink]="['/tournament', tournament.id]"
+          >
+            Ver
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<app-pagination
+  [inputPage]="page()"
+  [entityMeta]="tournamentMeta()"
+  (currentPage)="pageChangedTo($event)"
+/>
+<br />
+<hr class="opacity-25" stroke="currentColor" />
+<br />

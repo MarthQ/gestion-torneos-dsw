@@ -63,9 +63,19 @@ export class Sidebar {
       routerPath: 'admin/role',
       icon: `icon-[eos-icons--role-binding]`,
     },
+    {
+      name: 'CRUD Region',
+      routerPath: 'admin/region',
+      icon: `icon-[mdi--world]`,
+    },
   ]);
 
   sidebarButtons = signal([
+    {
+      name: 'Mis torneos',
+      routerPath: '/my-tournaments',
+      icon: `icon-[boxicons--crown]`,
+    },
     {
       name: 'Explorar Torneos',
       routerPath: '/explore',

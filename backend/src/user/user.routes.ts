@@ -5,13 +5,12 @@ import {
     add,
     update,
     remove,
-    sendInvitation,
-    changePassword,
-    requestResetPassword,
+    sendInvitation
 } from './user.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
+import { wrapController } from '../utils/http-errors.utils.js'
 
 const userRouter = Router()
 
@@ -27,7 +26,7 @@ const userRouter = Router()
  *       501:
  *         description: Servicio no disponible
  */
-userRouter.get('/', findAll)
+userRouter.get('/', wrapController(findAll))
 
 /**
  * @swagger
@@ -51,7 +50,7 @@ userRouter.get('/', findAll)
  *       500:
  *         description: Error interno
  */
-userRouter.get('/:id', findOne)
+userRouter.get('/:id', wrapController(findOne))
 
 /**
  * @swagger
@@ -85,7 +84,7 @@ userRouter.get('/:id', findOne)
  *       404:
  *         description: Usuario no encontrado
  */
-userRouter.put('/:id', authenticationMiddleware, update)
+userRouter.put('/:id', authenticationMiddleware, wrapController(update))
 
 /**
  * @swagger
@@ -114,7 +113,7 @@ userRouter.put('/:id', authenticationMiddleware, update)
  *       500:
  *         description: Error interno
  */
-userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
+userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(remove))
 
 //(ADMIN) Create user without password
 
@@ -147,7 +146,7 @@ userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROL
  *       500:
  *         description: Error interno
  */
-userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), add)
+userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(add))
 
 
 //(ADMIN) Generate token & send mail with link to setup the password
@@ -180,18 +179,19 @@ userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADM
  *       500:
  *         description: Error interno
  */
-userRouter.get('/:id/invite', authenticationMiddleware, sendInvitation)
+userRouter.get('/:id/invite', authenticationMiddleware, wrapController(sendInvitation))
 
+
+//! TODO: delete method and clean unused imports
 
 //! The consensus was not to document the following 2 calls because they are deprecated by auth
-//(USER) Change password from "setup password page"
+// //(USER) Change password from "setup password page"
 //! Function and route of changePassword is incorrect and does not work
 //! Mailtoken comes in query string path but the function references that comes in params (not referenced here with /:mailToken)
 //! Function and endpoint to be deleted
-userRouter.patch('/password', authenticationMiddleware, changePassword)
+// userRouter.patch('/password', authenticationMiddleware, changePassword)
 
-userRouter.get('/change-password', authenticationMiddleware, requestResetPassword)
-
+// userRouter.get('/change-password', authenticationMiddleware, requestResetPassword)
 
 
 //(ADMIN) Update user's data
@@ -229,6 +229,6 @@ userRouter.get('/change-password', authenticationMiddleware, requestResetPasswor
  *       404:
  *         description: Usuario no encontrado
  */
-userRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+userRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 export { userRouter }

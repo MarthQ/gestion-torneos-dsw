@@ -3,6 +3,7 @@ import { findAll, findOne, add, update, remove } from './tag.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
+import { wrapController } from '../utils/http-errors.utils.js'
 
 const tagRouter = Router()
 
@@ -37,7 +38,7 @@ const tagRouter = Router()
  *       501:
  *         description: Servicio no disponible
  */
-tagRouter.get('/', findAll)
+tagRouter.get('/', wrapController(findAll))
 
 /**
  * @swagger
@@ -61,7 +62,7 @@ tagRouter.get('/', findAll)
  *       500:
  *         description: Error interno
  */
-tagRouter.get('/:id', findOne)
+tagRouter.get('/:id', wrapController(findOne))
 
 /**
  * @swagger
@@ -86,7 +87,7 @@ tagRouter.get('/:id', findOne)
  *       401:
  *         description: No autenticado
  */
-tagRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), add)
+tagRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(add))
 
 /**
  * @swagger
@@ -121,7 +122,7 @@ tagRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMI
  *       404:
  *         description: Tag no encontrado
  */
-tagRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+tagRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 /**
  * @swagger
@@ -156,7 +157,7 @@ tagRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.AD
  *       404:
  *         description: Tag no encontrado
  */
-tagRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+tagRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 /**
  * @swagger
@@ -185,6 +186,7 @@ tagRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.
  *       500:
  *         description: Error interno
  */
-tagRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
+tagRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(remove))
+
 
 export { tagRouter }

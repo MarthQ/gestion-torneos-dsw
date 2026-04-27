@@ -3,6 +3,7 @@ import { findAll, findOne, add, update, remove } from './role.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
+import { wrapController } from '../utils/http-errors.utils.js'
 
 const roleRouter = Router()
 
@@ -37,7 +38,7 @@ const roleRouter = Router()
  *       501:
  *         description: Servicio no disponible
  */
-roleRouter.get('/', findAll)
+roleRouter.get('/', wrapController(findAll))
 
 /**
  * @swagger
@@ -61,7 +62,7 @@ roleRouter.get('/', findAll)
  *       500:
  *         description: Error interno
  */
-roleRouter.get('/:id', findOne)
+roleRouter.get('/:id', wrapController(findOne))
 
 /**
  * @swagger
@@ -86,7 +87,7 @@ roleRouter.get('/:id', findOne)
  *       401:
  *         description: No autenticado
  */
-roleRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), add)
+roleRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(add))
 
 /**
  * @swagger
@@ -121,7 +122,7 @@ roleRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADM
  *       404:
  *         description: Rol no encontrado
  */
-roleRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+roleRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 /**
  * @swagger
@@ -156,7 +157,7 @@ roleRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.A
  *       404:
  *         description: Rol no encontrado
  */
-roleRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+roleRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 /**
  * @swagger
@@ -185,6 +186,6 @@ roleRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE
  *       500:
  *         description: Error interno
  */
-roleRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
+roleRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(remove))
 
 export { roleRouter }
