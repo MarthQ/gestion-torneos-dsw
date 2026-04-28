@@ -17,7 +17,15 @@
           [class.toggled]="isSidebarToggled()"
         ></span>
       </label>
-      <div class="px-4"><h1 id="navbar-title">Okizeme</h1></div>
+      <div class="px-4">
+        <button
+          id="navbar-title"
+          class="hover:cursor-pointer hover:text-primary rounded-lg px-5 transition-colors duration-300"
+          [routerLink]="'/explore'"
+        >
+          Okizeme
+        </button>
+      </div>
     </nav>
 
     <!-- Page content -->
@@ -83,14 +91,16 @@
               @for (tournament of recentTournaments(); track tournament.id) {
                 <li class="my-0.5">
                   <button
-                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10 bg-cover hover:shadow-lg shadow-primary"
+                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10 is-drawer-close:bg-cover is-drawer-open:bg-center hover:shadow-lg shadow-primary"
                     [attr.data-tip]="tournament.name"
                     (click)="clickedTournament(tournament)"
                     [style.background-image]="
-                      'url(' + getBackgroundStyle(tournament.game!, 'cover_small') + ')'
+                      'url(' + getBackgroundStyle(tournament.game!, 'cover_big') + ')'
                     "
                   >
-                    <span class="is-drawer-close:hidden">
+                    <span
+                      class="is-drawer-close:hidden text-shadow-lg text-shadow-black is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                    >
                       {{ tournament.name }}
                     </span>
                   </button>
