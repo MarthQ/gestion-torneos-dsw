@@ -4,7 +4,7 @@
   <!-- CONTENT -->
   <div class="drawer-content flex flex-col min-h-screen">
     <!-- Navbar -->
-    <nav class="navbar w-full bg-base-300">
+    <nav class="navbar w-full bg-base-300 sticky top-0 z-10">
       <label
         for="my-drawer-4"
         aria-label="open sidebar"
@@ -86,18 +86,18 @@
               style="width: 18px; height: 18px"
             ></span>
           </div>
-          <div class="flex-1 overflow-y-auto overflow-x-hidden" style="scrollbar-width: none">
+          <div class="flex-1 overflow-y-auto" style="scrollbar-width: none">
             <ul class="menu w-full py-0">
               @for (tournament of recentTournaments(); track tournament.id) {
                 <li class="my-0.5">
                   <button
-                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right h-10 rounded-xl hover:shadow-lg shadow-primary"
+                    class="relative is-drawer-close:tooltip is-drawer-close:tooltip-right h-10 rounded-xl hover:shadow-lg shadow-primary"
                     [attr.data-tip]="tournament.name"
                     (click)="clickedTournament(tournament)"
                   >
                     <img
                       [src]="getBackgroundStyle(tournament.game!, 'cover_big')"
-                      class="absolute inset-0 w-full h-full object-cover object-center rounded-xl z-0"
+                      class="absolute inset-0 w-full h-full object-cover object-center rounded-xl z-0 pointer-events-none"
                     />
                     <span class="z-10 is-drawer-close:hidden text-shadow-lg text-shadow-black">
                       {{ tournament.name }}
