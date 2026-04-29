@@ -6,7 +6,6 @@ import {
     update,
     remove,
     findUserTournaments,
-    getTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
@@ -54,8 +53,6 @@ tournamentRouter.post(
 )
 
 //* Match
-// Find tournament's bracket
-tournamentRouter.get('/:id/bracket', wrapController(getTournamentBracket))
 // SSE Streaming for update on tournament's bracket
 tournamentRouter.get('/:id/bracket/stream', wrapController(streamTournamentBracket))
 

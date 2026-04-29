@@ -13,10 +13,7 @@ import { AuthService } from '@features/auth/services/auth.service';
 })
 export class TournamentService {
   private http = inject(HttpClient);
-  private _bracketData = signal<any | null>(null);
   private user = inject(AuthService).user;
-
-  bracketData = computed(() => this._bracketData());
 
   // Without pagination
   getTournaments(): Observable<Tournament[]> {
@@ -122,19 +119,6 @@ export class TournamentService {
       );
   }
 
-  // Tournament detail with populated relations
-  // getTournamentDetail(id: number): Observable<TournamentDetail> {
-  //   return this.http
-  //     .get<ApiResponse<TournamentDetail>>(`${environment.apiUrl}/tournaments/${id}`)
-  //     .pipe(
-  //       map((response) => response.data),
-  //       catchError((error) => {
-  //         console.error(error);
-  //         return throwError(() => error.error?.message || 'Tournament not found');
-  //       }),
-  //     );
-  // }
-
   // User's tournaments
   getUserTournaments(
     query?: string,
@@ -156,22 +140,6 @@ export class TournamentService {
         map((response) => response.data),
         catchError((error) => {
           return throwError(() => error.error?.message || 'Failed to fetch user tournaments');
-        }),
-      );
-  }
-
-  // Bracket operations
-  getTournamentBracket(tournamentId: number): Observable<any> {
-    return this.http
-      .get<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/bracket`)
-      .pipe(
-        map((response) => {
-          this._bracketData.set(response.data);
-          return response.data;
-        }),
-        catchError((error) => {
-          console.error(error);
-          return throwError(() => error.error?.message || 'Bracket not found');
         }),
       );
   }

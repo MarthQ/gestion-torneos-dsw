@@ -371,17 +371,6 @@ async function updateMatchResult(req: Request, res: Response) {
     })
 }
 
-async function getTournamentBracket(req: Request, res: Response) {
-    const id = Number.parseInt(req.params.id)
-
-    const bracketManagerTournament = await manager.get.tournamentData(id)
-
-    res.status(200).json({
-        message: 'Found Bracket',
-        data: bracketManagerTournament,
-    })
-}
-
 async function streamTournamentBracket(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.id)
 
@@ -561,7 +550,6 @@ export {
     update,
     remove,
     findUserTournaments,
-    getTournamentBracket,
     streamTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
