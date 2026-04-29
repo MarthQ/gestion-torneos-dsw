@@ -58,7 +58,11 @@
 
         <!-- Actions -->
         <div class="card-actions justify-end mt-4">
-          <button class="btn btn-ghost border-info hover:btn-info" (click)="sendInvitation()">
+          <button
+            class="btn btn-ghost border-info hover:btn-info tooltip tooltip-bottom"
+            (click)="sendInvitation()"
+            data-tip="Se enviara un email para reestablecer la contraseña"
+          >
             <span class="icon-[mdi--password-check] mr-2"></span>
             Cambiar contraseña
           </button>
