@@ -1,10 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SlicePipe } from '@angular/common';
 
 import { AuthService } from '@features/auth/services/auth.service';
 import { USER_ROLE } from '@features/auth/interfaces/user-role.const';
 import { Footer } from '../footer/footer';
+import { SidebarService } from '@features/tournament-hub/services/sidebarService.service';
+import { Tournament } from '@shared/interfaces/tournament';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,10 +28,17 @@ import { Footer } from '../footer/footer';
   `,
 })
 export class Sidebar {
+  private sidebarService = inject(SidebarService);
   authService = inject(AuthService);
   router = inject(Router);
 
-  isAdmin = this.authService.user()?.role.name === USER_ROLE.ADMIN;
+  getBackgroundStyle = TournamentUtils.GetGameImage;
+
+  isAdmin = computed(() => {
+    const user = this.authService.user();
+
+    return user?.role.name === USER_ROLE.ADMIN;
+  });
 
   isSidebarToggled = signal(false);
 
@@ -63,13 +73,26 @@ export class Sidebar {
       routerPath: 'admin/role',
       icon: `icon-[eos-icons--role-binding]`,
     },
+    {
+      name: 'CRUD Region',
+      routerPath: 'admin/region',
+      icon: `icon-[mdi--world]`,
+    },
   ]);
 
-  sidebarButtons = signal([
+  publicSidebarButtons = signal([
     {
       name: 'Explorar Torneos',
       routerPath: '/explore',
       icon: `icon-[material-symbols--explore]`,
+    },
+  ]);
+
+  userSidebarButtons = signal([
+    {
+      name: 'Mis torneos',
+      routerPath: '/my-tournaments',
+      icon: `icon-[boxicons--crown]`,
     },
     {
       name: 'Mis inscripciones',
@@ -82,6 +105,23 @@ export class Sidebar {
       icon: `icon-[material-symbols--settings]`,
     },
   ]);
+
+  sidebarButtons = computed(() => {
+    const user = this.authService.user();
+
+    return user
+      ? this.publicSidebarButtons().concat(this.userSidebarButtons())
+      : this.publicSidebarButtons();
+  });
+
+  recentTournaments = computed(() => {
+    return this.sidebarService.getRecentTournaments();
+  });
+
+  clickedTournament(tournament: Tournament) {
+    this.sidebarService.updateRecentTournaments(tournament);
+    this.router.navigate(['/tournament', tournament.id]);
+  }
 
   toggleSidebar() {
     this.isSidebarToggled.update((current) => !current);

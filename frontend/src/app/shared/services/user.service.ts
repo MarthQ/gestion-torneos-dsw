@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { User, UserFormDTO } from '@shared/interfaces/user';
+import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -47,17 +48,13 @@ export class UserService {
   }
 
   addUser(newUser: Omit<UserFormDTO, 'id'>): Observable<UserFormDTO> {
-    return this.http
-      .post<
-        ApiResponse<UserFormDTO>
-      >(`${environment.apiUrl}/users`, { ...newUser, password: '12345678' })
-      .pipe(
-        map((response) => response.data),
-        catchError((error) => {
-          console.log('Error removing user: ', error);
-          return throwError(() => error.error.message);
-        }),
-      );
+    return this.http.post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, newUser).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
+      }),
+    );
   }
 
   updateUser(updatedUser: UserFormDTO): Observable<UserFormDTO> {
@@ -87,5 +84,15 @@ export class UserService {
 
   getUserById(userId: Number) {
     return this.http.get(`${baseUrl}/users/${userId}`);
+  }
+
+  sendInvitation(userId: number, path: string) {
+    const params = { path };
+    return this.http.get(`${baseUrl}/users/${userId}/invite`, { params }).pipe(
+      catchError((error) => {
+        console.log('Error removing user: ', error);
+        return throwError(() => error.error.message);
+      }),
+    );
   }
 }

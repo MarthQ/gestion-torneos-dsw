@@ -4,12 +4,13 @@ import { MyInscriptions } from './pages/my-inscriptions/my-inscriptions';
 import { UserProfile } from './pages/user-profile/user-profile';
 import { MainLayout } from './layout/main-layout/main-layout';
 import { AuthenticatedGuard } from '@features/auth/guards/authenticated.guard';
+import { SetupPassword } from './pages/setup-password/setup-password';
+import { MyTournaments } from './pages/myTournaments/myTournaments';
 
 export const TournamentHubRoutes: Routes = [
   {
     path: '',
     component: MainLayout,
-
     children: [
       {
         path: '',
@@ -29,11 +30,24 @@ export const TournamentHubRoutes: Routes = [
         component: UserProfile,
       },
       {
+        path: 'setup-password',
+        component: SetupPassword,
+      },
+      {
+        path: 'my-tournaments',
+        canActivate: [AuthenticatedGuard],
+        component: MyTournaments,
+      },
+      {
         path: 'admin',
         canMatch: [AuthenticatedGuard],
         loadChildren: () => import('../admin/admin.routes'),
       },
-      //TODO change-password-page -> Request & Validate using ReactiveFormModules currentPassword & confirmCurrentPassword to send http.patch(`${baseUrl}/user/password`) with email_token.
+      {
+        path: 'tournament',
+        canMatch: [AuthenticatedGuard],
+        loadChildren: () => import('../tournament/tournament.routes'),
+      },
     ],
   },
 ];

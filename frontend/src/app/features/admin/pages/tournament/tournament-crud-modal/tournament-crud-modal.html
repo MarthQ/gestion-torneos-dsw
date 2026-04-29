@@ -1,5 +1,5 @@
-<dialog #tournamentModal class="modal py-2" (close)="onDialogClose()">
-  <div class="modal-box h-11/12">
+<dialog #tournamentModal class="modal" (close)="onDialogClose()">
+  <div class="modal-box max-h-11/12">
     <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
     <form [formGroup]="tournamentForm">
       @if (type() === 'add' || type() === 'edit') {
@@ -55,18 +55,34 @@
             </select>
             <span class="label">Obligatorio</span>
           </fieldset>
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">Localidad del torneo</legend>
-            <select class="select" formControlName="location">
-              <option disabled selected>Seleccione la localidad del torneo</option>
-              @for (location of locationResource(); track location.id) {
-                <option [ngValue]="location.id">
-                  {{ location.name }}
-                </option>
-              }
-            </select>
-            <span class="label">Obligatorio</span>
-          </fieldset>
+          @if (eventType() === 'presencial') {
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend">Localidad del torneo</legend>
+              <select class="select" formControlName="location">
+                <option disabled selected>Seleccione la localidad del torneo</option>
+                @for (location of locationResource(); track location.id) {
+                  <option [ngValue]="location.id">
+                    {{ location.name }}
+                  </option>
+                }
+              </select>
+              <span class="label">Obligatorio</span>
+            </fieldset>
+          }
+          @if (eventType() === 'virtual') {
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend">Region del torneo</legend>
+              <select class="select w-full" formControlName="region">
+                <option readonly value="0">Seleccione la region del torneo</option>
+                @for (region of regionResource(); track region.id) {
+                  <option [ngValue]="region.id">
+                    {{ region.name }}
+                  </option>
+                }
+              </select>
+              <span class="label">Obligatorio</span>
+            </fieldset>
+          }
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Juego del torneo</legend>
             <select class="select" formControlName="game">

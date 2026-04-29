@@ -5,6 +5,7 @@ import { Filters, QueryFilter } from '@shared/interfaces/filters';
 import { Location } from '@shared/interfaces/location';
 import { Role } from '@shared/interfaces/role';
 import { Tag } from '@shared/interfaces/tag';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
   selector: 'app-search-bar',
@@ -12,6 +13,7 @@ import { Tag } from '@shared/interfaces/tag';
   templateUrl: './search-bar.html',
 })
 export class SearchBar {
+  getGameImage = TournamentUtils.GetGameImage;
   query = signal('');
   debounceTime = input<number>(100);
 

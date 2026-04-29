@@ -17,6 +17,8 @@ import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { GameCrudModal } from './game-crud-modal/game-crud-modal';
 import { JsonPipe } from '@angular/common';
+import { PaginationMeta } from '@shared/interfaces/api-response';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
 
 @Component({
   imports: [Pagination, SearchBar, GameCrudModal],
@@ -24,6 +26,7 @@ import { JsonPipe } from '@angular/common';
 })
 export class GameCrud {
   gameService = inject(GameService);
+  getGameImage = TournamentUtils.GetGameImage;
 
   // ElementRef for resetting the query
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');

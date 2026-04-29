@@ -17,6 +17,7 @@ import { LocationCrudModal } from './location-crud-modal/location-crud-modal';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   imports: [LocationCrudModal, Pagination, SearchBar],

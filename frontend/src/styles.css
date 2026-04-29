@@ -3,8 +3,9 @@
 @plugin "daisyui" {
   themes:
     light --default,
-    sunset --prefersdark,
-    cupcake;
+    crimsoncore --prefersdark,
+    cupcake,
+    sunset;
 }
 @plugin "@iconify/tailwind4" {
   prefixes: mdi-light;
@@ -28,3 +29,54 @@
     }
   }
 }
+
+@plugin "daisyui/theme" {
+  name: "crimsoncore";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+
+  --color-base-100: oklch(14% 0.015 260);
+  --color-base-200: oklch(18% 0.02 260);
+  --color-base-300: oklch(22% 0.025 260);
+  --color-base-content: oklch(92% 0.01 260);
+
+  --color-primary: oklch(68% 0.24 25);
+  --color-primary-content: oklch(98% 0.01 25);
+
+  --color-secondary: oklch(55% 0.08 260);
+  --color-secondary-content: oklch(95% 0.01 260);
+
+  --color-accent: oklch(62% 0.18 20);
+  --color-accent-content: oklch(98% 0.01 20);
+
+  --color-neutral: oklch(20% 0.015 260);
+  --color-neutral-content: oklch(90% 0.01 260);
+
+  --color-info: oklch(70% 0.15 240);
+  --color-info-content: oklch(15% 0.02 240);
+
+  --color-success: oklch(75% 0.18 145);
+  --color-success-content: oklch(15% 0.02 145);
+
+  --color-warning: oklch(82% 0.18 90);
+  --color-warning-content: oklch(18% 0.02 90);
+
+  --color-error: oklch(70% 0.24 25);
+  --color-error-content: oklch(98% 0.01 25);
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.75rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+
+@import './app/features/tournament/styles/bracketViewer.css';
+

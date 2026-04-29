@@ -13,8 +13,10 @@ import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { TournamentCrudModal } from './tournament-crud-modal/tournament-crud-modal';
 import { GameService } from '@shared/services/game.service';
-import { tournamentStatusMap } from '@shared/utils/tournament-map-styles';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { PaginationMeta } from '@shared/interfaces/api-response';
+import { TournamentUtils } from '@shared/utils/tournament-utils';
+import { RegionService } from '@shared/services/region.service';
 
 @Component({
   imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe, I18nSelectPipe],
@@ -22,12 +24,13 @@ import { CrudAction } from '@shared/interfaces/crudAction';
 })
 export class TournamentCrud {
   tournamentService = inject(TournamentService);
-  tournamentStatusMap = tournamentStatusMap;
+  tournamentStatusMap = TournamentUtils.tournamentStatusMap;
 
   userService = inject(UserService);
   locationService = inject(LocationService);
   tagService = inject(TagService);
   gameService = inject(GameService);
+  regionService = inject(RegionService);
 
   // API Get parameters (for table)
   query = signal('');
@@ -58,6 +61,9 @@ export class TournamentCrud {
   });
   gameResource = rxResource({
     stream: () => this.gameService.getGames(),
+  });
+  regionResource = rxResource({
+    stream: () => this.regionService.getRegions(),
   });
 
   tournamentResource = rxResource({

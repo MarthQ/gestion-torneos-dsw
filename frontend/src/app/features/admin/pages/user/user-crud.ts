@@ -12,14 +12,13 @@ import { LocationService } from '@shared/services/location.service';
 import { RoleService } from '@features/admin/services/role.service';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { PaginationMeta } from '@shared/interfaces/api-response';
 
 @Component({
   imports: [Pagination, SearchBar, UserCrudModal],
   templateUrl: './user-crud.html',
 })
 export class UserCrud {
-  //TODO implement resend email -> if the emailToken expires, the admin can resend the email which contains the link to setup the user's password.
-
   userService = inject(UserService);
 
   locationService = inject(LocationService);
@@ -121,5 +120,18 @@ export class UserCrud {
           },
         });
     }
+  }
+
+  sendInvitation(user: User) {
+    const path = '/auth/setup-password';
+    this.userService.sendInvitation(user.id, path).subscribe({
+      next: () => {
+        Toaster.success(`Email enviado correctamente a ${user.mail}`);
+      },
+      error: (message) => {
+        Toaster.error(message);
+        console.log(message);
+      },
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { AbstractControl, FormArray, FormGroup, ValidationErrors } from '@angular/forms';
+import { AbstractControl, FormArray, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 async function sleep() {
   return new Promise((resolve) => {
@@ -49,6 +49,7 @@ export class FormUtils {
           return 'El mail ingresado ya esta en uso. Verifique que usted no tiene una cuenta';
         case 'usernameTaken':
           return 'El nombre de usuario "Strider" no esta disponible.';
+
         default:
           return `Error de validación no controlado: ${key}`;
       }
@@ -103,5 +104,17 @@ export class FormUtils {
     }
 
     return null;
+  }
+
+  // ========== Date/Time Utilities ==========
+
+  /**
+   * Convierte una fecha a formato HTML datetime-local (YYYY-MM-DDTHH:MM)
+   * Resta la timezone offset para mostrar la fecha correcta en el input
+   */
+  static formatDateForInput(date: string | Date): string {
+    const d = new Date(date);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 16);
   }
 }
