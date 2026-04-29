@@ -64,8 +64,9 @@
             <td>
               <div class="flex justify-center gap-2">
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning tooltip"
                   (click)="editUser(user)"
+                  data-tip="Editar"
                 >
                   <span
                     class="icon-[boxicons--edit-filled]"
@@ -73,15 +74,17 @@
                   ></span>
                 </button>
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error tooltip"
                   (click)="deleteUser(user)"
+                  data-tip="Eliminar"
                 >
                   <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
                 </button>
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-info-content hover:text-info"
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-info-content hover:text-info tooltip tooltip-left"
                   (click)="sendInvitation(user)"
                   [class.invisible]="user.hasPassword"
+                  data-tip="Enviar invitación por mail"
                 >
                   <span
                     class="icon-[material-symbols--mail]"
