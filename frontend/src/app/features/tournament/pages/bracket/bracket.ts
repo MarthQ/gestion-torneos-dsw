@@ -16,7 +16,7 @@ export class Bracket {
   private tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
   private tournamentService = inject(TournamentService);
   isModalOpen = signal<boolean>(false);
-  matchData = signal({});
+  matchData = signal<any>({});
 
   isCreator = toSignal(this.tournamentService.isLoggedUserCreator(Number(this.tournamentId())), {
     initialValue: false,
@@ -69,7 +69,9 @@ export class Bracket {
   }
 
   handleMatchModal(match: any) {
-    if (match.status !== 2 && match.status !== 4) {
+    const isLastMatch = this.tournamentService.bracketData().match.at(-1).id === match.id;
+
+    if (match.status !== 2 && match.status !== 4 && !isLastMatch) {
       Toaster.error('No se puede registrar el resultado de este Match');
       return;
     }
