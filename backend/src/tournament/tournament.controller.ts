@@ -15,6 +15,8 @@ import { ForeignKeyConstraintViolationException } from '@mikro-orm/core'
 import { Match } from '../bracket/interfaces/storage.interface'
 import { BracketMatch } from '../bracket/bracket-match.entity.js'
 
+import { sseManager } from './sse.store.js'
+
 const em = ORM.em
 
 const TournamentSchema = z.object({
@@ -273,6 +275,10 @@ async function reshuffleBracket(req: RequestWithUser, res: Response) {
 
     const bracketData = await manager.get.tournamentData(id)
 
+    if (bracketData) {
+        sseManager.broadcastBracketUpdate(id, bracketData)
+    }
+
     res.status(200).json({
         message: 'Bracket created',
         data: bracketData,
@@ -359,6 +365,13 @@ async function updateMatchResult(req: Request, res: Response) {
         child_count: 0,
     })
 
+    // SSEManager notifies every other person looking at the bracket
+    const updatedBracket = await manager.get.tournamentData(tournamentId)
+
+    if (updatedBracket) {
+        sseManager.broadcastBracketUpdate(tournamentId, updatedBracket)
+    }
+
     res.status(200).json({
         message: 'Match updated',
         data: {
@@ -367,15 +380,40 @@ async function updateMatchResult(req: Request, res: Response) {
     })
 }
 
-async function getTournamentBracket(req: Request, res: Response) {
-    const id = Number.parseInt(req.params.id)
+async function streamTournamentBracket(req: Request, res: Response) {
+    const tournamentId = Number.parseInt(req.params.id)
 
-    const bracketManagerTournament = await manager.get.tournamentData(id)
+    // SSE Headers
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+    res.setHeader('Access-Control-Allow-Origin', '*')
 
-    res.status(200).json({
-        message: 'Found Bracket',
-        data: bracketManagerTournament,
+    sseManager.addConnection(tournamentId, res)
+
+    const bracketData = await manager.get.tournamentData(tournamentId)
+    if (bracketData) {
+        // Send bracketData formatted as a SSE response
+        const payload = `data: ${JSON.stringify(bracketData)}\n\n`
+        res.write(payload)
+    }
+
+    // On disconnection we remove the connection from sseManager
+    req.on('close', () => {
+        sseManager.removeConnection(tournamentId, res)
+        res.end()
     })
+
+    // The idea behind the heartbeat is to keep the connection alive when no changes are done to the bracket
+    const heartbeat = setInterval(() => {
+        try {
+            res.write(`: heartbeat\n\n`)
+        } catch (e) {
+            clearInterval(heartbeat)
+            sseManager.removeConnection(tournamentId, res)
+        }
+    }, 30000)
+    req.on('close', () => clearInterval(heartbeat))
 }
 
 async function inscribeToTournament(req: RequestWithUser, res: Response) {
@@ -521,7 +559,7 @@ export {
     update,
     remove,
     findUserTournaments,
-    getTournamentBracket,
+    streamTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
