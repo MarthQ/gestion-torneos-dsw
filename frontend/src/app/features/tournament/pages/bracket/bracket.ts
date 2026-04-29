@@ -21,7 +21,7 @@ export class Bracket implements OnDestroy {
   bracketData = signal<any>({});
 
   isModalOpen = signal<boolean>(false);
-  matchData = signal({});
+  matchData = signal<any>({});
 
   isCreator = toSignal(this.tournamentService.isLoggedUserCreator(Number(this.tournamentId())), {
     initialValue: false,
@@ -100,7 +100,9 @@ export class Bracket implements OnDestroy {
   }
 
   handleMatchModal(match: any) {
-    if (match.status !== 2 && match.status !== 4) {
+    const isLastMatch = this.bracketData().match.at(-1).id === match.id;
+
+    if (match.status !== 2 && match.status !== 4 && !isLastMatch) {
       Toaster.error('No se puede registrar el resultado de este Match');
       return;
     }

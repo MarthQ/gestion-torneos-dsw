@@ -23,6 +23,7 @@ import {
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
 import { wrapController } from '../utils/http-errors.utils.js'
+import { updateMatchMiddleware } from './middlewares/updateMatch.middleware.js'
 
 const tournamentRouter = Router()
 
@@ -61,9 +62,12 @@ tournamentRouter.get('/:id/matches', wrapController(getStageMatches))
 // Find tournament's next ready matches
 tournamentRouter.get('/:id/next', wrapController(getNextReadyMatches))
 // Create match result (2-1)
-tournamentRouter.post('/:tournamentId/match/:id', wrapController(updateMatchResult))
-// Update match result (2-1)
-tournamentRouter.patch('/:tournamentId/match/:id', wrapController(updateMatchResult))
+tournamentRouter.post(
+    '/:tournamentId/match/:id',
+    authenticationMiddleware,
+    updateMatchMiddleware,
+    wrapController(updateMatchResult),
+)
 
 //* Inscriptions
 // Inscribe to tournament
