@@ -212,7 +212,6 @@ async function closeInscriptions(req: Request, res: Response) {
     const { name, type, inscriptions } = foundTournament
 
     const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
-    // const inscriptionNicknames = ['Participant 1', 'Participant 2', 'Participant 3']
 
     await manager.create.stage({
         name: name,
@@ -334,8 +333,6 @@ async function updateMatchResult(req: Request, res: Response) {
         em.assign(match, { status: 4 })
 
         tournament.status = TournamentStatus.FINISHED
-        await em.flush()
-
         await em.flush()
     }
 
