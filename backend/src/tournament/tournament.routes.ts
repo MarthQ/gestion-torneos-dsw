@@ -19,6 +19,7 @@ import {
     cancelTournament,
     reshuffleBracket,
     reopenTournament,
+    streamTournamentBracket,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
@@ -55,6 +56,9 @@ tournamentRouter.post(
 //* Match
 // Find tournament's bracket
 tournamentRouter.get('/:id/bracket', wrapController(getTournamentBracket))
+// SSE Streaming for update on tournament's bracket
+tournamentRouter.get('/:id/bracket/stream', wrapController(streamTournamentBracket))
+
 // Find tournament's matches
 tournamentRouter.get('/:id/matches', wrapController(getStageMatches))
 // Find tournament's next ready matches
