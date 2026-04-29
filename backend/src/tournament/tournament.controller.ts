@@ -12,6 +12,8 @@ import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
 import { TournamentStatus } from '../shared/interfaces/status.js'
 import { Inscription } from '../inscription/inscription.entity.js'
 import { ForeignKeyConstraintViolationException } from '@mikro-orm/core'
+import { Match } from '../bracket/interfaces/storage.interface'
+import { BracketMatch } from '../bracket/bracket-match.entity.js'
 
 const em = ORM.em
 
@@ -196,11 +198,11 @@ async function closeInscriptions(req: Request, res: Response) {
         throw error
     }
 
-    // if (tournament.inscriptions.length < 2) {
-    //     const error = new Error('Tournament must have at least 2 inscriptions to close.')
-    //     ;(error as any).statusCode = 400
-    //     throw error
-    // }
+    if (tournament.inscriptions.length < 2) {
+        const error = new Error('Tournament must have at least 2 inscriptions to close.')
+        ;(error as any).statusCode = 400
+        throw error
+    }
 
     tournament.status = TournamentStatus.CLOSED
     await em.flush()
@@ -209,8 +211,8 @@ async function closeInscriptions(req: Request, res: Response) {
 
     const { name, type, inscriptions } = foundTournament
 
-    // const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
-    const inscriptionNicknames = ['Participant 1', 'Participant 2', 'Participant 3']
+    const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
+    // const inscriptionNicknames = ['Participant 1', 'Participant 2', 'Participant 3']
 
     await manager.create.stage({
         name: name,
@@ -302,12 +304,17 @@ async function getNextReadyMatches(req: Request, res: Response) {
 
 async function updateMatchResult(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.tournamentId)
+
     const id = Number.parseInt(req.params.id)
+
     const { score } = req.body
+
     if (!score || typeof score !== 'string' || !score.includes('-')) {
         throw new Error('Invalid score format. Use "X-Y" format (e.g., "3-1")')
     }
+
     const [score1, score2] = score.split('-').map(Number)
+
     if (isNaN(score1) || isNaN(score2)) {
         throw new Error('Invalid score format. Scores must be numbers')
     }
@@ -320,20 +327,16 @@ async function updateMatchResult(req: Request, res: Response) {
         throw error
     }
 
-    const match = await manager.update.match({
-        id,
-        opponent1: { score: score1, result: score1 > score2 ? 'win' : 'loss' },
-        opponent2: { score: score2, result: score1 < score2 ? 'win' : 'loss' },
-
-        child_count: 0,
-    })
-
     const nextMatches = await manager.find.nextMatches(id)
-    console.log({ nextMatches })
+
     if (nextMatches.length === 0) {
+        const match = await em.getReference(BracketMatch, id)
+        em.assign(match, { status: 4 })
+
         tournament.status = TournamentStatus.FINISHED
         await em.flush()
-        console.log('CAMBIANDO ESTADO DE TORNEO A FINALIZADO')
+
+        await em.flush()
     }
 
     if (tournament.type === 'double_elimination' && nextMatches.length !== 0) {
@@ -350,6 +353,14 @@ async function updateMatchResult(req: Request, res: Response) {
             }
         }
     }
+
+    const match = await manager.update.match({
+        id,
+        opponent1: { score: score1, result: score1 > score2 ? 'win' : 'loss' },
+        opponent2: { score: score2, result: score1 < score2 ? 'win' : 'loss' },
+
+        child_count: 0,
+    })
 
     res.status(200).json({
         message: 'Match updated',

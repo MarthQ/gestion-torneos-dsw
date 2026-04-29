@@ -1,5 +1,14 @@
 import { SlicePipe } from '@angular/common';
-import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 
@@ -28,7 +37,6 @@ export class MatchModal {
     if (!this.isModalOpen()) return;
 
     modal.showModal();
-    console.log({ matchData: this.matchData() });
   });
 
   handleClose() {
