@@ -9,7 +9,13 @@ import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel
 
 @Component({
   imports: [CommonModule, ReactiveFormsModule, RouterLink, FormErrorLabel],
-  templateUrl: './login.html',
+  templateUrl: './login.html',  
+  styles: `
+    #homeButton {
+      font-family: Segoe-Script;
+      font-size: 2em;
+    }
+  `
 })
 export class Login {
   private authService = inject(AuthService);

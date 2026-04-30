@@ -20,6 +20,8 @@ const UserSchema = z.object({
     name: z.string({ message: 'Name must be a string' }),
     password: z.string({ message: 'Password must be a string' }).optional(),
     mail: z.string({ message: 'Mail must be a string' }),
+    avatarId: z.string({ message: 'AvatarId must be a string' }),
+    nameChangedOn: z.coerce.date({ message: 'Date time must be a date' }),
     location: z.number({
         message: 'Location must be a number representing a location id',
     }),
@@ -196,4 +198,20 @@ async function update(req: Request, res: Response) {
     res.status(200).json({ message: 'User updated' })
 }
 
-export { findAll, findOne, add, update, remove, sendInvitation, changePassword, requestResetPassword }
+async function updateByUser(req: Request, res: Response){
+    const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
+    
+    if (!sanitizedPartialUser.success) {
+        throw fromZodError(sanitizedPartialUser.error)
+    }
+
+    const { name, avatarId, nameChangedOn } = sanitizedPartialUser.data
+    const dataToUpdate = { name, avatarId, nameChangedOn }
+    const id = Number.parseInt(req.params.id)
+    const user = em.getReference(User, id)
+    em.assign(user, dataToUpdate);
+    em.flush();
+    res.status(200).json({ message: 'Perfil actualizado' })
+}
+
+export { findAll, findOne, add, update, updateByUser, remove, sendInvitation, changePassword, requestResetPassword }

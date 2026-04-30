@@ -1,77 +1,141 @@
 <div class="max-w-2xl mx-auto">
   @if (userResource.isLoading()) {
-    <div class="flex justify-center py-8">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
-    </div>
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
   } @else if (userResource.hasValue()) {
-    <div class="card bg-base-200 shadow-xl">
-      <!-- Header -->
-      <div class="card-body items-center text-center">
-        <div class="avatar placeholder">
-          <div
-            class="flex items-center justify-center bg-primary text-primary-content font-semibold rounded-full p-6"
-          >
-            <span class="text-5xl">{{ userResource.value()!.name.charAt(0).toUpperCase() }}</span>
-          </div>
+  <div class="card bg-base-200 shadow-xl">
+    <div class="card-body items-center text-center">
+
+      <div class="relative w-36 h-36 mb-2">
+        <div (click)="avatarModal.showModal()" class="peer absolute top-2 right-2 bg-primary rounded-full p-2 shadow-md 
+                      z-20 transition-transform duration-300 hover:scale-110 cursor-pointer border-2 border-base-200">
+          <span class="icon-[material-symbols--edit] size-5 text-white block"></span>
+        </div>
+
+        <img [src]="getAvatarPath(userResource.value()?.avatarId)" alt="Profile"
+          class="rounded-full w-36 h-36 object-cover transition-all duration-300 z-10 peer-hover:brightness-75 shadow-lg border-4 border-primary/20">
+      </div>
+      <div class="relative">
+        <div (click)="nameModal.showModal()" class="peer absolute -top-3 -right-6 bg-primary rounded-full p-1
+                              z-20 cursor-pointer border-3 border-base-200">
+          <span class="icon-[material-symbols--edit] size-4 text-white block"></span>
         </div>
         <h2 class="card-title text-2xl">{{ userResource.value()!.name }}</h2>
-        <p class="text-base-content/60 font-mono">{{ userResource.value()!.mail }}</p>
+      </div>
+      
+      <p class="text-base-content/60 font-mono">{{ userResource.value()!.mail }}</p>
+    </div>
+
+    <div class="card-body pt-0">
+      <div class="overflow-x-auto">
+        <table class="table">
+          <tbody>
+            <tr>
+              <td class="font-semibold text-base-content/70">ID</td>
+              <td>{{ userResource.value()!.id }}</td>
+            </tr>
+            <tr>
+              <td class="font-semibold text-base-content/70">Ubicación</td>
+              <td>
+                <span class="badge badge-info font-bold gap-1">
+                  <span class="icon-[mdi--location]"></span>
+                  {{ userResource.value()!.location.name }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="font-semibold text-base-content/70">Rol</td>
+              <td>
+                <span class="badge badge-primary">
+                  {{ userResource.value()!.role.name }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="font-semibold text-base-content/70">Inscripciones</td>
+              <td>
+                <span class="badge badge-secondary">
+                  {{ userResource.value()!.inscriptions?.length || 0 }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <!-- Info -->
-      <div class="card-body pt-0">
-        <div class="overflow-x-auto">
-          <table class="table">
-            <tbody>
-              <tr>
-                <td class="font-semibold">ID</td>
-                <td>{{ userResource.value()!.id }}</td>
-              </tr>
-              <tr>
-                <td class="font-semibold">Ubicación</td>
-                <td>
-                  <span class="badge badge-info font-bold">
-                    <span class="icon-[mdi--location] mr-1"></span>
-                    {{ userResource.value()!.location.name }}
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td class="font-semibold">Rol</td>
-                <td>
-                  <span class="badge badge-primary">
-                    {{ userResource.value()!.role.name }}
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td class="font-semibold">Inscripciones</td>
-                <td>
-                  <span class="badge badge-secondary">
-                    {{ userResource.value()!.inscriptions?.length || 0 }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Actions -->
-        <div class="card-actions justify-end mt-4">
-          <button class="btn btn-ghost border-info hover:btn-info" (click)="sendInvitation()">
-            <span class="icon-[mdi--password-check] mr-2"></span>
-            Cambiar contraseña
-          </button>
-          <button
-            class="btn btn-ghost border-error hover:btn-error"
-            (click)="logout()"
-            routerLink="/auth/login"
-          >
-            <span class="icon-[mdi--logout] mr-2"></span>
-            Cerrar sesión
-          </button>
-        </div>
+      <div class="card-actions justify-end mt-6">
+        <button class="btn btn-ghost border-info hover:btn-info" (click)="sendInvitation()">
+          <span class="icon-[mdi--password-check] mr-2"></span>
+          Cambiar contraseña
+        </button>
+        <button class="btn btn-ghost border-error hover:btn-error" (click)="logout()" routerLink="/auth/login">
+          <span class="icon-[mdi--logout] mr-2"></span>
+          Cerrar sesión
+        </button>
       </div>
     </div>
+  </div>
+
+  <dialog #avatarModal class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box bg-base-200 border border-base-300">
+      <h3 class="font-bold text-lg mb-6 text-center">Elegí tu Avatar</h3>
+
+      <div class="grid grid-cols-3 gap-6 max-h-96 overflow-y-auto p-2">
+        @for (avatar of availableAvatars; track avatar.id) {
+        <div class="flex flex-col items-center gap-2">
+          <button (click)="updateAvatar(avatar.id)"
+            class="avatar cursor-pointer transition-all duration-200 hover:scale-110 group">
+            <div
+              class="w-20 rounded-full ring-primary ring-offset-base-100 group-hover:ring-2 ring-offset-2 border border-base-300">
+              <img [src]="getAvatarPath(avatar.id)" [alt]="avatar.label" />
+            </div>
+          </button>
+          <span class="text-xs opacity-70 font-medium">{{ avatar.label }}</span>
+        </div>
+        }
+      </div>
+
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          <button class="btn btn-ghost">Cerrar</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <dialog #nameModal class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box bg-base-50 border border-base-50">
+      <h3 class="font-bold text-lg mb-6 text-center">Cambia tu nombre de usuario</h3>
+
+      <p class="py-5"> Recuerda que no podrás volver a cambiarlo por 3 meses </p>
+
+      <label class="input validator input-lg w-full">
+        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </g>
+        </svg>
+        <input type="text" #nameInput required placeholder="Username" pattern="[A-Za-z][A-Za-z0-9\-]*" minlength="1" maxlength="15"
+          title="Only letters, numbers or dash" />
+      </label>
+        
+      <p class="validator-hint">
+        Debe tener al menos entre 1 y 15 caracteres
+      </p>
+
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          <button class="btn btn-ghost">Cerrar</button>
+          <button (click)="updateUsername(nameInput.value)" class="btn btn-primary">Confirmar</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
   }
 </div>

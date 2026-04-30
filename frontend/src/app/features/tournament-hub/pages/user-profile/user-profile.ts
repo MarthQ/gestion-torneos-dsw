@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, viewChild, ElementRef } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthService } from '@features/auth/services/auth.service';
 import { UserService } from '@shared/services/user.service';
 import { map } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { User } from '@shared/interfaces/user';
+import { AVATARS, getAvatarPath } from '@shared/constants/avatar.constant';
 import { Toaster } from '@shared/utils/toaster';
+import { User, UserUpdateDTO } from '@shared/interfaces/user';
 
 @Component({
   imports: [RouterLink],
@@ -17,12 +18,80 @@ export class UserProfile {
   private authService = inject(AuthService);
   private userService = inject(UserService);
 
+  private modalRef = viewChild<ElementRef<HTMLDialogElement>>('avatarModal');
+  readonly availableAvatars = AVATARS;
+  getAvatarPath = getAvatarPath;
+
   userResource = rxResource({
     params: () => ({ userId: this.authService.user()!.id }),
     stream: ({ params }) => {
       return this.userService.getUserById(params.userId).pipe(map((resp) => (resp as any).data));
     },
   });
+
+  updateAvatar(avatarId: string) {
+    const currentUser = this.authService.user();
+
+    if (!currentUser) {
+      Toaster.error('Tu sesión ha expirado. Por favor, vuelve a ingresar.');
+      return;
+    }
+    
+    const { id, name } = currentUser
+    const updatedUser = { id, name, avatarId } as UserUpdateDTO;
+
+    
+    this.userService.updateUserNonAdmin(updatedUser).subscribe({
+      next: () => {
+        this.userResource.reload();
+        this.modalRef()?.nativeElement.close();
+        Toaster.success('Avatar actualizado correctamente');
+      },
+      error: (err) => {
+        Toaster.error('No se pudo actualizar el avatar');
+        console.error(err);
+      }
+    });
+  }
+
+  updateUsername(changedName: string) {
+    const currentUser = this.authService.user();
+
+    if (!currentUser) {
+      Toaster.error('Tu sesión ha expirado. Por favor, vuelve a ingresar.');
+      this.modalRef()?.nativeElement.close();
+      return;
+    }
+    if(currentUser.nameChangedOn){
+      const fechaLimite = new Date(currentUser.nameChangedOn);
+      fechaLimite.setMonth(fechaLimite.getMonth() + 3);
+      if( new Date < fechaLimite ){
+        Toaster.error('Aún no podés cambiar tu nombre.');
+        return
+      }
+    }
+
+
+    const { id } = currentUser
+    const updatedUser: UserUpdateDTO = {
+      id,
+      name: changedName,
+      nameChangedOn: new Date()
+    }
+
+    
+    this.userService.updateUserNonAdmin(updatedUser).subscribe({
+      next: () => {
+        this.userResource.reload();
+        this.modalRef()?.nativeElement.close();
+        Toaster.success('Nombre de usuario actualizado correctamente');
+      },
+      error: (err) => {
+        Toaster.error('No se pudo actualizar el nombre de usuario');
+        console.error(err);
+      }
+    });
+  }
 
   logout() {
     this.authService.logout();
