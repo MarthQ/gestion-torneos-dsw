@@ -67,14 +67,15 @@
         @if (authService.user()) {
           <li class="mt-auto">
             <button
-              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right is-drawer-open:justify-start is-drawer-close:justify-center 
+              is-drawer-close:px-0 h-12"
               [attr.data-tip]="authService.user()?.name"
               routerLink="/profile"
               routerLinkActive="bg-primary text-primary-content"
             >
-              <div class="flex items-center justify-center font-bold">
-                <span> ACA ESTA EL ICONO </span>
-                <span>{{ authService.user()?.name | slice: 0 : 1 }} </span>
+              <div class="flex items-center justify-center font-bold shrink-0">
+                        <img [src]="getAvatarPath(authService.user()?.avatarId)" alt="sideBarPic"
+                        class="rounded-full w-8 h-8 object-cover">
               </div>
               <div class="flex flex-col ml-2 justify-center" routerLinkActive="font-bold">
                 <span class="is-drawer-close:hidden">

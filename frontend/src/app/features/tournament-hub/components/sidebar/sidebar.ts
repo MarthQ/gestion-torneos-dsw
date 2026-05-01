@@ -5,6 +5,7 @@ import { SlicePipe } from '@angular/common';
 import { AuthService } from '@features/auth/services/auth.service';
 import { USER_ROLE } from '@features/auth/interfaces/user-role.const';
 import { Footer } from '../footer/footer';
+import { getAvatarPath } from '@shared/constants/avatar.constant';
 
 @Component({
   selector: 'app-sidebar',
@@ -32,6 +33,8 @@ export class Sidebar {
 
   isSidebarToggled = signal(false);
 
+  getAvatarPath = getAvatarPath;
+  
   adminSidebarButtons = signal([
     {
       name: 'CRUD Juegos',
