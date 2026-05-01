@@ -17,8 +17,12 @@
           class="rounded-full w-36 h-36 object-cover transition-all duration-300 z-10 peer-hover:brightness-75 shadow-lg border-4 border-primary/20">
       </div>
       <div class="relative">
-        <div (click)="nameModal.showModal()" class="peer absolute -top-3 -right-6 bg-primary rounded-full p-1
-                              z-20 cursor-pointer border-3 border-base-200">
+        <div (click)="canChangeName && nameModal.showModal()" 
+              class="peer absolute -top-3 -right-6 bg-primary rounded-full p-1
+                              z-20 cursor-pointer border-3 border-base-200"
+                              [class.opacity-50]="!canChangeName"
+                              [class.cursor-not-allowed]="!canChangeName"
+                              [class.cursor-pointer]="canChangeName">
           <span class="icon-[material-symbols--edit] size-4 text-white block"></span>
         </div>
         <h2 class="card-title text-2xl">{{ userResource.value()!.name }}</h2>
@@ -131,8 +135,8 @@
         <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
           <button class="btn btn-ghost">Cerrar</button>
-          <button (click)="updateUsername(nameInput.value)" class="btn btn-primary">Confirmar</button>
         </form>
+        <button (click)="updateUsername(nameInput.value)" class="btn btn-primary">Confirmar</button>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop"><button>close</button></form>

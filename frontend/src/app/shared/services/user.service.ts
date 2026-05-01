@@ -78,7 +78,7 @@ export class UserService {
         map((response) => response.data),
         catchError((error) => {
           console.log('Error updating user: ', error);
-          return throwError(() => error.error.message);
+          return throwError(() => error);
         }),
       );
   }

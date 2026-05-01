@@ -210,7 +210,7 @@ async function updateByUser(req: Request, res: Response){
     const id = Number.parseInt(req.params.id)
     const user = em.getReference(User, id)
     em.assign(user, dataToUpdate);
-    em.flush();
+    await em.flush();
     res.status(200).json({ message: 'Perfil actualizado' })
 }
 

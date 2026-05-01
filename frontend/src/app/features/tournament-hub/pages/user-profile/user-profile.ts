@@ -29,6 +29,15 @@ export class UserProfile {
     },
   });
 
+  get canChangeName(): boolean {
+    const currentUser = this.authService.user();
+    if (!currentUser?.nameChangedOn) return true;
+    
+    const fechaLimite = new Date(currentUser.nameChangedOn);
+    fechaLimite.setMonth(fechaLimite.getMonth() + 3);
+    return new Date() >= fechaLimite;
+  }
+
   updateAvatar(avatarId: string) {
     const currentUser = this.authService.user();
 
@@ -43,6 +52,7 @@ export class UserProfile {
     
     this.userService.updateUserNonAdmin(updatedUser).subscribe({
       next: () => {
+        this.authService.updateUserData({ avatarId });
         this.userResource.reload();
         this.modalRef()?.nativeElement.close();
         Toaster.success('Avatar actualizado correctamente');
@@ -55,6 +65,11 @@ export class UserProfile {
   }
 
   updateUsername(changedName: string) {
+    if (!changedName || changedName.trim().length < 1) {
+    Toaster.error('El nombre no puede estar vacío');
+    return;
+    }
+    
     const currentUser = this.authService.user();
 
     if (!currentUser) {
@@ -67,6 +82,7 @@ export class UserProfile {
       fechaLimite.setMonth(fechaLimite.getMonth() + 3);
       if( new Date < fechaLimite ){
         Toaster.error('Aún no podés cambiar tu nombre.');
+        this.modalRef()?.nativeElement.close();
         return
       }
     }
@@ -82,13 +98,18 @@ export class UserProfile {
     
     this.userService.updateUserNonAdmin(updatedUser).subscribe({
       next: () => {
+        this.authService.updateUserData({ name: changedName, nameChangedOn: new Date() });
         this.userResource.reload();
         this.modalRef()?.nativeElement.close();
         Toaster.success('Nombre de usuario actualizado correctamente');
       },
       error: (err) => {
-        Toaster.error('No se pudo actualizar el nombre de usuario');
-        console.error(err);
+        if(err.status === 409) {
+          Toaster.error('El nombre de usuario ya existe. Elige uno nuevo.')
+        } else{
+          Toaster.error('No se pudo actualizar el nombre de usuario');
+          console.error(err);
+        }
       }
     });
   }
