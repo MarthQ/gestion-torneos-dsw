@@ -1,4 +1,4 @@
-import { Component, inject, viewChild, ElementRef } from '@angular/core';
+import { Component, inject, viewChild, ElementRef, computed} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthService } from '@features/auth/services/auth.service';
 import { UserService } from '@shared/services/user.service';
@@ -12,7 +12,7 @@ import { User, UserUpdateDTO } from '@shared/interfaces/user';
   imports: [RouterLink],
   templateUrl: './user-profile.html',
 })
-export class UserProfile {
+export class UserProfile{
   //TODO implement a button to change password -> send email with link that redirect to a page to change the password (We can reuse the request setup-password-page).
 
   private authService = inject(AuthService);
@@ -29,14 +29,15 @@ export class UserProfile {
     },
   });
 
-  get canChangeName(): boolean {
+  canChangeName = computed(() => {
     const currentUser = this.authService.user();
     if (!currentUser?.nameChangedOn) return true;
     
     const fechaLimite = new Date(currentUser.nameChangedOn);
     fechaLimite.setMonth(fechaLimite.getMonth() + 3);
     return new Date() >= fechaLimite;
-  }
+  })
+
 
   updateAvatar(avatarId: string) {
     const currentUser = this.authService.user();

@@ -17,12 +17,12 @@
           class="rounded-full w-36 h-36 object-cover transition-all duration-300 z-10 peer-hover:brightness-75 shadow-lg border-4 border-primary/20">
       </div>
       <div class="relative">
-        <div (click)="canChangeName && nameModal.showModal()" 
+        <div (click)="canChangeName() && nameModal.showModal()" 
               class="peer absolute -top-3 -right-6 bg-primary rounded-full p-1
                               z-20 cursor-pointer border-3 border-base-200"
-                              [class.opacity-50]="!canChangeName"
-                              [class.cursor-not-allowed]="!canChangeName"
-                              [class.cursor-pointer]="canChangeName">
+                              [class.opacity-50]="!canChangeName()"
+                              [class.cursor-not-allowed]="!canChangeName()"
+                              [class.cursor-pointer]="canChangeName()">
           <span class="icon-[material-symbols--edit] size-4 text-white block"></span>
         </div>
         <h2 class="card-title text-2xl">{{ userResource.value()!.name }}</h2>
