@@ -204,8 +204,31 @@ async function updateByUser(req: RequestWithUser, res: Response) {
     if (!sanitizedPartialUser.success) {
         throw fromZodError(sanitizedPartialUser.error)
     }
-
+    
     const user = req.user
+
+    if(sanitizedPartialUser.data.nameChangedOn){
+        if(user!.name != sanitizedPartialUser.data.name){
+        const userCopied = await em.findOne(User, { name: sanitizedPartialUser.data.name })
+        
+        if(userCopied) {
+            const error = new Error('Username already exist.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+        }
+        const fechaLimite = new Date(user!.nameChangedOn!)
+        fechaLimite.setMonth(fechaLimite.getMonth() + 3)
+        if( new Date < fechaLimite ){
+            const error = new Error('Cooldown is not over for the name change.')
+            ;(error as any).statusCode = 403
+            throw error
+        }
+    }
+        
+
+    
+
     em.assign(user!, sanitizedPartialUser.data)
     await em.flush()
     res.status(200).json({ message: 'Perfil actualizado' })
