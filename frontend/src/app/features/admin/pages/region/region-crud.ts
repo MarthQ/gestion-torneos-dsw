@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { Region } from '@shared/interfaces/region';
@@ -9,21 +9,37 @@ import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { RegionCrudModal } from './region-crud-modal/region-crud-modal';
 import { PaginationMeta } from '@shared/interfaces/api-response';
+import { Limit } from '@shared/components/limit/limit';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [RegionCrudModal, SearchBar, Pagination],
+  imports: [RegionCrudModal, SearchBar, Pagination, Limit],
   templateUrl: './region-crud.html',
 })
 export class RegionCrud {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  router = inject(Router);
   regionService = inject(RegionService);
+
+  pageRecalculation = effect(() => {
+    if (!this.regionResource.value()) return;
+    if (!this.regionMeta()) return;
+    const maxPage = Math.ceil(this.regionMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
 
   // API Get parameters (for table)
   query = signal<string>('');
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -34,19 +50,18 @@ export class RegionCrud {
   regionMeta = signal<PaginationMeta | undefined>(undefined);
 
   regionResource = rxResource({
-    params: () => ({ query: this.query(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
-      return this.regionService.getRegionsPaginated(params.query, params.page, this.pageSize).pipe(
+      return this.regionService.getRegionsPaginated(params.query, params.page, params.limit).pipe(
         tap((response) => this.regionMeta.set(response.meta)),
         map((response) => response.data),
       );
     },
   });
-
-  pageChangedTo(newPage: number) {
-    console.log(this.query());
-    this.page.set(newPage);
-  }
 
   addRegion() {
     this.modalType.set('add');

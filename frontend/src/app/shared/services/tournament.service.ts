@@ -125,7 +125,7 @@ export class TournamentService {
     queryFilters?: QueryFilter,
     page: number = 1,
     pageSize: number = 10,
-  ): Observable<Tournament[]> {
+  ): Observable<PaginatedApiResponse<Tournament>> {
     const params: any = { page, pageSize };
 
     if (query) params.query = query;
@@ -134,10 +134,14 @@ export class TournamentService {
     if (queryFilters?.game) params.game = queryFilters.game.id;
     return this.http
       .get<
-        ApiResponse<Tournament[]>
+        PaginatedApiResponse<Tournament>
       >(`${environment.apiUrl}/tournaments/userTournaments`, { params })
       .pipe(
-        map((response) => response.data),
+        map((response) => ({
+          data: response.data,
+          meta: response.meta,
+          message: response.message,
+        })),
         catchError((error) => {
           return throwError(() => error.error?.message || 'Failed to fetch user tournaments');
         }),

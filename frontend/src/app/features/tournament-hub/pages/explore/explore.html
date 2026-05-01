@@ -24,11 +24,12 @@
   }
 </div>
 
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="tournamentMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="tournamentMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>
+
 <br />
 <hr class="opacity-25" stroke="currentColor" />
 <br />

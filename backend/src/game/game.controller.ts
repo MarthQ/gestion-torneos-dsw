@@ -49,26 +49,26 @@ async function searchIGDB(req: Request, res: Response) {
 
 //TODO: Discuss whether findAll should have or no pagination.
 async function findAll(req: Request, res: Response) {
-    // const page = req.query.page ? Number(req.query.page) : 1
-    // const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-    // const offset = (page - 1) * pageSize
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
 
-    // const query = req.query.query ? String(req.query.query) : undefined
+    const query = req.query.query ? String(req.query.query) : undefined
 
-    // const filter: any = {}
+    const filter: any = {}
 
-    // if (query) filter.name = { $like: `%${query}%` }
+    if (query) filter.name = { $like: `%${query}%` }
 
-    // const [games, total] = await em.findAndCount(Game, filter, {
-    //     limit: pageSize,
-    //     offset,
-    // })
+    const [games, total] = await em.findAndCount(Game, filter, {
+        limit: pageSize,
+        offset,
+    })
 
-    const games = await em.findAll(Game)
+    // const games = await em.findAll(Game)
     res.status(200).json({
         message: 'Found all games',
         data: games,
-        // meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 
