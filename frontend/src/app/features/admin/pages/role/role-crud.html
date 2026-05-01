@@ -84,9 +84,9 @@
     (confirmAction)="handleCrudAction($event)"
   />
 
-  <app-pagination
-    [inputPage]="page()"
-    [entityMeta]="roleMeta()"
-    (currentPage)="pageChangedTo($event)"
-  />
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="roleMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>
 }

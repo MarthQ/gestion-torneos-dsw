@@ -62,13 +62,16 @@ async function findAll(req: Request, res: Response) {
     if (location) filter.location = location
     if (game) filter.game = game
 
-    const Tournaments = await em.find(Tournament, filter, {
+    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
         populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
     })
 
     res.status(200).json({
         message: 'Found all tournaments',
         data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 
@@ -93,15 +96,16 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     if (region) filter.region = region
     if (game) filter.game = game
 
-    const Tournaments = await em.find(Tournament, filter, {
+    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
         populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
     })
-
-    console.log(Tournaments)
 
     res.status(200).json({
         message: 'Found all user tournaments',
         data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 

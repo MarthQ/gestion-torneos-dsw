@@ -92,8 +92,8 @@
   />
 }
 
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="tagMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="tagMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>

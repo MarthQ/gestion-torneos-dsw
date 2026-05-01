@@ -1,12 +1,4 @@
-import {
-  Component,
-  computed,
-  ElementRef,
-  inject,
-  linkedSignal,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs';
 import { Toaster } from '@shared/utils/toaster';
@@ -19,24 +11,40 @@ import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { PaginationMeta } from '@shared/interfaces/api-response';
+import { Limit } from '@shared/components/limit/limit';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [TagCrudModal, Pagination, SearchBar],
+  imports: [TagCrudModal, Pagination, SearchBar, Limit],
   templateUrl: './tag-crud.html',
 })
 export class TagCrud {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  router = inject(Router);
   tagService = inject(TagService);
+
+  pageRecalculation = effect(() => {
+    if (!this.tagResource.value()) return;
+    if (!this.tagMeta()) return;
+    const maxPage = Math.ceil(this.tagMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
 
   // ElementRef for resetting the query
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
 
   // API Get parameters (for table)
   query = signal('');
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -47,19 +55,18 @@ export class TagCrud {
   tagMeta = signal<PaginationMeta | undefined>(undefined);
 
   tagResource = rxResource({
-    params: () => ({ query: this.query(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
-      return this.tagService.getTagsPaginated(params.query, params.page, this.pageSize).pipe(
+      return this.tagService.getTagsPaginated(params.query, params.page, params.limit).pipe(
         tap((response) => this.tagMeta.set(response.meta)),
         map((response) => response.data),
       );
     },
   });
-
-  // Visual actions (pagination)
-  pageChangedTo(newPage: number) {
-    this.page.set(newPage);
-  }
 
   // CRUD Actions
   addTag() {

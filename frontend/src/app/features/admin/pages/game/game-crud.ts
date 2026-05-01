@@ -1,13 +1,14 @@
 import {
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
-  linkedSignal,
+  OnInit,
   signal,
   viewChild,
 } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { GameService } from '@shared/services/game.service';
 import { Toaster } from '@shared/utils/toaster';
 import { Game } from '@shared/interfaces/game';
@@ -16,15 +17,37 @@ import { map, of, tap } from 'rxjs';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { GameCrudModal } from './game-crud-modal/game-crud-modal';
-import { JsonPipe } from '@angular/common';
+
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
+import { Limit } from '@shared/components/limit/limit';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [Pagination, SearchBar, GameCrudModal],
+  imports: [Pagination, SearchBar, GameCrudModal, Limit],
   templateUrl: './game-crud.html',
 })
 export class GameCrud {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  router = inject(Router);
+
+  pageRecalculation = effect(() => {
+    if (!this.gameResource.value()) return;
+    if (!this.gameMeta()) return;
+    const maxPage = Math.ceil(this.gameMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
+
   gameService = inject(GameService);
   getGameImage = TournamentUtils.GetGameImage;
 
@@ -33,11 +56,6 @@ export class GameCrud {
 
   // API Get parameters (for table)
   query = signal('');
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -56,9 +74,13 @@ export class GameCrud {
   });
 
   gameResource = rxResource({
-    params: () => ({ query: this.query(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
-      return this.gameService.getGamesPaginated(params.query).pipe(
+      return this.gameService.getGamesPaginated(params.query, params.page, params.limit).pipe(
         tap((response) => console.log(response)),
         tap((response) => this.gameMeta.set(response.meta)),
         map((response) => response.data),
@@ -75,13 +97,9 @@ export class GameCrud {
       const dbGame = dbGames.find((game) => game.igdbId == igdbGame.igdbId);
       return dbGame ?? igdbGame;
     });
+
     return integratedGames.length ? integratedGames : dbGames;
   });
-
-  // Visual actions (pagination)
-  pageChangedTo(newPage: number) {
-    this.page.set(newPage);
-  }
 
   // Looks for the game in the gameResource
   isInDatabase(game: Game): boolean {
