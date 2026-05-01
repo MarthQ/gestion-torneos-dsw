@@ -198,16 +198,27 @@ async function update(req: Request, res: Response) {
     res.status(200).json({ message: 'User updated' })
 }
 
-async function updateByUser(req: RequestWithUser, res: Response){
+async function updateByUser(req: RequestWithUser, res: Response) {
     const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
-    
+
     if (!sanitizedPartialUser.success) {
         throw fromZodError(sanitizedPartialUser.error)
     }
+
     const user = req.user
-    em.assign(user!, sanitizedPartialUser.data);
-    await em.flush();
+    em.assign(user!, sanitizedPartialUser.data)
+    await em.flush()
     res.status(200).json({ message: 'Perfil actualizado' })
 }
 
-export { findAll, findOne, add, update, updateByUser, remove, sendInvitation, changePassword, requestResetPassword }
+export {
+    findAll,
+    findOne,
+    add,
+    update,
+    updateByUser,
+    remove,
+    sendInvitation,
+    changePassword,
+    requestResetPassword,
+}

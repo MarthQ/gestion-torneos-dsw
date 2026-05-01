@@ -35,6 +35,8 @@ userRouter.patch('/password', authenticationMiddleware, wrapController(changePas
 //(USER) Generate token & send mail with link to setup the new password
 userRouter.get('/change-password', authenticationMiddleware, wrapController(requestResetPassword))
 
+userRouter.patch('/editProfile', authenticationMiddleware, wrapController(updateByUser))
+
 //(ADMIN) Update user's data
 userRouter.patch(
     '/:id',
@@ -42,8 +44,6 @@ userRouter.patch(
     authorizeMiddleware(USER_ROLE.ADMIN),
     wrapController(update),
 )
-
-userRouter.patch('/editProfile', authenticationMiddleware, wrapController(updateByUser));
 
 userRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
