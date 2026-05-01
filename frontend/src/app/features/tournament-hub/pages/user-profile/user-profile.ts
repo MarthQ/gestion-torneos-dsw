@@ -87,7 +87,6 @@ export class UserProfile {
       }
     }
 
-
     const { id } = currentUser
     const updatedUser: UserUpdateDTO = {
       id,

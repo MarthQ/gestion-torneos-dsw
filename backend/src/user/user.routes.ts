@@ -38,11 +38,12 @@ userRouter.get('/change-password', authenticationMiddleware, wrapController(requ
 //(ADMIN) Update user's data
 userRouter.patch(
     '/:id',
+    authenticationMiddleware,
     authorizeMiddleware(USER_ROLE.ADMIN),
     wrapController(update),
 )
 
-userRouter.patch('/:id/byUser', authenticationMiddleware, wrapController(updateByUser));
+userRouter.patch('/editProfile', authenticationMiddleware, wrapController(updateByUser));
 
 userRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 

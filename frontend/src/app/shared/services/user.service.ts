@@ -73,7 +73,7 @@ export class UserService {
   updateUserNonAdmin(updatedUser: UserUpdateDTO): Observable<UserUpdateDTO> {
     const { id, ...body } = updatedUser;
     return this.http
-      .patch<ApiResponse<UserUpdateDTO>>(`${environment.apiUrl}/users/${id}/byUser`, body)
+      .patch<ApiResponse<UserUpdateDTO>>(`${environment.apiUrl}/users/editProfile`, body)
       .pipe(
         map((response) => response.data),
         catchError((error) => {
