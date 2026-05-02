@@ -53,6 +53,23 @@ app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
 })
 
+// Only sync schema in development
+if (process.env.NODE_ENV !== 'production') {
+    await syncSchema() // Never in production
+}
+
+// Seed initial data (safe to run multiple times)
+await seedRoles()
+await seedLocations()
+await seedTags()
+await seedRegions()
+
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
+
 await syncSchema() // Never in production
 await seedRoles()
 await seedLocations()

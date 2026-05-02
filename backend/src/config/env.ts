@@ -8,7 +8,7 @@ export const env = {
     dbPassword: process.env.DB_PASSWORD || 'dsw',
     dbHost: process.env.DB_HOST || 'localhost',
     dbPort: process.env.DB_PORT || '3306',
-    dbUsername: process.env.DB_USERNAME || 'dsw',
+    dbUsername: process.env.DB_USERNAME || process.env.DB_USER || 'dsw',
 
     smtpHost: process.env.SMTP_HOST,
     smtpPort: process.env.SMTP_PORT,
