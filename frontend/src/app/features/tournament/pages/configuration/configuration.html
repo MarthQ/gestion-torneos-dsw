@@ -81,7 +81,7 @@
           <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
         </fieldset>
 
-        @if (eventType() === 'virtual' || eventType() === null) {
+        @if (eventType() === 'virtual') {
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Region</legend>
             <select class="select w-full" formControlName="region">
