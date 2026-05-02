@@ -13,7 +13,7 @@ import { tagRouter } from './tag/tag.routes.js'
 import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
 import { regionRouter } from './region/region.routes.js'
-import { seedRoles, seedLocations, seedTags, seedRegions } from './db/seeds.js'
+import { seedRoles, seedLocations, seedTags, seedRegions, seedAdminUser } from './db/seeds.js'
 import { env } from './config/env.js'
 import { handleHttpError } from './utils/http-errors.utils.js'
 
@@ -68,6 +68,7 @@ await seedRoles()
 await seedLocations()
 await seedTags()
 await seedRegions()
+await seedAdminUser()
 
 const PORT = process.env.PORT || 3000
 
