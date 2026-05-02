@@ -69,15 +69,3 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
-
-await syncSchema() // Never in production
-await seedRoles()
-await seedLocations()
-await seedTags()
-await seedRegions()
-
-const PORT = process.env.PORT || 3000
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
