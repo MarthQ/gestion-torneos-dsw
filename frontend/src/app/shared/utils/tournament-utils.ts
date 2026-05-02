@@ -29,23 +29,23 @@ export class TournamentUtils {
   };
 
   static GetGameImage(game: Game, size = 'thumb'): string {
+    const dpr = window.devicePixelRatio >= 2 ? '_2x' : '';
     if (!game.imgId || game.imgId === '') {
       return `https://placehold.co/600x400/1e293b/white?text=${game.name.replace(' ', '+')}`;
     }
     switch (size) {
       case 'medium':
-        return `//images.igdb.com/igdb/image/upload/t_screenshot_big/${game.imgId}.jpg`;
+        return `//images.igdb.com/igdb/image/upload/t_screenshot_big${dpr}/${game.imgId}.jpg`;
       case 'big':
-        return `//images.igdb.com/igdb/image/upload/t_1080p/${game.imgId}.jpg`;
-      case 'thumb':
+        return `//images.igdb.com/igdb/image/upload/t_1080p${dpr}/${game.imgId}.jpg`;
       case 'cover_big':
-        return `//images.igdb.com/igdb/image/upload/t_cover_big/${game.imgId}.jpg`;
+        return `//images.igdb.com/igdb/image/upload/t_cover_big${dpr}/${game.imgId}.jpg`;
       case 'cover_small':
-        return `//images.igdb.com/igdb/image/upload/t_cover_small/${game.imgId}.jpg`;
+        return `//images.igdb.com/igdb/image/upload/t_cover_small${dpr}/${game.imgId}.jpg`;
       case 'screenshot_big':
-        return `//images.igdb.com/igdb/image/upload/t_screenshot_big/${game.imgId}.jpg`;
+        return `//images.igdb.com/igdb/image/upload/t_screenshot_big${dpr}/${game.imgId}.jpg`;
       default:
-        return `//images.igdb.com/igdb/image/upload/t_thumb/${game.imgId}.jpg`;
+        return `//images.igdb.com/igdb/image/upload/t_thumb${dpr}/${game.imgId}.jpg`;
     }
   }
 
@@ -74,8 +74,8 @@ export class TournamentUtils {
         .filter((t) => tagIds.includes(t.id))
         .map((t) => t.name);
 
-      const hasConflict = TournamentUtils.EXCLUSIVE_TAG_GROUPS.some((group) =>
-        group.filter((tag) => selectedTagNames.includes(tag)).length > 1,
+      const hasConflict = TournamentUtils.EXCLUSIVE_TAG_GROUPS.some(
+        (group) => group.filter((tag) => selectedTagNames.includes(tag)).length > 1,
       );
 
       return hasConflict ? { tagsNotCoherent: true } : null;
@@ -90,11 +90,7 @@ export class TournamentUtils {
    * @param availableTags - Array de todos los tags disponibles
    * @returns Nuevo array de tags tras el toggle
    */
-  static toggleExclusiveTag(
-    currentTags: number[],
-    tagId: number,
-    availableTags: Tag[],
-  ): number[] {
+  static toggleExclusiveTag(currentTags: number[], tagId: number, availableTags: Tag[]): number[] {
     const newTags = [...currentTags];
     const index = newTags.indexOf(tagId);
     const selectedTag = availableTags.find((t) => t.id === tagId);

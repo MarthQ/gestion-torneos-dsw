@@ -5,7 +5,7 @@
   </div>
 </div>
 
-<app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" />
+<app-search-bar (queryChanged)="query.set($event)" (clear)="query.set('')" [debounceTime]="500" />
 
 <div class="overflow-x-auto rounded-xl overflow-hidden shadow-xl">
   @if (gameData()) {

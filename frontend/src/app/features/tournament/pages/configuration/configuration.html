@@ -35,8 +35,7 @@
           <div class="h-full w-full flex items-center justify-center">
             @if (tournamentForm.get('game')?.value) {
               <img
-                [src]="getGameName(tournamentForm.get('game')!.value) | gameImage: IGDB_SIZE.CARD"
-                alt="Imagen del juego"
+                [src]="getGameImage(getGame(tournamentForm.get('game')!.value), 'big')"
                 class="w-full h-full object-contain"
               />
             }

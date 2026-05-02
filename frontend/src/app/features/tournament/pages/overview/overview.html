@@ -17,7 +17,7 @@
                 >{{ tournamentResource.value().status | i18nSelect: tournamentStatusMap }}</span
               >
               <span
-                class="flex items-center font-medium text-base-content text-shadow-lg text-shadow-content"
+                class="flex items-center font-medium p-2 rounded-xl bg-warning-content/85 text-warning"
                 ><span
                   class="icon-[hugeicons--date-time] mr-2"
                   style="width: 24px; height: 24px"
@@ -25,10 +25,14 @@
                 >{{ tournamentResource.value().datetimeinit | date: 'dd MMMM, HH:mm' }}</span
               >
             </div>
-            <h1 class="text-4xl md:text-5xl font-black">
+            <h1
+              class="text-4xl md:text-5xl font-black p-2 rounded-xl bg-base-100/85 text-base-content w-fit"
+            >
               {{ tournamentResource.value().name }}
             </h1>
-            <p class="flex items-center gap-1 text-primary font-bold text-lg my-1">
+            <p
+              class="flex items-center gap-1 mt-2 font-bold text-lg p-2 rounded-xl bg-info-content/85 text-info w-fit"
+            >
               <span class="icon-[mdi--location]" style="width: 24px; height: 24px"></span>
               @if (tournamentResource.value().region) {
                 {{ tournamentResource.value().region.name }}
@@ -164,7 +168,7 @@
               }
             }
 
-            <button class="btn btn-outline btn-lg">
+            <button class="btn btn-neutral btn-lg">
               <span class="icon-[material-symbols--share]" style="width: 18px; height: 18px"></span>
               Compartir
             </button>
