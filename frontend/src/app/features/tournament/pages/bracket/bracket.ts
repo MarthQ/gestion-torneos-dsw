@@ -16,6 +16,7 @@ export class Bracket implements OnDestroy {
   private tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
   private tournamentService = inject(TournamentService);
   private bracketSource: EventSource | null = null;
+  private abortController: AbortController | null = null;
   private url = `${environment.apiUrl}/tournaments/${this.tournamentId()}/bracket/stream`;
 
   bracketData = signal<any>({});
@@ -46,47 +47,95 @@ export class Bracket implements OnDestroy {
     const id = this.tournamentId();
     if (!id) return;
 
+    // Close existing connection if any
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
     if (this.bracketSource) {
       this.bracketSource.close();
+      this.bracketSource = null;
     }
 
-    this.bracketSource = new EventSource(this.url);
+    this.abortController = new AbortController();
 
-    this.bracketSource.onmessage = (event) => {
-      try {
-        // Validate that event.data is not undefined or empty
-        if (!event.data || event.data.trim() === '') {
-          console.log('[SSE] Empty message received, skipping');
-          return;
-        }
-
-        const data = JSON.parse(event.data);
-
-        console.log(`[SSE] Datos recibidos:`, data);
-        // Check if the data received is from a bracket update or a heartbeat
-        if (data && (data.stage || data.match)) {
-          this.renderBracket(data);
-          // The bracketData object is updated
-          this.bracketData.set(data);
-        }
-      } catch (e) {
-        console.error(`[SSE] Error procesando datos ${e}`);
-      }
+    // Use fetch API instead of EventSource to have full control over credentials
+    const fetchOptions = {
+      method: 'GET',
+      credentials: 'include' as RequestCredentials, // Send cookies for CORS with credentials
+      headers: {
+        'Accept': 'text/event-stream',
+      },
+      signal: this.abortController.signal,
     };
 
-    this.bracketSource.onerror = (error) => {
-      console.error(`[SSE] Error en la conexión:`, error);
-      // Close current connection
-      if (this.bracketSource) {
-        this.bracketSource.close();
-        this.bracketSource = null;
-      }
-      // Attempt to reconnect after 5 seconds
-      console.log('[SSE] Intentando reconectar en 5 segundos...');
-      setTimeout(() => {
-        this.connectToSSE();
-      }, 5000);
-    };
+    fetch(this.url, fetchOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        const read = () => {
+          reader?.read().then(({ done, value }) => {
+            if (done) {
+              console.log('[SSE] Connection closed by server');
+              this.reconnectSSE();
+              return;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            // Keep the last potentially incomplete line in the buffer
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const dataStr = line.slice(6).trim();
+                if (dataStr && dataStr !== '') {
+                  try {
+                    const data = JSON.parse(dataStr);
+                    console.log(`[SSE] Datos recibidos:`, data);
+                    if (data && (data.stage || data.match)) {
+                      this.renderBracket(data);
+                      this.bracketData.set(data);
+                    }
+                  } catch (e) {
+                    console.error(`[SSE] Error procesando datos:`, e);
+                  }
+                }
+              } else if (line.startsWith(': heartbeat')) {
+                console.log('[SSE] Heartbeat received');
+              }
+            }
+
+            read(); // Continue reading
+          }).catch((err) => {
+            if (err.name !== 'AbortError') {
+              console.error('[SSE] Read error:', err);
+              this.reconnectSSE();
+            }
+          });
+        };
+
+        read();
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.error('[SSE] Fetch error:', err);
+          this.reconnectSSE();
+        }
+      });
+  }
+
+  private reconnectSSE() {
+    console.log('[SSE] Intentando reconectar en 5 segundos...');
+    setTimeout(() => {
+      this.connectToSSE();
+    }, 5000);
   }
 
   isClosed = computed(() => this.tournamentResource.value()?.status === 'closed');
@@ -153,10 +202,14 @@ export class Bracket implements OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
     if (this.bracketSource) {
       this.bracketSource.close();
       this.bracketSource = null;
-      console.log('[SSE] Desconectado al salir del bracket');
     }
+    console.log('[SSE] Desconectado al salir del bracket');
   }
 }
