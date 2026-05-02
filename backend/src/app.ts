@@ -21,7 +21,7 @@ const app = express()
 app.use(express.json())
 app.use(
     cors({
-        origin: env.frontendURL,
+        origin: env.frontendURL || 'https://okizeme.matiascatala.com',
         credentials: true,
     }),
 )

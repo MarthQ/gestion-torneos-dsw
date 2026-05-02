@@ -54,11 +54,17 @@ export class Bracket implements OnDestroy {
 
     this.bracketSource.onmessage = (event) => {
       try {
+        // Validate that event.data is not undefined or empty
+        if (!event.data || event.data.trim() === '') {
+          console.log('[SSE] Empty message received, skipping');
+          return;
+        }
+
         const data = JSON.parse(event.data);
 
         console.log(`[SSE] Datos recibidos:`, data);
         // Check if the data received is from a bracket update or a heartbeat
-        if (data.stage || data.match) {
+        if (data && (data.stage || data.match)) {
           this.renderBracket(data);
           // The bracketData object is updated
           this.bracketData.set(data);
@@ -70,6 +76,16 @@ export class Bracket implements OnDestroy {
 
     this.bracketSource.onerror = (error) => {
       console.error(`[SSE] Error en la conexión:`, error);
+      // Close current connection
+      if (this.bracketSource) {
+        this.bracketSource.close();
+        this.bracketSource = null;
+      }
+      // Attempt to reconnect after 5 seconds
+      console.log('[SSE] Intentando reconectar en 5 segundos...');
+      setTimeout(() => {
+        this.connectToSSE();
+      }, 5000);
     };
   }
 
