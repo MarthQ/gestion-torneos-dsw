@@ -53,9 +53,14 @@ app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
 })
 
-// Only sync schema in development
+// Sync schema in development, ensure schema exists in production
 if (process.env.NODE_ENV !== 'production') {
-    await syncSchema() // Never in production
+    await syncSchema()
+} else {
+    // In production, ensure database and tables exist
+    const generator = ORM.getSchemaGenerator()
+    await generator.ensureDatabase()
+    await generator.updateSchema()
 }
 
 // Seed initial data (safe to run multiple times)
