@@ -1,6 +1,7 @@
 import {
   ApplicationConfig,
   inject,
+  LOCALE_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
@@ -11,6 +12,13 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { AuthService } from '@features/auth/services/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { authInterceptor } from '@features/auth/interceptors/auth.interceptor';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es-AR';
+import localeBr from '@angular/common/locales/br';
+import { LocaleService } from '@shared/services/locale.service';
+
+registerLocaleData(localeEs, 'es');
+registerLocaleData(localeBr, 'br');
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,5 +32,11 @@ export const appConfig: ApplicationConfig = {
       const authService = inject(AuthService);
       return firstValueFrom(authService.checkAuthStatus());
     }),
+
+    {
+      provide: LOCALE_ID,
+      deps: [LocaleService],
+      useFactory: (localeService: LocaleService) => localeService.getLocale,
+    },
   ],
 };

@@ -6,6 +6,8 @@ import { map } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { User } from '@shared/interfaces/user';
 import { Toaster } from '@shared/utils/toaster';
+import { ThemeService } from '@shared/services/theme.service';
+import { AvailableLocale, LocaleService } from '@shared/services/locale.service';
 
 @Component({
   imports: [RouterLink],
@@ -16,6 +18,8 @@ export class UserProfile {
 
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  themeService = inject(ThemeService);
+  private localeService = inject(LocaleService);
 
   userResource = rxResource({
     params: () => ({ userId: this.authService.user()!.id }),
@@ -23,6 +27,18 @@ export class UserProfile {
       return this.userService.getUserById(params.userId).pipe(map((resp) => (resp as any).data));
     },
   });
+
+  changeTheme(newtheme: string) {
+    this.themeService.setTheme(newtheme);
+  }
+
+  getLocale() {
+    return this.localeService.getLocale;
+  }
+
+  changeLocale(locale: string) {
+    this.localeService.changeLocale(locale as AvailableLocale);
+  }
 
   logout() {
     this.authService.logout();

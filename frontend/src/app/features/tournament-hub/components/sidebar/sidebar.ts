@@ -99,11 +99,6 @@ export class Sidebar {
       routerPath: '/my-inscriptions',
       icon: `icon-[material-symbols--joystick]`,
     },
-    {
-      name: 'Configuraciones',
-      routerPath: 'user-profile/settings',
-      icon: `icon-[material-symbols--settings]`,
-    },
   ]);
 
   sidebarButtons = computed(() => {
