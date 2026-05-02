@@ -396,8 +396,20 @@ async function streamTournamentBracket(req: Request, res: Response) {
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
-    // CORS is handled by the global middleware in app.ts
-    // Do NOT set Access-Control-Allow-Origin manually here to avoid conflicts with credentials:true
+
+    // Explicit CORS headers for SSE - using the request origin or fallback
+    const origin = req.headers.origin || env.frontendURL || 'https://okizeme.matiascatala.com'
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        res.writeHead(204)
+        res.end()
+        return
+    }
 
     sseManager.addConnection(tournamentId, res)
 
