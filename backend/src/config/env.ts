@@ -8,7 +8,7 @@ export const env = {
     dbPassword: process.env.DB_PASSWORD || 'dsw',
     dbHost: process.env.DB_HOST || 'localhost',
     dbPort: process.env.DB_PORT || '3306',
-    dbUsername: process.env.DB_USERNAME,
+    dbUsername: process.env.DB_USERNAME || 'dsw',
 
     smtpHost: process.env.SMTP_HOST,
     smtpPort: process.env.SMTP_PORT,
@@ -29,4 +29,5 @@ export const env = {
     jwtCookieName: 'access_token',
 
     frontendURL: process.env.FRONTEND_URL,
+    port: process.env.PORT || '3000',
 }

@@ -59,6 +59,8 @@ await seedLocations()
 await seedTags()
 await seedRegions()
 
-app.listen(3000, () => {
-    console.log('Server running on https://localhost:3000/')
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
 })

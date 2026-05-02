@@ -12,7 +12,7 @@ node_modules
 Thumbs.db
 
 # ignore built ts files
-dist/**/*
+dist/
 
 # vscode
 .vscode/*
@@ -30,3 +30,6 @@ dist/**/*
 
 ## mysql (docker)
 mysql/
+
+## Docker
+.dockerignore
