@@ -108,6 +108,7 @@ export class GameCrud {
 
   // CRUD Actions
   addGame(igdbGame: Game) {
+    console.log({ igdbGame });
     this.modalType.set('add');
     this.selectedGame.set(igdbGame);
     this.openModal.set(true);

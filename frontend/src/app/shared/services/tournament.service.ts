@@ -32,6 +32,8 @@ export class TournamentService {
 
     if (query) params.query = query;
     if (queryFilters?.location) params.location = queryFilters.location.id;
+    if (queryFilters?.tag) params.tag = queryFilters.tag.id;
+    if (queryFilters?.status) params.status = queryFilters.status;
     if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
 
@@ -132,6 +134,9 @@ export class TournamentService {
     if (queryFilters?.location) params.location = queryFilters.location.id;
     if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
+    if (queryFilters?.tag) params.tag = queryFilters.tag.id;
+    if (queryFilters?.status) params.status = queryFilters.status;
+
     return this.http
       .get<
         PaginatedApiResponse<Tournament>
