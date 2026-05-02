@@ -28,9 +28,6 @@ RUN npm ci --omit=dev
 # Copy compiled JavaScript from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy required files for runtime
-COPY --from=builder /app/.env ./.env 2>/dev/null || true
-
 EXPOSE 3000
 
 CMD ["node", "dist/app.js"]
