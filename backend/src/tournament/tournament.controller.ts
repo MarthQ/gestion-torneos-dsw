@@ -111,6 +111,44 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     })
 }
 
+async function findMyTournaments(req: RequestWithUser, res: Response){
+    const user = req.user!
+
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
+
+    const query = req.query.query ? String(req.query.query) : undefined
+    const tag = req.query.tag ? Number(req.query.tag) : undefined
+    const location = req.query.location ? Number(req.query.location) : undefined
+    const region = req.query.region ? Number(req.query.region) : undefined
+    const game = req.query.game ? Number(req.query.game) : undefined
+
+    const userWithInscriptions = await em.findOne(User, user.id!, {populate: ['inscriptions']})
+    const tournamentIds = userWithInscriptions?.inscriptions.map(inscription=>inscription.tournament)
+
+    const filter: any = {  id: {$in: tournamentIds} }
+
+    if (query) filter.name = { $like: `%${query}%` }
+    if (tag) filter.tags = { $some: { id: tag } }
+    if (location) filter.location = location
+    if (region) filter.region = region
+    if (game) filter.game = game
+
+    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+    })
+
+
+    res.status(200).json({
+        message: 'Found all user tournaments',
+        data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+    })
+}
+
 async function findOne(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
     const tournamentData = await em.findOneOrFail(
@@ -576,4 +614,5 @@ export {
     cancelTournament,
     reshuffleBracket,
     reopenTournament,
+    findMyTournaments
 }

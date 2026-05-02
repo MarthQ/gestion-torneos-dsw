@@ -1,1 +1,41 @@
-<p>my-inscriptions works!</p>,
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold">Mis Inscripciones</h1>
+    <h2 class="text-base-content/60">
+      Aquí puedes ver los torneos a los que estas inscripto. Dar de baja tu inscripción y demas
+    </h2>
+  </div>
+</div>
+<br />
+<hr class="opacity-25" stroke="currentColor" />
+<br />
+
+<app-search-bar
+  [filters]="{
+    games: gameResource.value(),
+    tags: tagResource.value(),
+  }"
+  (queryChanged)="query.set($event)"
+  (clear)="query.set('')"
+  (queryFiltered)="queryFilters.set($event)"
+/>
+
+<!-- Grid de torneos -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
+  <!-- Card 1 -->
+  @if (tournamentResource.hasValue()) {
+    @for (tournament of tournamentResource.value(); track tournament.id) {
+      <tournament-card [tournament]="tournament" (hasClicked)="clickedTournament(tournament)" />
+    }
+  }
+</div>
+
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="tournamentMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>
+
+<br />
+<hr class="opacity-25" stroke="currentColor" />
+<br />

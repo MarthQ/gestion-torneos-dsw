@@ -19,6 +19,7 @@ import {
     reshuffleBracket,
     reopenTournament,
     streamTournamentBracket,
+    findMyTournaments,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
@@ -34,6 +35,10 @@ tournamentRouter.get('/', wrapController(findAll))
 //* Find methods for user's tournaments
 // Find user's tournament
 tournamentRouter.get('/userTournaments', authenticationMiddleware, wrapController(findUserTournaments))
+
+// Find tournaments that the user is registered in
+tournamentRouter.get('/myInscriptions', authenticationMiddleware, wrapController(findMyTournaments))
+
 // Find tournament by id
 tournamentRouter.get('/:id', wrapController(findOne))
 
