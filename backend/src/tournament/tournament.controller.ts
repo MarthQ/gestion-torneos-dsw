@@ -392,46 +392,44 @@ async function updateMatchResult(req: Request, res: Response) {
 async function streamTournamentBracket(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.id)
 
-    // SSE Headers
-    res.setHeader('Content-Type', 'text/event-stream')
-    res.setHeader('Cache-Control', 'no-cache')
-    res.setHeader('Connection', 'keep-alive')
-
-    // Explicit CORS headers for SSE - using the request origin or fallback
     const origin = req.headers.origin || env.frontendURL || 'https://okizeme.matiascatala.com'
-    res.setHeader('Access-Control-Allow-Origin', origin)
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-    // Handle preflight requests
+    // Handle preflight ANTES de setear headers SSE
     if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Origin', origin)
+        res.setHeader('Access-Control-Allow-Credentials', 'true')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
         res.writeHead(204)
         res.end()
         return
     }
 
-    // Send an immediate heartbeat to ensure headers are flushed to client
-    // This prevents Cloudflare 524 timeout by sending data within 100 seconds
+    // SSE Headers
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache, no-store')
+    res.setHeader('Connection', 'keep-alive')
+    res.setHeader('X-Accel-Buffering', 'no')
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+
+    res.flushHeaders() // Ahora sí, solo para SSE
+
     res.write(`: connected\n\n`)
 
     sseManager.addConnection(tournamentId, res)
 
-    // Now fetch the bracket data (can take time, but headers are already sent)
     const bracketData = await manager.get.tournamentData(tournamentId)
     if (bracketData) {
-        // Send bracketData formatted as a SSE response
-        const payload = `data: ${JSON.stringify(bracketData)}\n\n`
-        res.write(payload)
+        res.write(`data: ${JSON.stringify(bracketData)}\n\n`)
     }
 
-    // On disconnection we remove the connection from sseManager
     req.on('close', () => {
+        clearInterval(heartbeat)
         sseManager.removeConnection(tournamentId, res)
         res.end()
     })
 
-    // The idea behind the heartbeat is to keep the connection alive when no changes are done to the bracket
     const heartbeat = setInterval(() => {
         try {
             res.write(`: heartbeat\n\n`)
@@ -440,7 +438,6 @@ async function streamTournamentBracket(req: Request, res: Response) {
             sseManager.removeConnection(tournamentId, res)
         }
     }, 30000)
-    req.on('close', () => clearInterval(heartbeat))
 }
 
 async function inscribeToTournament(req: RequestWithUser, res: Response) {
