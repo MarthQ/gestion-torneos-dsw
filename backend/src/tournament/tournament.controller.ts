@@ -411,8 +411,13 @@ async function streamTournamentBracket(req: Request, res: Response) {
         return
     }
 
+    // Send an immediate heartbeat to ensure headers are flushed to client
+    // This prevents Cloudflare 524 timeout by sending data within 100 seconds
+    res.write(`: connected\n\n`)
+
     sseManager.addConnection(tournamentId, res)
 
+    // Now fetch the bracket data (can take time, but headers are already sent)
     const bracketData = await manager.get.tournamentData(tournamentId)
     if (bracketData) {
         // Send bracketData formatted as a SSE response
