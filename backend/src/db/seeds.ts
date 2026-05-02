@@ -392,8 +392,10 @@ export async function seedAdminUser() {
         throw new Error('Admin role not found. Make sure seedRoles() runs first.')
     }
     
-    // Get first available location (or create a default one)
-    let defaultLocation = await em.findOne(Location, {})
+    // Get first available location
+    const locations = await em.find(Location, {}, { limit: 1 })
+    let defaultLocation = locations[0]
+    
     if (!defaultLocation) {
         defaultLocation = em.create(Location, { name: 'Buenos Aires' })
     }
