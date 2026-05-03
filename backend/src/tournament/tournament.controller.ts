@@ -5,17 +5,27 @@ import { fromZodError } from 'zod-validation-error'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { MikroOrmDatabase } from '../bracket/brackets-mikro-db.js'
 import { BracketsManager } from 'brackets-manager'
-import { User } from '../user/user.entity.js'
 import { StageType } from '../bracket/interfaces/unions.interface.js'
-import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
 import { TournamentStatus } from '../shared/interfaces/status.js'
 import { Inscription } from '../inscription/inscription.entity.js'
-import { ForeignKeyConstraintViolationException } from '@mikro-orm/core'
-import { TournamentSchema } from './tournament.schema.js';
+import { BracketMatch } from '../bracket/bracket-match.entity.js'
+
+import { sseManager } from './sse.store.js'
+import { TournamentSchema } from './tournament.schema.js'
 
 const em = ORM.em
+
 const storage = new MikroOrmDatabase()
 const manager = new BracketsManager(storage)
+
+// Array shuffling using Fisher-Yates algorithm
+function shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1))
+        ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+}
 
 async function findAll(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : 1
@@ -26,6 +36,7 @@ async function findAll(req: Request, res: Response) {
     const tag = req.query.tag ? Number(req.query.tag) : undefined
     const location = req.query.location ? Number(req.query.location) : undefined
     const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
 
     const filter: any = {}
 
@@ -33,13 +44,18 @@ async function findAll(req: Request, res: Response) {
     if (tag) filter.tags = { $some: { id: tag } }
     if (location) filter.location = location
     if (game) filter.game = game
+    if (status) filter.status = status
 
-    const Tournaments = await em.find(Tournament, filter, {
-        populate: ['game', 'creator', 'location', 'tags', 'game'],
+    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
     })
+
     res.status(200).json({
         message: 'Found all tournaments',
         data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 
@@ -53,22 +69,29 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     const query = req.query.query ? String(req.query.query) : undefined
     const tag = req.query.tag ? Number(req.query.tag) : undefined
     const location = req.query.location ? Number(req.query.location) : undefined
+    const region = req.query.region ? Number(req.query.region) : undefined
     const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
 
-    const filter: any = { $some: { creator: user.id } }
+    const filter: any = { creator: user.id }
 
     if (query) filter.name = { $like: `%${query}%` }
     if (tag) filter.tags = { $some: { id: tag } }
     if (location) filter.location = location
+    if (region) filter.region = region
     if (game) filter.game = game
+    if (status) filter.status = status
 
-    const tournaments = await em.find(Tournament, filter)
+    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+    })
 
     res.status(200).json({
         message: 'Found all user tournaments',
-        data: {
-            tournaments,
-        },
+        data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 
@@ -77,7 +100,7 @@ async function findOne(req: Request, res: Response) {
     const tournamentData = await em.findOneOrFail(
         Tournament,
         { id },
-        { populate: ['game', 'location', 'creator', 'inscriptions', 'tags', 'inscriptions.user'] },
+        { populate: ['game', 'location', 'region', 'creator', 'inscriptions', 'tags', 'inscriptions.user'] },
     )
 
     const bracketData = (await storage.select('stage', { tournament_id: id }))
@@ -127,6 +150,13 @@ async function update(req: Request, res: Response) {
     if (!sanitizedTournament.success) {
         throw fromZodError(sanitizedTournament.error)
     } else {
+        if (sanitizedTournament.data.region) {
+            sanitizedTournament.data.location = undefined
+        }
+        if (sanitizedTournament.data.location) {
+            sanitizedTournament.data.region = undefined
+        }
+
         const id = Number.parseInt(req.params.id)
         const tournament = await em.findOneOrFail(Tournament, id)
 
@@ -181,10 +211,61 @@ async function closeInscriptions(req: Request, res: Response) {
         settings: {
             seedOrdering: ['inner_outer'],
             size: getNearestPowerOfTwo(inscriptionNicknames.length),
+            grandFinal: type === 'double_elimination' ? 'double' : 'simple',
         },
     })
 
     const bracketData = await manager.get.tournamentData(id)
+
+    res.status(200).json({
+        message: 'Bracket created',
+        data: bracketData,
+    })
+}
+
+async function reshuffleBracket(req: RequestWithUser, res: Response) {
+    const id = Number.parseInt(req.params.id)
+    const tournament = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+
+    if (tournament.status !== TournamentStatus.CLOSED) {
+        const error = new Error('Tournament is not closed.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    const { name, type, inscriptions } = tournament
+    const inscriptionNicknames = inscriptions.map((inscription) => inscription.nickname)
+
+    const stages = await storage.select('stage', { tournament_id: id })
+
+    if (!stages?.length) {
+        const error = new Error(`There's no bracket available for this tournament.`)
+        ;(error as any).statusCode = 500
+        throw error
+    }
+    const stageId = stages[0].id
+
+    await manager.delete.stage(stageId)
+
+    const shuffledInscription = shuffleArray(inscriptionNicknames)
+
+    await manager.create.stage({
+        name: tournament.name,
+        tournamentId: id,
+        type: tournament.type as StageType,
+        seeding: shuffledInscription,
+        settings: {
+            seedOrdering: ['inner_outer'],
+            size: getNearestPowerOfTwo(shuffledInscription.length),
+            grandFinal: type === 'double_elimination' ? 'double' : 'simple',
+        },
+    })
+
+    const bracketData = await manager.get.tournamentData(id)
+
+    if (bracketData) {
+        sseManager.broadcastBracketUpdate(id, bracketData)
+    }
 
     res.status(200).json({
         message: 'Bracket created',
@@ -214,18 +295,47 @@ async function getNextReadyMatches(req: Request, res: Response) {
     })
 }
 
-async function updateMatchResult(req: Request, res: Response) {
-    const tournamentId = Number.parseInt(req.params.tournamentId)
+async function getStandings(req: Request, res: Response) {
+    const id = Number.parseInt(req.params.id)
 
-    const tournament = await em.findOneOrFail(Tournament, { id: tournamentId })
+    const tournament = await em.findOneOrFail(Tournament, id, {
+        populate: ['inscriptions', 'inscriptions.user'],
+    })
 
-    if (tournament.status !== TournamentStatus.RUNNING) {
-        const error = new Error(`Tournament is not running therefore matches can't be updated.`)
+    // const stages = await storage.select('stage', { tournament_id: id })
+    const tournamentData = await manager.get.tournamentData(id)
+
+    // The limitation bracketManager has is that the finalStandings function does not work if there's at least one match left unplayed.
+    if (tournament.status !== TournamentStatus.FINISHED) {
+        const error = new Error(`Tournament is not finished therefore standings can't be fetched.`)
         ;(error as any).statusCode = 409
         throw error
     }
 
+    const stageId = tournamentData.stage![0].id
+
+    const standings = await manager.get.finalStandings(stageId)
+
+    // The standings use participants therefore, crossing it with inscriptions is needed.
+    const inscriptionRanked = tournament.inscriptions.map((inscription) => {
+        const inscriptionStanding = standings.find((standing) => inscription.nickname === standing.name)
+
+        return { ...inscription, rank: inscriptionStanding!.rank }
+    })
+
+    res.status(200).json({
+        message: 'Tournament standings',
+        data: {
+            standings: inscriptionRanked,
+        },
+    })
+}
+
+async function updateMatchResult(req: Request, res: Response) {
+    const tournamentId = Number.parseInt(req.params.tournamentId)
+
     const id = Number.parseInt(req.params.id)
+
     const { score } = req.body
 
     if (!score || typeof score !== 'string' || !score.includes('-')) {
@@ -238,29 +348,96 @@ async function updateMatchResult(req: Request, res: Response) {
         throw new Error('Invalid score format. Scores must be numbers')
     }
 
+    const tournament = await em.findOneOrFail(Tournament, { id: tournamentId })
+
+    if (tournament.status !== TournamentStatus.RUNNING) {
+        const error = new Error(`Tournament is not running therefore matches can't be updated.`)
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    const nextMatches = await manager.find.nextMatches(id)
+
+    if (nextMatches.length === 0) {
+        const match = await em.getReference(BracketMatch, id)
+        em.assign(match, { status: 4 })
+
+        tournament.status = TournamentStatus.FINISHED
+        await em.flush()
+    }
+
+    if (tournament.type === 'double_elimination' && nextMatches.length !== 0) {
+        const currentStage = await manager.get.currentStage(tournamentId)
+        if (currentStage) {
+            const stageData = await manager.get.stageData(currentStage.id)
+            const allMatches = stageData.match as any[]
+            if (allMatches[allMatches.length - 2].id === id) {
+                if (score1 > score2) {
+                    tournament.status = TournamentStatus.FINISHED
+                    await em.flush()
+                    console.log('CAMBIANDO ESTADO DE TORNEO A FINALIZADO')
+                }
+            }
+        }
+    }
+
     const match = await manager.update.match({
         id,
         opponent1: { score: score1, result: score1 > score2 ? 'win' : 'loss' },
         opponent2: { score: score2, result: score1 < score2 ? 'win' : 'loss' },
-        //? Is this neccesary?
+
         child_count: 0,
     })
 
+    // SSEManager notifies every other person looking at the bracket
+    const updatedBracket = await manager.get.tournamentData(tournamentId)
+
+    if (updatedBracket) {
+        sseManager.broadcastBracketUpdate(tournamentId, updatedBracket)
+    }
+
     res.status(200).json({
         message: 'Match updated',
-        data: { match },
+        data: {
+            match,
+        },
     })
 }
 
-async function getTournamentBracket(req: Request, res: Response) {
-    const id = Number.parseInt(req.params.id)
+async function streamTournamentBracket(req: Request, res: Response) {
+    const tournamentId = Number.parseInt(req.params.id)
 
-    const bracketManagerTournament = await manager.get.tournamentData(id)
+    // SSE Headers
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+    res.setHeader('Access-Control-Allow-Origin', '*')
 
-    res.status(200).json({
-        message: 'Found Bracket',
-        data: bracketManagerTournament,
+    sseManager.addConnection(tournamentId, res)
+
+    const bracketData = await manager.get.tournamentData(tournamentId)
+    if (bracketData) {
+        // Send bracketData formatted as a SSE response
+        const payload = `data: ${JSON.stringify(bracketData)}\n\n`
+        res.write(payload)
+    }
+
+    // On disconnection we remove the connection from sseManager
+    req.on('close', () => {
+        sseManager.removeConnection(tournamentId, res)
+        res.end()
     })
+
+    // The idea behind the heartbeat is to keep the connection alive when no changes are done to the bracket
+    const heartbeat = setInterval(() => {
+        try {
+            res.write(`: heartbeat\n\n`)
+        } catch (e) {
+            clearInterval(heartbeat)
+            sseManager.removeConnection(tournamentId, res)
+        }
+    }, 30000)
+    req.on('close', () => clearInterval(heartbeat))
 }
 
 async function inscribeToTournament(req: RequestWithUser, res: Response) {
@@ -273,7 +450,27 @@ async function inscribeToTournament(req: RequestWithUser, res: Response) {
         throw error
     }
 
-    const tournament = await em.getReference(Tournament, tournamentId)
+    const tournament = await em.findOneOrFail(
+        Tournament,
+        { id: tournamentId },
+        { populate: ['inscriptions'] },
+    )
+
+    const inscriptionsWithNickname = tournament.inscriptions.filter(
+        (inscription) => inscription.nickname === nickname,
+    )
+
+    if (inscriptionsWithNickname.length !== 0) {
+        const error = new Error('There is already a user inscribed with that nickname.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    if (tournament!.inscriptions.length >= tournament!.maxParticipants) {
+        const error = new Error('Tournament has reached its maximum capacity.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
 
     // Checks if the user is not already inscribed
     const existingInscription = await em.findOne(Inscription, {
@@ -358,6 +555,22 @@ async function endTournament(req: RequestWithUser, res: Response) {
     await em.flush()
     res.status(200).send({ message: 'The tournament has finished!', data: tournament })
 }
+
+async function reopenTournament(req: RequestWithUser, res: Response) {
+    const id = Number(req.params.id)
+    const tournament = await em.findOneOrFail(Tournament, { id })
+
+    if (tournament.status !== TournamentStatus.FINISHED) {
+        const error = new Error('Tournament is not finished.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    tournament.status = TournamentStatus.RUNNING
+    await em.flush()
+    res.status(200).send({ message: 'The tournament has been reopen!', data: tournament })
+}
+
 async function cancelTournament(req: RequestWithUser, res: Response) {
     const id = Number(req.params.id)
     const tournament = await em.findOneOrFail(Tournament, { id })
@@ -380,10 +593,11 @@ export {
     update,
     remove,
     findUserTournaments,
-    getTournamentBracket,
+    streamTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
+    getStandings,
     create,
     inscribeToTournament,
     deleteInscription,
@@ -391,4 +605,6 @@ export {
     startTournament,
     endTournament,
     cancelTournament,
+    reshuffleBracket,
+    reopenTournament,
 }

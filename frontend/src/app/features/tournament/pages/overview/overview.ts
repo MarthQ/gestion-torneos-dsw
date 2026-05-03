@@ -1,6 +1,6 @@
 import { DatePipe, I18nSelectPipe, JsonPipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@features/auth/services/auth.service';
 import { InscriptionModal } from '@features/tournament/components/inscription-modal/inscription-modal';
@@ -11,6 +11,7 @@ import { Toaster } from '@shared/utils/toaster';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
 import { map, tap } from 'rxjs';
 import { ConfirmModal } from '@features/tournament/components/confirm-modal/confirm-modal';
+import { getAvatarPath } from '@shared/constants/avatar.constant';
 
 @Component({
   imports: [I18nSelectPipe, DatePipe, TitleCasePipe, InscriptionModal, ConfirmModal],
@@ -19,17 +20,20 @@ import { ConfirmModal } from '@features/tournament/components/confirm-modal/conf
 export class Overview {
   user = inject(AuthService).user();
   activatedRoute = inject(ActivatedRoute);
-  tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
+  tournamentId = toSignal(
+    this.activatedRoute.parent!.paramMap.pipe(map((paramMap) => paramMap.get('id'))),
+  );
   getBackgroundStyle = TournamentUtils.GetGameImage;
   tournamentStatusMap = TournamentUtils.tournamentStatusMap;
   tournamentStatusBadgeMap = TournamentUtils.tournamentStatusBadgeMap;
+  getAvatarPath = getAvatarPath;
 
   // Inscription modal
   isModalOpen = signal(false);
   modalType = signal<'add' | 'delete'>('add');
 
   // Confirm transition status modal
-  confirmModalType = signal<'close' | 'start' | 'end' | 'cancel'>('close');
+  confirmModalType = signal<'close' | 'start' | 'end' | 'cancel' | 'reopen'>('close');
   isConfirmModalOpen = signal<boolean>(false);
 
   private tournamentService = inject(TournamentService);
@@ -60,18 +64,6 @@ export class Overview {
         .pipe(map((response) => response.tournamentData));
     },
   });
-
-  // closeInscription() {
-  //   if (!this.tournamentId()) return;
-  //   this.tournamentService.closeInscriptions(this.tournamentId()!).subscribe({
-  //     next: (bracketManagerTournament) => {
-  //       Toaster.success(`Bracket generated succesfully`);
-  //     },
-  //     error: (message) => {
-  //       Toaster.error(message);
-  //     },
-  //   });
-  // }
 
   userIsCreator(): boolean {
     if (this.tournamentResource.hasValue() && this.user) {
@@ -108,7 +100,7 @@ export class Overview {
     this.isModalOpen.set(true);
   }
 
-  openConfirmationModal(type: 'close' | 'start' | 'end' | 'cancel') {
+  openConfirmationModal(type: 'close' | 'start' | 'end' | 'cancel' | 'reopen') {
     this.confirmModalType.set(type);
     this.isConfirmModalOpen.set(true);
   }
@@ -164,6 +156,15 @@ export class Overview {
           this.tournamentService.endTournament(this.tournamentResource.value().id).subscribe({
             next: () => {
               Toaster.success('El torneo ha finalizado!');
+              this.tournamentResource.reload();
+            },
+            error: (msg) => Toaster.error(msg),
+          });
+          break;
+        case 'reopen':
+          this.tournamentService.reopenTournament(this.tournamentResource.value().id).subscribe({
+            next: () => {
+              Toaster.success('El torneo se ha reabierto!');
               this.tournamentResource.reload();
             },
             error: (msg) => Toaster.error(msg),

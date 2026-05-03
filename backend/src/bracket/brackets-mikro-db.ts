@@ -99,11 +99,17 @@ export class MikroOrmDatabase implements CrudInterface {
     async delete<T extends keyof DataTypes>(table: T): Promise<boolean>
     async delete<T extends keyof DataTypes>(table: T, filter: Partial<DataTypes[T]>): Promise<boolean>
     async delete<T extends keyof DataTypes>(table: T, filter?: Partial<DataTypes[T]>): Promise<boolean> {
-        //! Ojo, esto puede borrar todo.
-        const entity = this.getEntity(table)
-        const records = await em.find(entity, filter ?? {})
-        await em.removeAndFlush(records)
-        return records.length > 0
+        try {
+            const entity = this.getEntity(table)
+            const records = await em.find(entity, filter ?? {})
+            if (records.length > 0) {
+                await em.removeAndFlush(records)
+            }
+            return true
+        } catch (error) {
+            console.error(`Error deleting from ${table}:`, error)
+            return false
+        }
     }
 
     private getEntity(table: string) {

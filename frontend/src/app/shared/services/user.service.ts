@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { QueryFilter } from '@shared/interfaces/filters';
-import { User, UserFormDTO } from '@shared/interfaces/user';
+import { User, UserFormDTO, UserUpdateDTO } from '@shared/interfaces/user';
 import { ApiResponse, PaginatedApiResponse } from '@shared/interfaces/api-response';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -66,6 +66,19 @@ export class UserService {
         catchError((error) => {
           console.log('Error updating user: ', error);
           return throwError(() => error.error.message);
+        }),
+      );
+  }
+
+  updateUserNonAdmin(updatedUser: UserUpdateDTO): Observable<UserUpdateDTO> {
+    const { id, ...body } = updatedUser;
+    return this.http
+      .patch<ApiResponse<UserUpdateDTO>>(`${environment.apiUrl}/users/editProfile`, body)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.log('Error updating user: ', error);
+          return throwError(() => error);
         }),
       );
   }

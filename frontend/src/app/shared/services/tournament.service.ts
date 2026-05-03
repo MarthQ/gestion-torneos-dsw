@@ -13,10 +13,7 @@ import { AuthService } from '@features/auth/services/auth.service';
 })
 export class TournamentService {
   private http = inject(HttpClient);
-  private _bracketData = signal<any | null>(null);
   private user = inject(AuthService).user;
-
-  bracketData = computed(() => this._bracketData());
 
   // Without pagination
   getTournaments(): Observable<Tournament[]> {
@@ -35,6 +32,8 @@ export class TournamentService {
 
     if (query) params.query = query;
     if (queryFilters?.location) params.location = queryFilters.location.id;
+    if (queryFilters?.tag) params.tag = queryFilters.tag.id;
+    if (queryFilters?.status) params.status = queryFilters.status;
     if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
 
@@ -90,8 +89,6 @@ export class TournamentService {
   updateTournament(updatedTournament: TournamentFormDTO): Observable<TournamentFormDTO> {
     const { id, ...body } = updatedTournament;
 
-    console.log(body);
-
     return this.http
       .patch<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`, body)
       .pipe(
@@ -124,54 +121,34 @@ export class TournamentService {
       );
   }
 
-  // Tournament detail with populated relations
-  // getTournamentDetail(id: number): Observable<TournamentDetail> {
-  //   return this.http
-  //     .get<ApiResponse<TournamentDetail>>(`${environment.apiUrl}/tournaments/${id}`)
-  //     .pipe(
-  //       map((response) => response.data),
-  //       catchError((error) => {
-  //         console.error(error);
-  //         return throwError(() => error.error?.message || 'Tournament not found');
-  //       }),
-  //     );
-  // }
-
   // User's tournaments
   getUserTournaments(
     query?: string,
     queryFilters?: QueryFilter,
     page: number = 1,
     pageSize: number = 10,
-  ): Observable<Tournament[]> {
+  ): Observable<PaginatedApiResponse<Tournament>> {
     const params: any = { page, pageSize };
 
     if (query) params.query = query;
     if (queryFilters?.location) params.location = queryFilters.location.id;
     if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
+    if (queryFilters?.tag) params.tag = queryFilters.tag.id;
+    if (queryFilters?.status) params.status = queryFilters.status;
+
     return this.http
-      .get<ApiResponse<Tournament[]>>(`${environment.apiUrl}/tournaments`, { params })
+      .get<
+        PaginatedApiResponse<Tournament>
+      >(`${environment.apiUrl}/tournaments/userTournaments`, { params })
       .pipe(
-        map((response) => response.data),
+        map((response) => ({
+          data: response.data,
+          meta: response.meta,
+          message: response.message,
+        })),
         catchError((error) => {
           return throwError(() => error.error?.message || 'Failed to fetch user tournaments');
-        }),
-      );
-  }
-
-  // Bracket operations
-  getTournamentBracket(tournamentId: number): Observable<any> {
-    return this.http
-      .get<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/bracket`)
-      .pipe(
-        map((response) => {
-          this._bracketData.set(response.data);
-          return response.data;
-        }),
-        catchError((error) => {
-          console.error(error);
-          return throwError(() => error.error?.message || 'Bracket not found');
         }),
       );
   }
@@ -239,6 +216,18 @@ export class TournamentService {
       );
   }
 
+  reopenTournament(tournamentId: number): Observable<Tournament> {
+    return this.http
+      .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/reopen`, {})
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to end the tournament');
+        }),
+      );
+  }
+
   cancelTournament(tournamentId: number): Observable<Tournament> {
     return this.http
       .post<ApiResponse<Tournament>>(`${environment.apiUrl}/tournaments/${tournamentId}/cancel`, {})
@@ -251,6 +240,18 @@ export class TournamentService {
       );
   }
 
+  getStandings(tournamentId: number): Observable<any> {
+    return this.http
+      .get<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/standings`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to fetch tournament standings');
+        }),
+      );
+  }
+
   isLoggedUserCreator(tournamentId: number): Observable<boolean> {
     return this.getTournament(tournamentId).pipe(
       map((response) => {
@@ -259,5 +260,13 @@ export class TournamentService {
       }),
       catchError(() => of(false)),
     );
+  }
+
+  refreshBracket(tournamentId: number): Observable<any> {
+    return this.http
+      .post<
+        ApiResponse<any>
+      >(`${environment.apiUrl}/tournaments/${tournamentId}/bracket/change`, {})
+      .pipe(map((response) => response.data));
   }
 }

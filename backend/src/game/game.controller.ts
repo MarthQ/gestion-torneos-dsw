@@ -26,7 +26,7 @@ async function searchIGDB(req: Request, res: Response) {
             Authorization: `Bearer ${env.igdbAccessToken}`,
             'Content-Type': 'text/plain',
         },
-        body: `search "${query}"; fields name,cover.image_id,summary,rating; limit 10;`,
+        body: `search "${query}"; fields name,cover.image_id,summary,rating; where game_type = (0,2,4,5,8,9,10,11,12); limit 10;`,
     })
 
     if (!response.ok) {
@@ -42,26 +42,34 @@ async function searchIGDB(req: Request, res: Response) {
 
 //TODO: Discuss whether findAll should have or no pagination.
 async function findAll(req: Request, res: Response) {
-    // const page = req.query.page ? Number(req.query.page) : 1
-    // const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-    // const offset = (page - 1) * pageSize
-
-    // const query = req.query.query ? String(req.query.query) : undefined
-
-    // const filter: any = {}
-
-    // if (query) filter.name = { $like: `%${query}%` }
-
-    // const [games, total] = await em.findAndCount(Game, filter, {
-    //     limit: pageSize,
-    //     offset,
-    // })
-
     const games = await em.findAll(Game)
     res.status(200).json({
         message: 'Found all games',
         data: games,
-        // meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+    })
+}
+
+async function findAllPaginated(req: Request, res: Response) {
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
+
+    const query = req.query.query ? String(req.query.query) : undefined
+
+    const filter: any = {}
+
+    if (query) filter.name = { $like: `%${query}%` }
+
+    const [games, total] = await em.findAndCount(Game, filter, {
+        limit: pageSize,
+        offset,
+    })
+
+    // const games = await em.findAll(Game)
+    res.status(200).json({
+        message: 'Found all games',
+        data: games,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 
@@ -135,4 +143,4 @@ async function remove(req: Request, res: Response) {
     res.status(200).send({ message: 'Game deleted' })
 }
 
-export { findAll, searchIGDB, findOne, add, update, remove }
+export { findAll, findAllPaginated, searchIGDB, findOne, add, update, remove }

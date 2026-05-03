@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { findAll, searchIGDB, findOne, add, update, remove } from './game.controller.js'
+import { findAll, searchIGDB, findOne, add, update, remove, findAllPaginated } from './game.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
@@ -50,6 +50,20 @@ gameRouter.get('/', wrapController(findAll))
 
 /**
  * @swagger
+ * /games/paginated:
+ *   get:
+ *     summary: Lista todos los juegos de manera paginada
+ *     tags: [Games]
+ *     responses:
+ *       200:
+ *         description: Se recuperaron todos los juegos paginados
+ *       501:
+ *         description: Servicio no disponible
+ */
+gameRouter.get('/paginated', wrapController(findAllPaginated))
+
+/**
+ * @swagger
  * /games/{id}:
  *   get:
  *     summary: Recupera un juego específico
@@ -94,6 +108,10 @@ gameRouter.get('/:id', wrapController(findOne))
  *         description: Error de validación
  *       401:
  *         description: No autenticado
+ *       409:
+ *         description: El juego ya está registrado en la base de datos
+ *       502:
+ *         description: Error en la api de IGDB
  */
 gameRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(add))
 
@@ -165,7 +183,12 @@ gameRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.A
  *       404:
  *         description: Juego no encontrado
  */
-gameRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
+gameRouter.patch(
+    '/:id',
+    authenticationMiddleware,
+    authorizeMiddleware(USER_ROLE.ADMIN),
+    wrapController(update),
+)
 
 /**
  * @swagger
@@ -194,6 +217,11 @@ gameRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE
  *       500:
  *         description: Error interno
  */
-gameRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(remove))
+gameRouter.delete(
+    '/:id',
+    authenticationMiddleware,
+    authorizeMiddleware(USER_ROLE.ADMIN),
+    wrapController(remove),
+)
 
 export { gameRouter }

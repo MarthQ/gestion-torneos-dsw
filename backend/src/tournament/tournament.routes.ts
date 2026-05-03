@@ -6,7 +6,6 @@ import {
     update,
     remove,
     findUserTournaments,
-    getTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
@@ -17,10 +16,15 @@ import {
     closeInscriptions,
     endTournament,
     cancelTournament,
+    reshuffleBracket,
+    reopenTournament,
+    streamTournamentBracket,
+    getStandings,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
 import { wrapController } from '../utils/http-errors.utils.js'
+import { updateMatchMiddleware } from './middlewares/updateMatch.middleware.js'
 
 const tournamentRouter = Router()
 
@@ -182,7 +186,6 @@ tournamentRouter.patch('/:id', authenticationMiddleware, isOwnerOrAdminMiddlewar
  */
 tournamentRouter.delete('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(remove))
 
-
 //* Find methods for user's tournaments
 // Find user's tournament
 
@@ -237,14 +240,46 @@ tournamentRouter.post('/create', authenticationMiddleware, wrapController(create
 
 //* Bracket -> A bracket is generated when the inscriptions has been closed.
 
+/**
+ * @swagger
+ * /tournaments/{id}/bracket/change:
+ *  get:
+ *    summary: Envia una petición de reformar el bracket equiparando a los jugadores de una nueva manera.
+ *    description: Se envia una petición para randomizar nuevamente la lista de inscriptos, borrar el stage del bracketManager y volverlo a crear. El sistema de randomización de nuevos inscriptos es el algoritmo de Fisher-Yates que asegura la máxima randomización.
+ *    tags: [Tournaments]
+ *    parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del torneo
+ *     responses:
+ *       200:
+ *         description: Torneo mezclado exitosamente.
+ *       409:
+ *         description: El torneo no está cerrado. Por ende no se pueden mezclar las brackets
+ *       422:
+ *         description: Torneo no encontrado o ID inválido
+ *       500:
+ *         description: No hay brackets disponible para este torneo.
+ */
+tournamentRouter.post(
+    '/:id/bracket/change',
+    authenticationMiddleware,
+    isOwnerOrAdminMiddleware,
+    wrapController(reshuffleBracket),
+)
+
 //* Match
-// Find tournament's bracket
+// SSE Streaming for update on tournament's bracket
 
 /**
  * @swagger
- * /tournaments/{id}/bracket:
+ * /tournaments/{id}/bracket/stream:
  *   get:
- *     summary: Obtiene el bracket de un torneo
+ *     summary: Obtiene el bracket de un torneo con actualizaciones en tiempo real (SSE)
+ *     description: Establece una conexión Server-Sent Events (SSE) que envía el bracket completo cada vez que hay un cambio. Incluye un heartbeat cada 30 segundos para mantener la conexión.
  *     tags: [Tournaments]
  *     parameters:
  *       - in: path
@@ -252,17 +287,23 @@ tournamentRouter.post('/create', authenticationMiddleware, wrapController(create
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID del torneo
  *     responses:
  *       200:
- *         description: Bracket encontrado
+ *         description: Conexión SSE establecida. El servidor envía eventos 'data' con el bracket actualizado.
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: string
+ *               description: Stream de datos del bracket en formato JSON.
  *       422:
- *         description: Torneo no encontrado
+ *         description: Torneo no encontrado o ID inválido
  *       500:
- *         description: Error interno
+ *         description: Error interno del servidor
  */
-tournamentRouter.get('/:id/bracket', wrapController(getTournamentBracket))
-// Find tournament's matches
+tournamentRouter.get('/:id/bracket/stream', wrapController(streamTournamentBracket))
 
+// Find tournament's matches
 /**
  * @swagger
  * /tournaments/{id}/matches:
@@ -390,7 +431,12 @@ tournamentRouter.post('/:tournamentId/match/:id', wrapController(updateMatchResu
  *       500:
  *         description: Error interno
  */
-tournamentRouter.patch('/:tournamentId/match/:id', wrapController(updateMatchResult))
+tournamentRouter.patch(
+    '/:tournamentId/match/:id',
+    authenticationMiddleware,
+    updateMatchMiddleware,
+    wrapController(updateMatchResult),
+)
 
 //* Inscriptions
 // Inscribe to tournament
@@ -504,7 +550,6 @@ tournamentRouter.post(
     wrapController(closeInscriptions),
 )
 
-
 // The owner or admin starts the tournament. Bracket gets created
 
 /**
@@ -577,6 +622,12 @@ tournamentRouter.post(
     isOwnerOrAdminMiddleware,
     wrapController(endTournament),
 )
+tournamentRouter.post(
+    '/:id/reopen',
+    authenticationMiddleware,
+    isOwnerOrAdminMiddleware,
+    wrapController(reopenTournament),
+)
 // The owner or admin notifies cancelation of the tournament
 
 /**
@@ -613,5 +664,6 @@ tournamentRouter.post(
     isOwnerOrAdminMiddleware,
     wrapController(cancelTournament),
 )
+tournamentRouter.get('/:id/standings', authenticationMiddleware, wrapController(getStandings))
 
 export { tournamentRouter }

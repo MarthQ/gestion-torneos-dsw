@@ -16,7 +16,8 @@ export class SetupPassword {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private mailToken = this.activatedRoute.snapshot.queryParamMap.get('token') ?? '';
-
+  showPassword = false;
+  showConfirmPassword = false;
   setPasswordForm = this.fb.group(
     {
       password: ['', [Validators.required, Validators.minLength(8)]],

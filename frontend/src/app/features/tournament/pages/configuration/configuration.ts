@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormArray,
   FormBuilder,
@@ -10,19 +10,21 @@ import {
 import { GameService } from '@shared/services/game.service';
 import { LocationService } from '@shared/services/location.service';
 import { TagService } from '@shared/services/tag.service';
+import { RegionService } from '@shared/services/region.service';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
 import { TournamentService } from '@shared/services/tournament.service';
 import { ActivatedRoute } from '@angular/router';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { Toaster } from '@shared/utils/toaster';
-import { map, firstValueFrom } from 'rxjs';
+import { map } from 'rxjs';
 import { FormUtils } from '@shared/utils/form-utils';
-import { GameImagePipe, IGDB_SIZE } from '../../../../shared/pipes/game-image.pipe';
-import { JsonPipe } from '@angular/common';
+import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
+import { debounceTime, EMPTY } from 'rxjs';
+import { Game } from '@shared/interfaces/game';
 
 @Component({
-  imports: [ReactiveFormsModule, FormErrorLabel, GameImagePipe],
+  imports: [ReactiveFormsModule, FormErrorLabel],
   templateUrl: './configuration.html',
 })
 export class Configuration {
@@ -33,7 +35,7 @@ export class Configuration {
   private tournamentService = inject(TournamentService);
   private fb = inject(FormBuilder);
   private activatedRoute = inject(ActivatedRoute);
-  IGDB_SIZE = IGDB_SIZE;
+  private regionService = inject(RegionService);
 
   // Signals
   private tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
@@ -77,6 +79,9 @@ export class Configuration {
   locationResource = rxResource({
     stream: () => this.locationService.getLocations(),
   });
+  regionResource = rxResource({
+    stream: () => this.regionService.getRegions(),
+  });
   tagResource = rxResource({
     stream: () => this.tagService.getTags(),
   });
@@ -92,6 +97,8 @@ export class Configuration {
         .pipe(map((response) => response.tournamentData));
     },
   });
+
+  getGameImage = TournamentUtils.GetGameImage;
 
   // Effects
   private toggle(controlName: string, disabled: boolean) {
@@ -143,19 +150,67 @@ export class Configuration {
     datetimeinit: [new Date(), Validators.required],
     game: [0, [Validators.required, Validators.min(1)]],
     maxParticipants: [2, [Validators.required, Validators.min(2)]],
-    location: [0, [Validators.required, Validators.min(1)]],
+    location: [0],
+    region: [0],
     type: ['single_elimination', [Validators.required]],
     tags: this.fb.array<FormControl<number>>([]),
+  });
+
+  tagsValue = toSignal(
+    this.tournamentForm.get('tags')?.valueChanges.pipe(debounceTime(300)) ?? EMPTY,
+  );
+
+  eventType = computed(() => {
+    const tagIds = this.tagsValue();
+    const allTags = this.tagResource.value();
+    if (!tagIds || !allTags) return null;
+    const hasVirtual = allTags.some(
+      (t) => t.name === EVENT_TAGS.VIRTUAL.name && tagIds.includes(t.id),
+    );
+    const hasPresencial = allTags.some(
+      (t) => t.name === EVENT_TAGS.IN_PERSON.name && tagIds.includes(t.id),
+    );
+    if (hasVirtual && hasPresencial) return 'mixed';
+    if (hasVirtual) return 'virtual';
+    if (hasPresencial) return 'presencial';
+    return null;
+  });
+
+  dynamicValidatorsEffect = effect(() => {
+    const type = this.eventType();
+
+    const locationControl = this.tournamentForm.get('location');
+    const regionControl = this.tournamentForm.get('region');
+
+    if (locationControl) {
+      if (type === 'virtual' || type === null) {
+        locationControl.reset();
+      }
+      locationControl.setValidators(
+        type === 'presencial' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      locationControl.updateValueAndValidity();
+    }
+
+    if (regionControl) {
+      if (type === 'presencial' || type === null) {
+        regionControl.reset();
+      }
+      regionControl.setValidators(
+        type === 'virtual' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      regionControl.updateValueAndValidity();
+    }
   });
 
   get tournamentTags() {
     return this.tournamentForm.get('tags') as FormArray;
   }
 
-  getGameName(gameId: number): string | null {
+  getGame(gameId: number): Game {
     const games = this.gameResource.value();
-    if (!games) return null;
-    return games.find((g) => g.id === gameId)?.imgId ?? null;
+    if (!games) return {} as Game;
+    return games.find((g) => g.id === gameId) ?? ({} as Game);
   }
 
   initTags(tags: number[]) {
@@ -172,6 +227,7 @@ export class Configuration {
       game: tournament.game?.id ?? 0,
       maxParticipants: tournament.maxParticipants,
       location: tournament.location?.id ?? 0,
+      region: tournament.region?.id ?? 0,
       type: tournament.type,
     } as any);
 
@@ -209,10 +265,31 @@ export class Configuration {
       return;
     }
 
+    const formValue = this.tournamentForm.getRawValue();
+    const type = this.eventType();
+
     const tournamentData: TournamentFormDTO = {
       id: +this.tournamentId()!,
-      ...this.tournamentForm.getRawValue(),
+      name: formValue.name,
+      description: formValue.description,
+      datetimeinit: formValue.datetimeinit,
+      game: formValue.game,
+      maxParticipants: formValue.maxParticipants,
+      type: formValue.type,
+      tags: formValue.tags,
     };
+
+    if (type === 'virtual' || type === null) {
+      // No enviar location
+    } else {
+      tournamentData.location = formValue.location || undefined;
+    }
+
+    if (type === 'presencial' || type === null) {
+      // No enviar region
+    } else {
+      tournamentData.region = formValue.region || undefined;
+    }
 
     this.tournamentService.updateTournament(tournamentData).subscribe();
   }

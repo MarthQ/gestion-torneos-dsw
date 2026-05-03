@@ -88,6 +88,13 @@ export function handleHttpError(error: any, res: Response): Response<HttpErrorRe
         })
     }
 
+    if (error.code === 'ER_DUP_ENTRY' || sqlMessage?.includes('tournament.tournament_name_unique')) {
+        return res.status(504).json({
+            message: 'Tournament name already taken',
+            statusCode: 504,
+        })
+    }
+
     return res.status(500).json({
         message: 'Internal Server Error',
         statusCode: 500,

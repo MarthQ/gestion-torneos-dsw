@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   linkedSignal,
@@ -18,21 +19,38 @@ import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { PaginationMeta } from '@shared/interfaces/api-response';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Router } from '@angular/router';
+import { Limit } from '@shared/components/limit/limit';
 
 @Component({
-  imports: [LocationCrudModal, Pagination, SearchBar],
+  imports: [LocationCrudModal, Pagination, SearchBar, Limit],
   templateUrl: './location-crud.html',
 })
 export class LocationCrud {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  router = inject(Router);
+
+  pageRecalculation = effect(() => {
+    if (!this.locationResource.value()) return;
+    if (!this.locationMeta()) return;
+    const maxPage = Math.ceil(this.locationMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
+
   locationService = inject(LocationService);
 
   // API Get parameters (for table)
   query = signal<string>('');
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -43,21 +61,20 @@ export class LocationCrud {
   locationMeta = signal<PaginationMeta | undefined>(undefined);
 
   locationResource = rxResource({
-    params: () => ({ query: this.query(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
       return this.locationService
-        .getLocationsPaginated(params.query, params.page, this.pageSize)
+        .getLocationsPaginated(params.query, params.page, params.limit)
         .pipe(
           tap((response) => this.locationMeta.set(response.meta)),
           map((response) => response.data),
         );
     },
   });
-
-  pageChangedTo(newPage: number) {
-    console.log(this.query());
-    this.page.set(newPage);
-  }
 
   addLocation() {
     this.modalType.set('add');

@@ -1,5 +1,6 @@
-import { Component, computed, input, linkedSignal, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, output } from '@angular/core';
 import { PaginationMeta } from '@shared/interfaces/api-response';
+import { Router, RouterLink } from '@angular/router';
 
 interface PageItem {
   n: number;
@@ -8,17 +9,31 @@ interface PageItem {
 
 @Component({
   selector: 'app-pagination',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './pagination.html',
 })
 export class Pagination {
+  router = inject(Router);
+
   entityMeta = input<PaginationMeta>();
+
   inputPage = input.required<number>();
+
   page = linkedSignal({
     source: this.inputPage,
     computation: () => this.inputPage(),
   });
-  currentPage = output<number>();
+
+  totalPages = computed(() =>
+    Array.from({ length: this.entityMeta()?.totalPages ?? 0 }, (_, i) => i + 1),
+  );
+
+  movePage = effect(() => {
+    this.router.navigate([], {
+      queryParams: { page: this.page() },
+      queryParamsHandling: 'merge',
+    });
+  });
 
   // Computed array of page items with ellipsis markers
   visiblePages = computed<PageItem[]>(() => {
@@ -63,19 +78,18 @@ export class Pagination {
     return pages;
   });
 
-  // Info text: "Página X de Y · Z resultados" o "X resultados · Única página"
   infoText = computed(() => {
     const meta = this.entityMeta();
     if (!meta) return '';
-    
+
     if (meta.total === 0) {
       return 'Sin resultados';
     }
-    
+
     if (meta.totalPages === 1) {
       return `${meta.total} resultado${meta.total !== 1 ? 's' : ''} · Única página`;
     }
-    
+
     return `Página ${meta.page} de ${meta.totalPages} · ${meta.total} resultados`;
   });
 
@@ -83,27 +97,20 @@ export class Pagination {
     return this.totalPages().length === 0;
   }
 
-  totalPages = computed(() =>
-    Array.from({ length: this.entityMeta()?.totalPages ?? 0 }, (_, i) => i + 1),
-  );
-
   moveToPreviousPage() {
     if (this.page() > 1) {
       this.page.update((current) => current - 1);
-      this.currentPage.emit(this.page());
     }
   }
 
   moveToPage(p: number) {
     this.page.set(p);
-    this.currentPage.emit(this.page());
   }
 
   moveToNextPage() {
     const maxPage = this.entityMeta()?.totalPages ?? 1;
     if (this.page() < maxPage) {
       this.page.update((current) => current + 1);
-      this.currentPage.emit(this.page());
     }
   }
 

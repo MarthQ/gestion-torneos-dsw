@@ -1,12 +1,5 @@
 import { Router } from 'express'
-import {
-    findAll,
-    findOne,
-    add,
-    update,
-    remove,
-    sendInvitation
-} from './user.controller.js'
+import { findAll, findOne, add, update, updateByUser, remove, sendInvitation } from './user.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
@@ -113,7 +106,12 @@ userRouter.put('/:id', authenticationMiddleware, wrapController(update))
  *       500:
  *         description: Error interno
  */
-userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(remove))
+userRouter.delete(
+    '/:id',
+    authenticationMiddleware,
+    authorizeMiddleware(USER_ROLE.ADMIN),
+    wrapController(remove),
+)
 
 //(ADMIN) Create user without password
 
@@ -148,7 +146,6 @@ userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROL
  */
 userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(add))
 
-
 //(ADMIN) Generate token & send mail with link to setup the password
 
 /**
@@ -181,18 +178,65 @@ userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADM
  */
 userRouter.get('/:id/invite', authenticationMiddleware, wrapController(sendInvitation))
 
-
-//! TODO: delete method and clean unused imports
-
-//! The consensus was not to document the following 2 calls because they are deprecated by auth
-// //(USER) Change password from "setup password page"
-//! Function and route of changePassword is incorrect and does not work
-//! Mailtoken comes in query string path but the function references that comes in params (not referenced here with /:mailToken)
-//! Function and endpoint to be deleted
-// userRouter.patch('/password', authenticationMiddleware, changePassword)
-
-// userRouter.get('/change-password', authenticationMiddleware, requestResetPassword)
-
+/**
+ * @swagger
+ * /users/editProfile:
+ *   patch:
+ *     summary: Actualiza parcialmente el perfil del usuario autenticado
+ *     description: Permite al usuario modificar sus propios datos (nombre, mail, ubicación, avatar).
+ *                  Incluye validaciones de unicidad para el nombre y un cooldown de 3 meses
+ *                  para cambios de nombre de usuario.
+ *     tags: [Users]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nombre de usuario (requiere cooldown si ya fue cambiado)
+ *                 example: "NuevoNickname"
+ *               mail:
+ *                 type: string
+ *                 format: email
+ *                 description: Correo electrónico
+ *                 example: "nuevo@mail.com"
+ *               location:
+ *                 type: integer
+ *                 description: ID de la ubicación
+ *                 example: 5
+ *               avatarId:
+ *                 type: string
+ *                 description: ID del avatar (opcional)
+ *                 example: "avatar-123"
+ *             required: []
+ *     responses:
+ *       200:
+ *         description: Perfil actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Perfil actualizado
+ *       400:
+ *         description: Datos de entrada inválidos (error de validación Zod)
+ *       403:
+ *         description: Cooldown no terminado para cambio de nombre o nombre ya existente
+ *       401:
+ *         description: No autenticado
+ *       409:
+ *         description: El nombre de usuario ya está en uso
+ *       500:
+ *         description: Error interno
+ */
+userRouter.patch('/editProfile', authenticationMiddleware, wrapController(updateByUser))
 
 //(ADMIN) Update user's data
 
@@ -229,6 +273,11 @@ userRouter.get('/:id/invite', authenticationMiddleware, wrapController(sendInvit
  *       404:
  *         description: Usuario no encontrado
  */
-userRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
+userRouter.patch(
+    '/:id',
+    authenticationMiddleware,
+    authorizeMiddleware(USER_ROLE.ADMIN),
+    wrapController(update),
+)
 
 export { userRouter }

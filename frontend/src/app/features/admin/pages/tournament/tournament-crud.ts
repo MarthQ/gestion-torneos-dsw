@@ -1,4 +1,4 @@
-import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { TournamentService } from '@shared/services/tournament.service';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -16,12 +16,35 @@ import { GameService } from '@shared/services/game.service';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
+import { RegionService } from '@shared/services/region.service';
+import { Limit } from '@shared/components/limit/limit';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe, I18nSelectPipe],
+  imports: [SearchBar, Pagination, TournamentCrudModal, DatePipe, I18nSelectPipe, Limit],
   templateUrl: './tournament-crud.html',
 })
 export class TournamentCrud {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  router = inject(Router);
+
+  pageRecalculation = effect(() => {
+    if (!this.tournamentResource.value()) return;
+    if (!this.tournamentMeta()) return;
+    const maxPage = Math.ceil(this.tournamentMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
+
   tournamentService = inject(TournamentService);
   tournamentStatusMap = TournamentUtils.tournamentStatusMap;
 
@@ -29,15 +52,11 @@ export class TournamentCrud {
   locationService = inject(LocationService);
   tagService = inject(TagService);
   gameService = inject(GameService);
+  regionService = inject(RegionService);
 
   // API Get parameters (for table)
   query = signal('');
   queryFilters = signal<QueryFilter>({});
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -60,23 +79,26 @@ export class TournamentCrud {
   gameResource = rxResource({
     stream: () => this.gameService.getGames(),
   });
+  regionResource = rxResource({
+    stream: () => this.regionService.getRegions(),
+  });
 
   tournamentResource = rxResource({
-    params: () => ({ query: this.query(), queryFilters: this.queryFilters(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      queryFilters: this.queryFilters(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
       return this.tournamentService
-        .getTournamentsPaginated(params.query, params.queryFilters, params.page, this.pageSize)
+        .getTournamentsPaginated(params.query, params.queryFilters, params.page, params.limit)
         .pipe(
           tap((response) => this.tournamentMeta.set(response.meta)),
           map((response) => response.data),
         );
     },
   });
-
-  // Visual actions (pagination)
-  pageChangedTo(newPage: number) {
-    this.page.set(newPage);
-  }
 
   // CRUD Actions
   addTournament() {
