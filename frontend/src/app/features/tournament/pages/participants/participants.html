@@ -124,11 +124,7 @@
         </table>
 
         <div class="py-2">
-          <app-pagination
-            [inputPage]="page()"
-            [entityMeta]="inscriptionsMeta()"
-            (currentPage)="pageChangedTo($event)"
-          />
+          <app-pagination [inputPage]="page()" [entityMeta]="inscriptionsMeta()" />
         </div>
       </div>
     }

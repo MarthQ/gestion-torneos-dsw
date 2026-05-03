@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 
@@ -13,12 +13,32 @@ import { PaginationMeta } from '@shared/interfaces/api-response';
 import { TournamentCard } from '@features/tournament-hub/components/tournament-card/tournament-card';
 import { Tournament } from '@shared/interfaces/tournament';
 import { SidebarService } from '@features/tournament-hub/services/sidebarService.service';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Limit } from '@shared/components/limit/limit';
+import { map, tap } from 'rxjs';
 
 @Component({
-  imports: [SearchBar, Pagination, RouterLink, TournamentCard],
+  imports: [SearchBar, Pagination, RouterLink, TournamentCard, Limit],
   templateUrl: './myTournaments.html',
 })
 export class MyTournaments {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  pageRecalculation = effect(() => {
+    if (!this.tournamentResource.value()) return;
+    if (!this.tournamentMeta()) return;
+    const maxPage = Math.ceil(this.tournamentMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
+
   private tournamentService = inject(TournamentService);
   private sidebarService = inject(SidebarService);
   private router = inject(Router);
@@ -29,11 +49,6 @@ export class MyTournaments {
   // API Get parameters (for table)
   query = signal('');
   queryFilters = signal<QueryFilter>({});
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   tournamentMeta = signal<PaginationMeta | undefined>(undefined);
 
@@ -45,24 +60,24 @@ export class MyTournaments {
   });
 
   tournamentResource = rxResource({
-    params: () => ({ query: this.query(), queryFilters: this.queryFilters(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      queryFilters: this.queryFilters(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
-      return this.tournamentService.getUserTournaments(
-        params.query,
-        params.queryFilters,
-        params.page,
-        this.pageSize,
-      );
+      return this.tournamentService
+        .getUserTournaments(params.query, params.queryFilters, params.page, params.limit)
+        .pipe(
+          tap((response) => this.tournamentMeta.set(response.meta)),
+          map((response) => response.data),
+        );
     },
   });
 
   clickedTournament(tournament: Tournament) {
     this.sidebarService.updateRecentTournaments(tournament);
     this.router.navigate(['/tournament', tournament.id]);
-  }
-
-  // Visual actions (pagination)
-  pageChangedTo(newPage: number) {
-    this.page.set(newPage);
   }
 }

@@ -41,6 +41,9 @@
       class="join-item btn btn-sm"
       [disabled]="page() === entityMeta()?.totalPages || noPages()"
       (click)="moveToNextPage()"
+      [routerLink]="[]"
+      [queryParams]="{ page: page() + 1 }"
+      [queryParamsHandling]="'merge'"
       aria-label="Página siguiente"
     >
       <span class="icon-[icon-park-outline--right]"></span>

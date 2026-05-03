@@ -56,6 +56,7 @@ async function findAll(req: Request, res: Response) {
     const tag = req.query.tag ? Number(req.query.tag) : undefined
     const location = req.query.location ? Number(req.query.location) : undefined
     const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
 
     const filter: any = {}
 
@@ -63,14 +64,18 @@ async function findAll(req: Request, res: Response) {
     if (tag) filter.tags = { $some: { id: tag } }
     if (location) filter.location = location
     if (game) filter.game = game
+    if (status) filter.status = status
 
-    const Tournaments = await em.find(Tournament, filter, {
+    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
         populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
     })
 
     res.status(200).json({
         message: 'Found all tournaments',
         data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 
@@ -86,6 +91,7 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     const location = req.query.location ? Number(req.query.location) : undefined
     const region = req.query.region ? Number(req.query.region) : undefined
     const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
 
     const filter: any = { creator: user.id }
 
@@ -94,16 +100,18 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     if (location) filter.location = location
     if (region) filter.region = region
     if (game) filter.game = game
+    if (status) filter.status = status
 
-    const Tournaments = await em.find(Tournament, filter, {
+    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
         populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
     })
-
-    console.log(Tournaments)
 
     res.status(200).json({
         message: 'Found all user tournaments',
         data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
 

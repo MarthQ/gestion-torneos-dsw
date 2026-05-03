@@ -17,15 +17,14 @@ import { TournamentService } from '@shared/services/tournament.service';
 import { ActivatedRoute } from '@angular/router';
 import { Tournament, TournamentFormDTO } from '@shared/interfaces/tournament';
 import { Toaster } from '@shared/utils/toaster';
-import { map, firstValueFrom } from 'rxjs';
+import { map } from 'rxjs';
 import { FormUtils } from '@shared/utils/form-utils';
-import { GameImagePipe, IGDB_SIZE } from '../../../../shared/pipes/game-image.pipe';
-import { JsonPipe } from '@angular/common';
 import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
 import { debounceTime, EMPTY } from 'rxjs';
+import { Game } from '@shared/interfaces/game';
 
 @Component({
-  imports: [ReactiveFormsModule, FormErrorLabel, GameImagePipe],
+  imports: [ReactiveFormsModule, FormErrorLabel],
   templateUrl: './configuration.html',
 })
 export class Configuration {
@@ -37,7 +36,6 @@ export class Configuration {
   private fb = inject(FormBuilder);
   private activatedRoute = inject(ActivatedRoute);
   private regionService = inject(RegionService);
-  IGDB_SIZE = IGDB_SIZE;
 
   // Signals
   private tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
@@ -99,6 +97,8 @@ export class Configuration {
         .pipe(map((response) => response.tournamentData));
     },
   });
+
+  getGameImage = TournamentUtils.GetGameImage;
 
   // Effects
   private toggle(controlName: string, disabled: boolean) {
@@ -207,10 +207,10 @@ export class Configuration {
     return this.tournamentForm.get('tags') as FormArray;
   }
 
-  getGameName(gameId: number): string | null {
+  getGame(gameId: number): Game {
     const games = this.gameResource.value();
-    if (!games) return null;
-    return games.find((g) => g.id === gameId)?.imgId ?? null;
+    if (!games) return {} as Game;
+    return games.find((g) => g.id === gameId) ?? ({} as Game);
   }
 
   initTags(tags: number[]) {
