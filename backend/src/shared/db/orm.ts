@@ -6,9 +6,9 @@ const isTest = process.env.NODE_ENV === 'test'
 
 export const ORM = await MikroORM.init({
     entities: ['dist/**/*.entity.js'],
-    entitiesTs: isTest ? ['dist/**/*.entity.js'] : ['src/**/*.entity.ts'],
-    dbName: env.DB_NAME,
-    clientUrl: 'mysql://dsw:dsw@localhost:3306/okiDSW',
+    entitiesTs: ['src/**/*.entity.ts'],
+    dbName: env.dbName,
+    clientUrl: `mysql://${env.dbUsername}:${env.dbPassword}@${env.dbHost}:${env.dbPort}/${env.dbName}`,
     highlighter: new SqlHighlighter(),
     debug: true,
     allowGlobalContext: true,

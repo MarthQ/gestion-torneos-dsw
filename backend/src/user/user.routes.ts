@@ -4,6 +4,7 @@ import {
     findOne,
     add,
     update,
+    updateByUser,
     remove,
     sendInvitation,
     changePassword,
@@ -12,24 +13,38 @@ import {
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { authorizeMiddleware } from '../auth/middlewares/authorize.middleware.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
+import { wrapController } from '../utils/http-errors.utils.js'
 
 const userRouter = Router()
 
-userRouter.get('/', findAll)
-userRouter.get('/:id', findOne)
-userRouter.put('/:id', authenticationMiddleware, update)
-userRouter.delete('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), remove)
+userRouter.get('/', wrapController(findAll))
+userRouter.get('/:id', wrapController(findOne))
+userRouter.delete(
+    '/:id',
+    authenticationMiddleware,
+    authorizeMiddleware(USER_ROLE.ADMIN),
+    wrapController(remove),
+)
 
 //(ADMIN) Create user without password
-userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), add)
+userRouter.post('/', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(add))
 //(ADMIN) Generate token & send mail with link to setup the password
-userRouter.get('/:id/invite', authenticationMiddleware, sendInvitation)
+userRouter.get('/:id/invite', authenticationMiddleware, wrapController(sendInvitation))
 //(USER) Change password from "setup password page"
-userRouter.patch('/password', authenticationMiddleware, changePassword)
+userRouter.patch('/password', authenticationMiddleware, wrapController(changePassword))
 //(USER) Generate token & send mail with link to setup the new password
-userRouter.get('/change-password', authenticationMiddleware, requestResetPassword)
+userRouter.get('/change-password', authenticationMiddleware, wrapController(requestResetPassword))
+
+userRouter.patch('/editProfile', authenticationMiddleware, wrapController(updateByUser))
 
 //(ADMIN) Update user's data
-userRouter.patch('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), update)
+userRouter.patch(
+    '/:id',
+    authenticationMiddleware,
+    authorizeMiddleware(USER_ROLE.ADMIN),
+    wrapController(update),
+)
+
+userRouter.put('/:id', authenticationMiddleware, authorizeMiddleware(USER_ROLE.ADMIN), wrapController(update))
 
 export { userRouter }

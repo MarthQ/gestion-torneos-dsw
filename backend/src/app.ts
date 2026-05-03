@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import { ORM, syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
 import { gameRouter } from './game/game.routes.js'
@@ -9,12 +9,13 @@ import { locationRouter } from './location/location.routes.js'
 import { inscriptionRouter } from './inscription/inscription.routes.js'
 import { roleRouter } from './role/role.routes.js'
 import cors from 'cors'
-import { matchupRouter } from './matchup/matchup.routes.js'
 import { tagRouter } from './tag/tag.routes.js'
 import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
-import { seedRoles, seedLocations, seedTags } from './db/seeds.js'
+import { regionRouter } from './region/region.routes.js'
+import { seedRoles, seedLocations, seedTags, seedRegions } from './db/seeds.js'
 import { env } from './config/env.js'
+import { handleHttpError } from './utils/http-errors.utils.js'
 
 export const app = express()
 
@@ -38,11 +39,16 @@ app.use('/api/games', gameRouter)
 app.use('/api/tournaments', tournamentRouter)
 app.use('/api/users', userRouter)
 app.use('/api/locations', locationRouter)
+app.use('/api/regions', regionRouter)
 app.use('/api/inscriptions', inscriptionRouter)
-app.use('/api/matchups', matchupRouter)
 app.use('/api/tags', tagRouter)
 app.use('/api/roles', roleRouter)
 app.use('/api/auth', authRouter)
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error('Catched an error:', err)
+    handleHttpError(err, res)
+})
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
@@ -52,6 +58,7 @@ await syncSchema() // Never in production
 await seedRoles()
 await seedLocations()
 await seedTags()
+await seedRegions()
 
 app.listen(3000, () => {
     console.log('Server running on https://localhost:3000/')

@@ -1,0 +1,38 @@
+<dialog #confirmModal class="modal" (cancel)="onCancel()" (close)="onCancel()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{ getTitle() }}</h3>
+
+    <div class="py-4">
+      @if (type() === 'cancel') {
+        <!-- Caso especial: escribir "Cancelar" -->
+        <div class="alert alert-warning mb-4 flex items-center">
+          <span class="icon-[solar--danger-bold] mr-2" style="width: 24px; height: 24px"></span>
+          <span>Esta acción es <strong>irreversible</strong></span>
+        </div>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Escribí "Cancelar" para confirmar</legend>
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            placeholder="Cancelar"
+            [formControl]="confirmInput"
+          />
+        </fieldset>
+      } @else {
+        <p>{{ getMessage() }}</p>
+      }
+    </div>
+    <div class="modal-action">
+      <button
+        class="btn"
+        [class.btn-warning]="type() !== 'cancel'"
+        [class.btn-error]="type() === 'cancel'"
+        [disabled]="type() === 'cancel' && confirmInput.value !== 'Cancelar'"
+        (click)="onConfirm()"
+      >
+        Confirmar
+      </button>
+      <button class="btn btn-ghost" (click)="onCancel()">Cancelar</button>
+    </div>
+  </div>
+</dialog>

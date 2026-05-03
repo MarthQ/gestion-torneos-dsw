@@ -4,6 +4,7 @@ import { Location } from '../location/location.entity.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
 import { EVENT_TAGS } from '../tag/interfaces/default-tags.const.js'
 import { Tag } from '../tag/tag.entity.js'
+import { Region } from '../region/region.entity.js'
 
 const DEFAULT_ROLES = Object.values(USER_ROLE)
 
@@ -319,6 +320,31 @@ const ARGENTINIAN_LOCATIONS = [
     'Puerto Esperanza',
 ]
 
+const REGIONS = [
+    'GLOBAL',
+
+    // Americas
+    'NA', // North America
+    'LAN', // Latin America North
+    'LAS', // Latin America South
+    'BR', // Brazil
+
+    // Europe
+    'EUW', // Europe West
+    'EUNE', // Europe Nordic & East
+    'EU', // General Europe
+    'TR', // Turkey
+
+    // Asia
+    'JP', // Japan
+    'CN', // China
+
+    // Oceania
+    'OCE', // Oceania
+    'AU', // Australia
+    'NZ', // New Zealand
+]
+
 export async function seedLocations() {
     const em = ORM.em.fork()
     let created = 0
@@ -331,4 +357,18 @@ export async function seedLocations() {
     }
     await em.flush()
     console.log(`✅ Locations seeded (${created} new)`)
+}
+
+export async function seedRegions() {
+    const em = ORM.em.fork()
+    let created = 0
+    for (const name of REGIONS) {
+        const exists = await em.findOne(Region, { name: name.trim() })
+        if (!exists) {
+            em.create(Region, { name: name.trim() })
+            created++
+        }
+    }
+    await em.flush()
+    console.log(`✅ Regions seeded (${created} new)`)
 }

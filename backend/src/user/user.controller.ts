@@ -17,10 +17,11 @@ const em = ORM.em
 const mailer = new Mailer()
 
 const UserSchema = z.object({
-    id: z.number().gt(0).optional(),
     name: z.string({ message: 'Name must be a string' }),
     password: z.string({ message: 'Password must be a string' }).optional(),
     mail: z.string({ message: 'Mail must be a string' }),
+    avatarId: z.string({ message: 'AvatarId must be a string' }).optional(),
+    nameChangedOn: z.coerce.date({ message: 'Date time must be a date' }).optional(),
     location: z.number({
         message: 'Location must be a number representing a location id',
     }),
@@ -28,267 +29,219 @@ const UserSchema = z.object({
 })
 
 async function findAll(req: Request, res: Response) {
-    try {
-        const page = req.query.page ? Number(req.query.page) : 1
-        const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
-        const offset = (page - 1) * pageSize
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
 
-        const query = req.query.query ? String(req.query.query) : undefined
-        const role = req.query.role ? Number(req.query.role) : undefined
-        const location = req.query.location ? Number(req.query.location) : undefined
+    const query = req.query.query ? String(req.query.query) : undefined
+    const role = req.query.role ? Number(req.query.role) : undefined
+    const location = req.query.location ? Number(req.query.location) : undefined
 
-        const filter: any = {}
+    const filter: any = {}
 
-        if (query) filter.name = { $like: `%${query}%` }
-        if (role) filter.role = role
-        if (location) filter.location = location
+    if (query) filter.name = { $like: `%${query}%` }
+    if (role) filter.role = role
+    if (location) filter.location = location
 
-        const [users, total] = await em.findAndCount(User, filter, {
-            limit: pageSize,
-            offset,
-            populate: ['location', 'role'],
-        })
+    const [users, total] = await em.findAndCount(User, filter, {
+        limit: pageSize,
+        offset,
+        populate: ['location', 'role'],
+    })
 
-        const requestUsers = users.map((user) => {
-            const { password, ...rest } = user
-            return {
-                ...rest,
-                hasPassword: !!user.password,
-            }
-        })
+    const requestUsers = users.map((user) => {
+        const { password, ...rest } = user
+        return {
+            ...rest,
+            hasPassword: !!user.password,
+        }
+    })
 
-        res.status(200).json({
-            message: 'Found all locations',
-            data: requestUsers,
-            meta: {
-                total,
-                page,
-                pageSize,
-                totalPages: Math.ceil(total / pageSize),
-            },
-        })
-    } catch (error: any) {
-        res.status(404).json({ message: error.message })
-    }
+    res.status(200).json({
+        message: 'Found all locations',
+        data: requestUsers,
+        meta: {
+            total,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize),
+        },
+    })
 }
 
 async function findOne(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const user = await em.findOneOrFail(
-            User,
-            { id },
-            { populate: ['location', 'inscriptions', 'role', 'tournament'] },
-        )
-        const { password, ...userData } = user
-        res.status(200).json({ message: 'Found user', data: userData })
-    } catch (error: any) {
-        res.status(500).json({ message: error.message })
-    }
+    const id = Number.parseInt(req.params.id)
+    const user = await em.findOneOrFail(
+        User,
+        { id },
+        { populate: ['location', 'inscriptions', 'role', 'tournament'] },
+    )
+    const { password, ...userData } = user
+    res.status(200).json({ message: 'Found user', data: userData })
 }
 
 async function remove(req: Request, res: Response) {
-    try {
-        const id = Number.parseInt(req.params.id)
-        const user = em.getReference(User, id)
-        await em.removeAndFlush(user)
-        res.status(200).send({ message: 'User deleted' })
-    } catch (error: any) {
-        res.status(500).json({ message: error.message })
-    }
+    const id = Number.parseInt(req.params.id)
+    const user = em.getReference(User, id)
+    await em.removeAndFlush(user)
+    res.status(200).send({ message: 'User deleted' })
 }
 
 //TODO (ADMIN) Create user without password
 async function add(req: Request, res: Response) {
-    try {
-        const sanitizedUser = UserSchema.safeParse(req.body)
+    const sanitizedUser = UserSchema.safeParse(req.body)
 
-        if (!sanitizedUser.success) {
-            throw fromZodError(sanitizedUser.error)
-        }
-
-        const { password, ...userWithoutPassword } = em.create(User, sanitizedUser.data)
-
-        await em.flush()
-
-        res.status(201).json({ message: 'User created', data: userWithoutPassword })
-    } catch (error: any) {
-        console.log({ error })
-
-        // Custom error handling
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // Zod Validation Error
-        if (error.name === 'ZodValidationError' || error.details) {
-            return res.status(400).json({
-                message: 'Invalid login request',
-                errors: error.details, // Array de errores de Zod
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: 'Credentials are not valid (email)',
-            })
-        }
-
-        if (error.sqlMessage.includes('user_name_unique')) {
-            return res.status(409).json({
-                message: `Name already taken`,
-            })
-        }
-        if (error.sqlMessage.includes('user_mail_unique')) {
-            return res.status(409).json({
-                message: `Email already taken`,
-            })
-        }
-        res.status(500).json({ message: error.message })
+    if (!sanitizedUser.success) {
+        throw fromZodError(sanitizedUser.error)
     }
+
+    const { password, ...userWithoutPassword } = em.create(User, sanitizedUser.data)
+
+    await em.flush()
+
+    res.status(201).json({ message: 'User created', data: userWithoutPassword })
 }
 
 //(ADMIN) Generate token & send mail
 async function sendInvitation(req: Request, res: Response) {
-    try {
-        const userId = Number.parseInt(req.params.id)
+    const userId = Number.parseInt(req.params.id)
 
-        const frontendUrl = `${env.frontendURL}${req.query['path']}`
+    const path = String(req.query['path'] || '')
 
-        const user = await em.findOneOrFail(User, { id: userId })
-
-        const email = user.mail
-
-        await mailer.sendPasswordAsignation(email, frontendUrl, { userId })
-
-        return res.status(200).json({ message: 'An email has been sent successfully to invite the user' })
-    } catch (error: any) {
-        console.log(error)
-        // Custom error from mailer
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: "User doesn't exist in database",
-            })
-        }
-        res.status(500).json({ message: error.message })
+    if (!path) {
+        const error = new Error('Path query parameter is required')
+        ;(error as any).statusCode = 400
+        throw error
     }
+
+    const frontendUrl = `${env.frontendURL}${req.query['path']}`
+
+    const user = await em.findOne(User, { id: userId })
+
+    if (!user) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
+
+    const email = user.mail
+
+    await mailer.sendPasswordAsignation(email, frontendUrl, { userId })
+
+    return res.status(200).json({ message: 'An email has been sent successfully to invite the user' })
 }
 
 //(USER) Change password
 async function changePassword(req: Request, res: Response) {
-    try {
-        const mailToken = req.params.mailToken
+    const mailToken = req.params.mailToken
 
-        if (!mailToken) {
-            const error = new Error('No token has been supplied')
-            ;(error as any).statusCode = 400
-            throw error
-        }
-
-        const decoded = JWTUtils.verify(mailToken)
-
-        const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
-
-        const password = req.body.password
-
-        const userWithNewPassword = em.assign(user, {
-            password: hashSync(password, Number(env.defaultSaltRounds)),
-        })
-
-        res.status(200).json({
-            message: `Updated user's password successfully`,
-            data: {
-                user: UserMapper.getUserResponse(userWithNewPassword),
-                token: JWTUtils.getJWT({ userId: user.id! }),
-            },
-        })
-    } catch (error: any) {
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: "User doesn't exist in database",
-            })
-        }
-        res.status(500).json({ message: error.message })
+    if (!mailToken) {
+        const error = new Error('No token has been supplied')
+        ;(error as any).statusCode = 400
+        throw error
     }
 
-    // // Extract email_token
-    // // Verify email_token expiraton
-    // // Extract userEmail from token
-    // // Verify if userEmail belongs to a user
-    // // Extract & Hash password from req.body
-    // // Update user password
-    // // Return status
+    const decoded = JWTUtils.verify(mailToken)
+
+    const user = await em.findOne(User, { id: decoded.userId }, { populate: ['location', 'role'] })
+
+    if (!user) {
+        const error = new Error('Credential is not valid')
+        ;(error as any).statusCode = 401
+        throw error
+    }
+
+    const password = req.body.password
+
+    const userWithNewPassword = em.assign(user, {
+        password: hashSync(password, Number(env.defaultSaltRounds)),
+    })
+
+    res.status(200).json({
+        message: `Updated user's password successfully`,
+        data: {
+            user: UserMapper.getUserResponse(userWithNewPassword),
+            token: JWTUtils.getJWT({ userId: user.id! }),
+        },
+    })
 }
 //(USER) Generate token & send mail with link to setup the new password
 async function requestResetPassword(req: RequestWithUser, res: Response) {
     //* The user is already authenticated by going through the authenticated middleware
 
-    try {
-        const email = String(req.user!.mail!)
-        const user = req.user
-        const frontendUrl = `${env.frontendURL}${req.query['path']}`
+    const email = String(req.user!.mail!)
+    const user = req.user
+    const frontendUrl = `${env.frontendURL}${req.query['path']}`
 
-        if (!email) {
-            const error = new Error('No email has been supplied')
-            ;(error as any).statusCode = 400
-            throw error
-        }
-
-        const mailerResponse = mailer.sendPasswordReset(email, frontendUrl, { userId: user!.id! })
-
-        res.status(200).json(`A reset password mail has been sent to the user's email`)
-    } catch (error: any) {
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                message: error.message,
-            })
-        }
-        res.status(500).json({ message: error.message })
+    if (!email) {
+        const error = new Error('No email has been supplied')
+        ;(error as any).statusCode = 400
+        throw error
     }
+
+    const mailerResponse = mailer.sendPasswordReset(email, frontendUrl, { userId: user!.id! })
+
+    res.status(200).json(`A reset password mail has been sent to the user's email`)
 }
 //(ADMIN) Update user's data
 async function update(req: Request, res: Response) {
-    try {
-        const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
+    const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
 
-        if (!sanitizedPartialUser.success) {
-            throw fromZodError(sanitizedPartialUser.error)
-        }
-
-        const id = Number.parseInt(req.params.id)
-        const user = em.getReference(User, id)
-        em.assign(user, req.body)
-        await em.flush()
-        res.status(200).json({ message: 'User updated' })
-    } catch (error: any) {
-        console.log({ error })
-
-        // MikroORM Errors
-        if (error.sqlMessage.includes('user_name_unique')) {
-            return res.status(409).json({
-                message: `Name already taken`,
-            })
-        }
-        if (error.sqlMessage.includes('user_mail_unique')) {
-            return res.status(409).json({
-                message: `Email already taken`,
-            })
-        }
-        res.status(500).json(error.message)
+    if (!sanitizedPartialUser.success) {
+        throw fromZodError(sanitizedPartialUser.error)
     }
+
+    const id = Number.parseInt(req.params.id)
+    const user = em.getReference(User, id)
+    em.assign(user, req.body)
+    await em.flush()
+    res.status(200).json({ message: 'User updated' })
 }
 
-export { findAll, findOne, add, update, remove, sendInvitation, changePassword, requestResetPassword }
+async function updateByUser(req: RequestWithUser, res: Response) {
+    const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
+
+    if (!sanitizedPartialUser.success) {
+        throw fromZodError(sanitizedPartialUser.error)
+    }
+    
+    const user = req.user
+
+    if(sanitizedPartialUser.data.nameChangedOn){
+        if(user!.name != sanitizedPartialUser.data.name){
+        const userCopied = await em.findOne(User, { name: sanitizedPartialUser.data.name })
+        
+        if(userCopied) {
+            const error = new Error('Username already exist.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+        }
+        const fechaLimite = new Date(user!.nameChangedOn!)
+        fechaLimite.setMonth(fechaLimite.getMonth() + 3)
+        if( new Date < fechaLimite ){
+            const error = new Error('Cooldown is not over for the name change.')
+            ;(error as any).statusCode = 403
+            throw error
+        }
+    }
+        
+
+    
+
+    em.assign(user!, sanitizedPartialUser.data)
+    await em.flush()
+    res.status(200).json({ message: 'Perfil actualizado' })
+}
+
+export {
+    findAll,
+    findOne,
+    add,
+    update,
+    updateByUser,
+    remove,
+    sendInvitation,
+    changePassword,
+    requestResetPassword,
+}
