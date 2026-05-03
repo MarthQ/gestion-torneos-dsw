@@ -19,6 +19,7 @@ import {
     reshuffleBracket,
     reopenTournament,
     streamTournamentBracket,
+    getStandings,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
@@ -110,6 +111,7 @@ tournamentRouter.post(
     isOwnerOrAdminMiddleware,
     wrapController(cancelTournament),
 )
+tournamentRouter.get('/:id/standings', authenticationMiddleware, wrapController(getStandings))
 
 // Update all tournament
 tournamentRouter.put('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(update))

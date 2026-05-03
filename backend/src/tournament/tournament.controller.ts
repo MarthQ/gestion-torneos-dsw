@@ -307,6 +307,42 @@ async function getNextReadyMatches(req: Request, res: Response) {
     })
 }
 
+async function getStandings(req: Request, res: Response) {
+    const id = Number.parseInt(req.params.id)
+
+    const tournament = await em.findOneOrFail(Tournament, id, {
+        populate: ['inscriptions', 'inscriptions.user'],
+    })
+
+    // const stages = await storage.select('stage', { tournament_id: id })
+    const tournamentData = await manager.get.tournamentData(id)
+
+    // The limitation bracketManager has is that the finalStandings function does not work if there's at least one match left unplayed.
+    if (tournament.status !== TournamentStatus.FINISHED) {
+        const error = new Error(`Tournament is not finished therefore standings can't be fetched.`)
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    const stageId = tournamentData.stage![0].id
+
+    const standings = await manager.get.finalStandings(stageId)
+
+    // The standings use participants therefore, crossing it with inscriptions is needed.
+    const inscriptionRanked = tournament.inscriptions.map((inscription) => {
+        const inscriptionStanding = standings.find((standing) => inscription.nickname === standing.name)
+
+        return { ...inscription, rank: inscriptionStanding!.rank }
+    })
+
+    res.status(200).json({
+        message: 'Tournament standings',
+        data: {
+            standings: inscriptionRanked,
+        },
+    })
+}
+
 async function updateMatchResult(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.tournamentId)
 
@@ -431,6 +467,16 @@ async function inscribeToTournament(req: RequestWithUser, res: Response) {
         { id: tournamentId },
         { populate: ['inscriptions'] },
     )
+
+    const inscriptionsWithNickname = tournament.inscriptions.filter(
+        (inscription) => inscription.nickname === nickname,
+    )
+
+    if (inscriptionsWithNickname.length !== 0) {
+        const error = new Error('There is already a user inscribed with that nickname.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
 
     if (tournament!.inscriptions.length >= tournament!.maxParticipants) {
         const error = new Error('Tournament has reached its maximum capacity.')
@@ -563,6 +609,7 @@ export {
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
+    getStandings,
     create,
     inscribeToTournament,
     deleteInscription,
