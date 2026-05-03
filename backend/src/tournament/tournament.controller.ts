@@ -1,39 +1,19 @@
 import { Request, Response } from 'express'
 import { Tournament } from './tournament.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { MikroOrmDatabase } from '../bracket/brackets-mikro-db.js'
 import { BracketsManager } from 'brackets-manager'
-import { User } from '../user/user.entity.js'
 import { StageType } from '../bracket/interfaces/unions.interface.js'
-import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
 import { TournamentStatus } from '../shared/interfaces/status.js'
 import { Inscription } from '../inscription/inscription.entity.js'
-import { ForeignKeyConstraintViolationException } from '@mikro-orm/core'
-import { Match } from '../bracket/interfaces/storage.interface'
 import { BracketMatch } from '../bracket/bracket-match.entity.js'
 
 import { sseManager } from './sse.store.js'
+import { TournamentSchema } from './tournament.schema.js'
 
 const em = ORM.em
-
-const TournamentSchema = z.object({
-    name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
-    datetimeinit: z.coerce.date({ message: 'Date time must be a date' }),
-    status: z.nativeEnum(TournamentStatus, { message: 'Status must be one of the permitted' }).optional(),
-    maxParticipants: z
-        .number({ message: 'The maximum number of participants should be a number' })
-        .gt(1, { message: 'The maximum number of participants should be greater than 1' }),
-    game: z.number({ message: 'Game must be a number representing a game id' }),
-    location: z.number({ message: 'Location must be a number representing a location id' }).optional(),
-    region: z.number({ message: 'Region must be a number representing a region id' }).optional(),
-    creator: z.number({ message: 'Creator must be a number representing a user id' }),
-    tags: z.array(z.number()),
-    type: z.nativeEnum(TournamentTypeEnum, { message: 'Type must be one of the permitted' }),
-})
 
 const storage = new MikroOrmDatabase()
 const manager = new BracketsManager(storage)
