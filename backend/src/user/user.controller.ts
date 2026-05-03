@@ -1,6 +1,4 @@
 import { Request, Response } from 'express'
-
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { hashSync } from 'bcrypt'
 
@@ -11,22 +9,11 @@ import { Mailer } from '../shared/mailer/mailer.service.js'
 import { JWTUtils } from '../shared/auth/jwt.utils.js'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { UserMapper } from '../shared/mappers/user.mapper.js'
+import { UserSchema } from './user.schema.js'
 
 const em = ORM.em
 
 const mailer = new Mailer()
-
-const UserSchema = z.object({
-    name: z.string({ message: 'Name must be a string' }),
-    password: z.string({ message: 'Password must be a string' }).optional(),
-    mail: z.string({ message: 'Mail must be a string' }),
-    avatarId: z.string({ message: 'AvatarId must be a string' }).optional(),
-    nameChangedOn: z.coerce.date({ message: 'Date time must be a date' }).optional(),
-    location: z.number({
-        message: 'Location must be a number representing a location id',
-    }),
-    role: z.number({ message: 'Role must be a number representing a role id' }),
-})
 
 async function findAll(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : 1
@@ -131,58 +118,6 @@ async function sendInvitation(req: Request, res: Response) {
     return res.status(200).json({ message: 'An email has been sent successfully to invite the user' })
 }
 
-//(USER) Change password
-async function changePassword(req: Request, res: Response) {
-    const mailToken = req.params.mailToken
-
-    if (!mailToken) {
-        const error = new Error('No token has been supplied')
-        ;(error as any).statusCode = 400
-        throw error
-    }
-
-    const decoded = JWTUtils.verify(mailToken)
-
-    const user = await em.findOne(User, { id: decoded.userId }, { populate: ['location', 'role'] })
-
-    if (!user) {
-        const error = new Error('Credential is not valid')
-        ;(error as any).statusCode = 401
-        throw error
-    }
-
-    const password = req.body.password
-
-    const userWithNewPassword = em.assign(user, {
-        password: hashSync(password, Number(env.defaultSaltRounds)),
-    })
-
-    res.status(200).json({
-        message: `Updated user's password successfully`,
-        data: {
-            user: UserMapper.getUserResponse(userWithNewPassword),
-            token: JWTUtils.getJWT({ userId: user.id! }),
-        },
-    })
-}
-//(USER) Generate token & send mail with link to setup the new password
-async function requestResetPassword(req: RequestWithUser, res: Response) {
-    //* The user is already authenticated by going through the authenticated middleware
-
-    const email = String(req.user!.mail!)
-    const user = req.user
-    const frontendUrl = `${env.frontendURL}${req.query['path']}`
-
-    if (!email) {
-        const error = new Error('No email has been supplied')
-        ;(error as any).statusCode = 400
-        throw error
-    }
-
-    const mailerResponse = mailer.sendPasswordReset(email, frontendUrl, { userId: user!.id! })
-
-    res.status(200).json(`A reset password mail has been sent to the user's email`)
-}
 //(ADMIN) Update user's data
 async function update(req: Request, res: Response) {
     const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
@@ -204,44 +139,31 @@ async function updateByUser(req: RequestWithUser, res: Response) {
     if (!sanitizedPartialUser.success) {
         throw fromZodError(sanitizedPartialUser.error)
     }
-    
+
     const user = req.user
 
-    if(sanitizedPartialUser.data.nameChangedOn){
-        if(user!.name != sanitizedPartialUser.data.name){
-        const userCopied = await em.findOne(User, { name: sanitizedPartialUser.data.name })
-        
-        if(userCopied) {
-            const error = new Error('Username already exist.')
-            ;(error as any).statusCode = 409
-            throw error
-        }
+    if (user!.nameChangedOn) {
+        if (user!.name != sanitizedPartialUser.data.name) {
+            const userCopied = await em.findOne(User, { name: sanitizedPartialUser.data.name })
+
+            if (userCopied) {
+                const error = new Error('Username already exist.')
+                ;(error as any).statusCode = 409
+                throw error
+            }
         }
         const fechaLimite = new Date(user!.nameChangedOn!)
         fechaLimite.setMonth(fechaLimite.getMonth() + 3)
-        if( new Date < fechaLimite ){
+        if (new Date() < fechaLimite) {
             const error = new Error('Cooldown is not over for the name change.')
             ;(error as any).statusCode = 403
             throw error
         }
     }
-        
-
-    
 
     em.assign(user!, sanitizedPartialUser.data)
     await em.flush()
     res.status(200).json({ message: 'Perfil actualizado' })
 }
 
-export {
-    findAll,
-    findOne,
-    add,
-    update,
-    updateByUser,
-    remove,
-    sendInvitation,
-    changePassword,
-    requestResetPassword,
-}
+export { findAll, findOne, add, update, updateByUser, remove, sendInvitation }

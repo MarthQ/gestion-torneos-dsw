@@ -1,14 +1,10 @@
 import { Request, Response } from 'express'
 import { Tag } from './tag.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
+import { TagSchema } from './tag.schema.js'
+import { fromZodError } from 'zod-validation-error'
 
 const em = ORM.em
-
-const TagSchema = z.object({
-    name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
-})
 
 async function findAll(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : undefined
@@ -46,16 +42,29 @@ async function findOne(req: Request, res: Response) {
 }
 
 async function add(req: Request, res: Response) {
-    const tags = em.create(Tag, req.body)
-    await em.flush()
-    res.status(201).json({ message: 'Tag created', data: tags })
+    const sanitized = TagSchema.safeParse(req.body)
+
+    if (!sanitized.success) {
+            throw fromZodError(sanitized.error)
+        } else {
+            const inscription = em.create(Tag, sanitized.data)
+            await em.flush()
+            res.status(201).json({ message: 'Inscription added', data: inscription })
+    }
 }
+
 async function update(req: Request, res: Response) {
-    const id = Number.parseInt(req.params.id)
-    const tags = em.getReference(Tag, id)
-    em.assign(tags, req.body)
-    await em.flush()
-    res.status(200).json({ message: 'Tag updated' })
+    const sanitized = TagSchema.partial().safeParse(req.body)
+    
+    if (!sanitized.success) {
+            throw fromZodError(sanitized.error)
+    } else {
+            const id = Number.parseInt(req.params.id)
+            const inscription = em.getReference(Tag, id)
+            em.assign(inscription, sanitized.data)
+            await em.flush()
+            res.status(200).json({ message: 'Inscription updated' })
+    }
 }
 
 async function remove(req: Request, res: Response) {

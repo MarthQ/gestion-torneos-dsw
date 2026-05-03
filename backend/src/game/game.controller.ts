@@ -1,21 +1,14 @@
 import { Request, Response } from 'express'
 import { Game } from './game.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { env } from '../config/env.js'
 import { GameMapper } from '../shared/mappers/gameMapper.js'
+//! Check that GameDTO is not used in game controller
 import { GameDTO, IGDBGame } from '../shared/interfaces/game.js'
+import { GameSchema } from './game.schema.js'
 
 const em = ORM.em
-
-const GameSchema = z.object({
-    name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
-    imgId: z.string({ message: 'Img Id must be a string' }),
-    igdbId: z.number({ message: 'Description must be a number referencing IGDB DB' }),
-    gametype: z.number({ message: 'Gametype must be a number representing a Gametype id' }),
-})
 
 async function searchIGDB(req: Request, res: Response) {
     const query = req.query.query ? String(req.query.query) : undefined

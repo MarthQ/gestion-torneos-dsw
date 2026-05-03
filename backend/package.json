@@ -13,6 +13,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@asteasolutions/zod-to-openapi": "7.3.0",
         "@mikro-orm/core": "6.2.9",
         "@mikro-orm/mysql": "6.2.9",
         "@mikro-orm/sql-highlighter": "1.0.1",
@@ -22,6 +23,8 @@
         "express": "4.19.2",
         "nodemailer": "^8.0.4",
         "reflect-metadata": "0.2.2",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1",
         "zod": "3.23.8",
         "zod-validation-error": "3.3.1"
     },
@@ -34,7 +37,12 @@
         "@types/jsonwebtoken": "^9.0.10",
         "@types/node": "25.5.2",
         "@types/nodemailer": "^7.0.11",
+<<<<<<< HEAD
         "@types/supertest": "^7.2.0",
+=======
+        "@types/swagger-jsdoc": "^6.0.4",
+        "@types/swagger-ui-express": "^4.1.8",
+>>>>>>> 1280ac302c473e8b55aa673b5d8575180549a719
         "bcrypt": "^6.0.0",
         "cross-env": "^10.1.0",
         "dotenv": "^17.4.2",
