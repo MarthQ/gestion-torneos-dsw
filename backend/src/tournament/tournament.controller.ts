@@ -6,16 +6,14 @@ import { fromZodError } from 'zod-validation-error'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { MikroOrmDatabase } from '../bracket/brackets-mikro-db.js'
 import { BracketsManager } from 'brackets-manager'
-import { User } from '../user/user.entity.js'
 import { StageType } from '../bracket/interfaces/unions.interface.js'
 import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
 import { TournamentStatus } from '../shared/interfaces/status.js'
 import { Inscription } from '../inscription/inscription.entity.js'
-import { ForeignKeyConstraintViolationException } from '@mikro-orm/core'
-import { Match } from '../bracket/interfaces/storage.interface'
 import { BracketMatch } from '../bracket/bracket-match.entity.js'
 
 import { sseManager } from './sse.store.js'
+import { env } from 'process'
 
 const em = ORM.em
 
@@ -391,28 +389,44 @@ async function updateMatchResult(req: Request, res: Response) {
 async function streamTournamentBracket(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.id)
 
+    const origin = req.headers.origin || env.frontendURL || 'https://okizeme.matiascatala.com'
+
+    // Handle preflight ANTES de setear headers SSE
+    if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Origin', origin)
+        res.setHeader('Access-Control-Allow-Credentials', 'true')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+        res.writeHead(204)
+        res.end()
+        return
+    }
+
     // SSE Headers
     res.setHeader('Content-Type', 'text/event-stream')
-    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Cache-Control', 'no-cache, no-store')
     res.setHeader('Connection', 'keep-alive')
-    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('X-Accel-Buffering', 'no')
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+
+    res.flushHeaders() // Ahora sí, solo para SSE
+
+    res.write(`: connected\n\n`)
 
     sseManager.addConnection(tournamentId, res)
 
     const bracketData = await manager.get.tournamentData(tournamentId)
     if (bracketData) {
-        // Send bracketData formatted as a SSE response
-        const payload = `data: ${JSON.stringify(bracketData)}\n\n`
-        res.write(payload)
+        res.write(`data: ${JSON.stringify(bracketData)}\n\n`)
     }
 
-    // On disconnection we remove the connection from sseManager
     req.on('close', () => {
+        clearInterval(heartbeat)
         sseManager.removeConnection(tournamentId, res)
         res.end()
     })
 
-    // The idea behind the heartbeat is to keep the connection alive when no changes are done to the bracket
     const heartbeat = setInterval(() => {
         try {
             res.write(`: heartbeat\n\n`)
@@ -421,7 +435,6 @@ async function streamTournamentBracket(req: Request, res: Response) {
             sseManager.removeConnection(tournamentId, res)
         }
     }, 30000)
-    req.on('close', () => clearInterval(heartbeat))
 }
 
 async function inscribeToTournament(req: RequestWithUser, res: Response) {

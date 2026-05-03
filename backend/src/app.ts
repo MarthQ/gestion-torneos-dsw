@@ -13,7 +13,7 @@ import { tagRouter } from './tag/tag.routes.js'
 import cookieParser from 'cookie-parser'
 import { authRouter } from './auth/auth.routes.js'
 import { regionRouter } from './region/region.routes.js'
-import { seedRoles, seedLocations, seedTags, seedRegions } from './db/seeds.js'
+import { seedRoles, seedLocations, seedTags, seedRegions, seedAdminUser } from './db/seeds.js'
 import { env } from './config/env.js'
 import { handleHttpError } from './utils/http-errors.utils.js'
 
@@ -21,7 +21,7 @@ const app = express()
 app.use(express.json())
 app.use(
     cors({
-        origin: env.frontendURL,
+        origin: env.frontendURL || 'https://okizeme.matiascatala.com',
         credentials: true,
     }),
 )
@@ -53,12 +53,25 @@ app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
 })
 
-await syncSchema() // Never in production
+// Sync schema in development, ensure schema exists in production
+if (process.env.NODE_ENV !== 'production') {
+    await syncSchema()
+} else {
+    // In production, ensure database and tables exist
+    const generator = ORM.getSchemaGenerator()
+    await generator.ensureDatabase()
+    await generator.updateSchema()
+}
+
+// Seed initial data (safe to run multiple times)
 await seedRoles()
 await seedLocations()
 await seedTags()
 await seedRegions()
+await seedAdminUser()
 
-app.listen(3000, () => {
-    console.log('Server running on https://localhost:3000/')
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
 })
