@@ -5,7 +5,9 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env ./dist/app.js \""
+        "build": "tsc",
+        "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env ./dist/app.js \"",
+        "start": "node dist/app.js"
     },
     "keywords": [],
     "author": "",
