@@ -26,7 +26,7 @@
       </thead>
       <tbody>
         @for (region of regionResource.value(); track region.name) {
-          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
+          <tr class="hover:bg-neutral hover:text-neutral-content transition-colors">
             <td>
               <div class="font-mono text-sm">{{ region.id }}</div>
             </td>
@@ -39,8 +39,9 @@
             <td>
               <div class="flex justify-center gap-2">
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning tooltip"
                   (click)="editRegion(region)"
+                  data-tip="Editar"
                 >
                   <span
                     class="icon-[boxicons--edit-filled]"
@@ -48,8 +49,9 @@
                   ></span>
                 </button>
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error tooltip"
                   (click)="deleteRegion(region)"
+                  data-tip="Eliminar"
                 >
                   <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
                 </button>
@@ -83,8 +85,8 @@
   />
 }
 
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="regionMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="regionMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>

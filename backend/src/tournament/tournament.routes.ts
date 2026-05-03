@@ -6,7 +6,6 @@ import {
     update,
     remove,
     findUserTournaments,
-    getTournamentBracket,
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
@@ -19,10 +18,13 @@ import {
     cancelTournament,
     reshuffleBracket,
     reopenTournament,
+    streamTournamentBracket,
+    getStandings,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
 import { isOwnerOrAdminMiddleware } from '../auth/middlewares/isOwnerOrAdmin.middleware.js'
 import { wrapController } from '../utils/http-errors.utils.js'
+import { updateMatchMiddleware } from './middlewares/updateMatch.middleware.js'
 
 const tournamentRouter = Router()
 
@@ -53,16 +55,20 @@ tournamentRouter.post(
 )
 
 //* Match
-// Find tournament's bracket
-tournamentRouter.get('/:id/bracket', wrapController(getTournamentBracket))
+// SSE Streaming for update on tournament's bracket
+tournamentRouter.get('/:id/bracket/stream', wrapController(streamTournamentBracket))
+
 // Find tournament's matches
 tournamentRouter.get('/:id/matches', wrapController(getStageMatches))
 // Find tournament's next ready matches
 tournamentRouter.get('/:id/next', wrapController(getNextReadyMatches))
 // Create match result (2-1)
-tournamentRouter.post('/:tournamentId/match/:id', wrapController(updateMatchResult))
-// Update match result (2-1)
-tournamentRouter.patch('/:tournamentId/match/:id', wrapController(updateMatchResult))
+tournamentRouter.post(
+    '/:tournamentId/match/:id',
+    authenticationMiddleware,
+    updateMatchMiddleware,
+    wrapController(updateMatchResult),
+)
 
 //* Inscriptions
 // Inscribe to tournament
@@ -105,6 +111,7 @@ tournamentRouter.post(
     isOwnerOrAdminMiddleware,
     wrapController(cancelTournament),
 )
+tournamentRouter.get('/:id/standings', authenticationMiddleware, wrapController(getStandings))
 
 // Update all tournament
 tournamentRouter.put('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(update))

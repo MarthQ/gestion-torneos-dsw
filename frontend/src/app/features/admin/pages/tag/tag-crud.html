@@ -26,7 +26,7 @@
       </thead>
       <tbody>
         @for (tag of tagResource.value(); track tag.name) {
-          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
+          <tr class="hover:bg-neutral hover:text-neutral-content transition-colors">
             <td>
               <div class="font-mono text-sm">{{ tag.id }}</div>
             </td>
@@ -44,9 +44,10 @@
             <td>
               <div class="flex justify-center gap-2">
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning tooltip"
                   [disabled]="isDefaultTag(tag)"
                   (click)="editTag(tag)"
+                  data-tip="Editar"
                 >
                   <span
                     class="icon-[boxicons--edit-filled]"
@@ -54,9 +55,10 @@
                   ></span>
                 </button>
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error tooltip"
                   [disabled]="isDefaultTag(tag)"
                   (click)="deleteTag(tag)"
+                  data-tip="Eliminar"
                 >
                   <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
                 </button>
@@ -90,8 +92,8 @@
   />
 }
 
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="tagMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="tagMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>

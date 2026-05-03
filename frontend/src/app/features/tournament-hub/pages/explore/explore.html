@@ -9,6 +9,7 @@
   [filters]="{
     games: gameResource.value(),
     tags: tagResource.value(),
+    status: ['open', 'closed', 'running', 'finished', 'canceled'],
   }"
   (queryChanged)="query.set($event)"
   (clear)="query.set('')"
@@ -20,15 +21,16 @@
   <!-- Card 1 -->
 
   @for (tournament of tournamentResource.value(); track tournament.id) {
-    <tournament-card [tournament]="tournament"> </tournament-card>
+    <tournament-card [tournament]="tournament" (hasClicked)="clickedTournament(tournament)" />
   }
 </div>
 
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="tournamentMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="tournamentMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>
+
 <br />
 <hr class="opacity-25" stroke="currentColor" />
 <br />

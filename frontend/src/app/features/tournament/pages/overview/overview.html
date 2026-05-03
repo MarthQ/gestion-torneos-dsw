@@ -17,7 +17,7 @@
                 >{{ tournamentResource.value().status | i18nSelect: tournamentStatusMap }}</span
               >
               <span
-                class="flex items-center font-medium text-base-content text-shadow-lg text-shadow-content"
+                class="flex items-center font-medium p-2 rounded-xl bg-warning-content/85 text-warning"
                 ><span
                   class="icon-[hugeicons--date-time] mr-2"
                   style="width: 24px; height: 24px"
@@ -25,44 +25,56 @@
                 >{{ tournamentResource.value().datetimeinit | date: 'dd MMMM, HH:mm' }}</span
               >
             </div>
-            <h1 class="text-4xl md:text-5xl font-black">
+            <h1
+              class="text-4xl md:text-5xl font-black p-2 rounded-xl bg-base-100/85 text-base-content w-fit"
+            >
               {{ tournamentResource.value().name }}
             </h1>
-            <p class="flex items-center gap-1 text-primary font-bold text-lg my-1">
-              <span class="icon-[mdi--location]" style="width: 24px; height: 24px"></span>
-              @if (tournamentResource.value().region) {
-                {{ tournamentResource.value().region.name }}
-              }
-              <!--  -->
-              @else if (tournamentResource.value().location) {
-                {{ tournamentResource.value().location.name }}
-              }
-            </p>
+            @if (tournamentResource.value().region) {
+              <p
+                class="flex items-center gap-1 mt-2 font-bold text-lg p-2 rounded-xl bg-info-content/85 text-info w-fit"
+              >
+                <span class="icon-[mdi--location]" style="width: 24px; height: 24px"></span>
+                @if (tournamentResource.value().region) {
+                  {{ tournamentResource.value().region.name }}
+                }
+                <!--  -->
+                @else if (tournamentResource.value().location) {
+                  {{ tournamentResource.value().location.name }}
+                }
+              </p>
+            }
           </div>
-          <div class="flex gap-3 justify-center items-center md:flex-row flex-col">
+          <div class="flex flex-wrap gap-3 justify-end items-center md:flex-row flex-col">
             @switch (tournamentResource.value().status) {
               @case ('open') {
                 <!-- Botones del CREADOR -->
                 @if (userIsCreator()) {
-                  <button class="btn btn-warning btn-lg" (click)="openConfirmationModal('close')">
+                  <button
+                    class="btn btn-warning btn-lg w-full md:w-fit"
+                    (click)="openConfirmationModal('close')"
+                  >
                     <span class="icon-[lucide--lock]" style="width: 24px; height: 24px"></span>
                     Cerrar Inscripciones
                   </button>
                   <button
-                    class="btn btn-error btn-outline btn-lg"
+                    class="btn btn-error btn-outline btn-lg w-full md:w-fit"
                     (click)="openConfirmationModal('cancel')"
                   >
                     Cancelar Torneo
                   </button>
                   <!-- El creator también puede inscribirse -->
                   @if (userIsInscribed()) {
-                    <button class="btn btn-warning btn-lg" (click)="openInscriptionModal('delete')">
+                    <button
+                      class="btn btn-warning btn-lg w-full md:w-fit"
+                      (click)="openInscriptionModal('delete')"
+                    >
                       <span class="icon-[lucide--trash-2]" style="width: 24px; height: 24px"></span>
                       Borrar Inscripción
                     </button>
                   } @else {
                     <button
-                      class="btn btn-primary btn-lg"
+                      class="btn btn-primary btn-lg w-full md:w-fit"
                       (click)="openInscriptionModal('add')"
                       [disabled]="participantsLeft() <= 0 ? true : ''"
                     >
@@ -76,7 +88,10 @@
                 } @else {
                   <!-- Usuario normal -->
                   @if (userIsInscribed()) {
-                    <button class="btn btn-warning btn-lg" (click)="openInscriptionModal('delete')">
+                    <button
+                      class="btn btn-warning btn-lg w-full md:w-fit"
+                      (click)="openInscriptionModal('delete')"
+                    >
                       <span
                         class="icon-[lucide-f-trash-2]"
                         style="width: 24px; height: 24px"
@@ -85,7 +100,7 @@
                     </button>
                   } @else {
                     <button
-                      class="btn btn-primary btn-lg"
+                      class="btn btn-primary btn-lg w-full md:w-fit"
                       (click)="openInscriptionModal('add')"
                       [disabled]="participantsLeft() <= 0 ? true : ''"
                     >
@@ -101,12 +116,15 @@
 
               @case ('closed') {
                 @if (userIsCreator()) {
-                  <button class="btn btn-success btn-lg" (click)="openConfirmationModal('start')">
+                  <button
+                    class="btn btn-success btn-lg w-full md:w-fit"
+                    (click)="openConfirmationModal('start')"
+                  >
                     <span class="icon-[lucide--play]" style="width: 24px; height: 24px"></span>
                     Iniciar Torneo
                   </button>
                   <button
-                    class="btn btn-error btn-outline btn-lg"
+                    class="btn btn-error btn-outline btn-lg w-full md:w-fit"
                     (click)="openConfirmationModal('cancel')"
                   >
                     Cancelar Torneo
@@ -149,11 +167,6 @@
                     <span class="icon-[lucide--flag]" style="width: 24px; height: 24px"></span>
                     Reabrir torneo
                   </button>
-                } @else {
-                  <div class="badge badge-success badge-lg gap-2">
-                    <span class="icon-[lucide--zap]" style="width: 20px; height: 20px"></span>
-                    Torneo en curso
-                  </div>
                 }
                 <div class="badge badge-neutral badge-lg gap-2">
                   <span class="icon-[lucide--trophy]" style="width: 20px; height: 20px"></span>
@@ -169,7 +182,7 @@
               }
             }
 
-            <button class="btn btn-outline btn-lg">
+            <button class="btn btn-neutral btn-lg w-full md:w-fit">
               <span class="icon-[material-symbols--share]" style="width: 18px; height: 18px"></span>
               Compartir
             </button>

@@ -1,6 +1,6 @@
 import { DatePipe, I18nSelectPipe, JsonPipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@features/auth/services/auth.service';
 import { InscriptionModal } from '@features/tournament/components/inscription-modal/inscription-modal';
@@ -20,7 +20,9 @@ import { getAvatarPath } from '@shared/constants/avatar.constant';
 export class Overview {
   user = inject(AuthService).user();
   activatedRoute = inject(ActivatedRoute);
-  tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
+  tournamentId = toSignal(
+    this.activatedRoute.parent!.paramMap.pipe(map((paramMap) => paramMap.get('id'))),
+  );
   getBackgroundStyle = TournamentUtils.GetGameImage;
   tournamentStatusMap = TournamentUtils.tournamentStatusMap;
   tournamentStatusBadgeMap = TournamentUtils.tournamentStatusBadgeMap;

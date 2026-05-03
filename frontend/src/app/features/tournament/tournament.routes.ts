@@ -6,6 +6,7 @@ import { Configuration } from './pages/configuration/configuration';
 import { Participants } from './pages/participants/participants';
 import { Wizard } from './pages/wizard/wizard';
 import { isCreatorOrAdminGuard } from './guards/isCreatorOrAdmin.guard';
+import { tournamentExistsGuard } from './guards/tournamentExists.guard';
 
 export const TournamentRoutes: Routes = [
   {
@@ -15,6 +16,7 @@ export const TournamentRoutes: Routes = [
   {
     path: ':id',
     component: TournamentLayout,
+    canActivate: [tournamentExistsGuard],
     children: [
       {
         path: '',
