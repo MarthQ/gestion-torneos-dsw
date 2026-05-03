@@ -6,6 +6,7 @@ import { InscriptionService } from '@features/tournament/services/inscription.se
 import { PaginationMeta } from '@shared/interfaces/api-response';
 import { map, of, tap } from 'rxjs';
 import { Pagination } from '@shared/components/pagination/pagination';
+import { getAvatarPath } from '@shared/constants/avatar.constant';
 import { TournamentService } from '@shared/services/tournament.service';
 import { Inscription } from '@shared/interfaces/inscription';
 
@@ -34,6 +35,8 @@ export class Participants {
   tournamentService = inject(TournamentService);
 
   tournamentId = signal(this.activatedRoute.parent?.snapshot.paramMap.get('id'));
+
+  getAvatarPath = getAvatarPath;
 
   page = linkedSignal({
     source: this.tournamentId,

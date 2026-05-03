@@ -229,15 +229,13 @@
             <h4 class="text-xs font-bold text-base-content uppercase tracking-widest mb-4">
               Organizado por
             </h4>
-            <div class="flex justify-center items-center gap-4">
+            <div class="flex justify-center items-center gap-2">
               <div
-                class="flex justify-center items-center w-12 h-12 rounded-full bg-primary text-base-content text-xl"
+                class="flex items-center justify-center font-bold"
               >
-                {{
-                  tournamentResource.value().creator.name
-                    ? tournamentResource.value().creator!.name!.charAt(0).toUpperCase()
-                    : '?'
-                }}
+                <img [src]="getAvatarPath((tournamentResource.value().creator.avatarId
+                    ? tournamentResource.value().creator!.avatarId! : 'johhny'))" alt="sideBarPic"
+                class="rounded-full w-10 h-10">
               </div>
               <div>
                 <p class="text-base-content font-bold">

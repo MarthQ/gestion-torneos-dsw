@@ -20,6 +20,8 @@ const UserSchema = z.object({
     name: z.string({ message: 'Name must be a string' }),
     password: z.string({ message: 'Password must be a string' }).optional(),
     mail: z.string({ message: 'Mail must be a string' }),
+    avatarId: z.string({ message: 'AvatarId must be a string' }).optional(),
+    nameChangedOn: z.coerce.date({ message: 'Date time must be a date' }).optional(),
     location: z.number({
         message: 'Location must be a number representing a location id',
     }),
@@ -196,4 +198,50 @@ async function update(req: Request, res: Response) {
     res.status(200).json({ message: 'User updated' })
 }
 
-export { findAll, findOne, add, update, remove, sendInvitation, changePassword, requestResetPassword }
+async function updateByUser(req: RequestWithUser, res: Response) {
+    const sanitizedPartialUser = UserSchema.partial().safeParse(req.body)
+
+    if (!sanitizedPartialUser.success) {
+        throw fromZodError(sanitizedPartialUser.error)
+    }
+    
+    const user = req.user
+
+    if(sanitizedPartialUser.data.nameChangedOn){
+        if(user!.name != sanitizedPartialUser.data.name){
+        const userCopied = await em.findOne(User, { name: sanitizedPartialUser.data.name })
+        
+        if(userCopied) {
+            const error = new Error('Username already exist.')
+            ;(error as any).statusCode = 409
+            throw error
+        }
+        }
+        const fechaLimite = new Date(user!.nameChangedOn!)
+        fechaLimite.setMonth(fechaLimite.getMonth() + 3)
+        if( new Date < fechaLimite ){
+            const error = new Error('Cooldown is not over for the name change.')
+            ;(error as any).statusCode = 403
+            throw error
+        }
+    }
+        
+
+    
+
+    em.assign(user!, sanitizedPartialUser.data)
+    await em.flush()
+    res.status(200).json({ message: 'Perfil actualizado' })
+}
+
+export {
+    findAll,
+    findOne,
+    add,
+    update,
+    updateByUser,
+    remove,
+    sendInvitation,
+    changePassword,
+    requestResetPassword,
+}

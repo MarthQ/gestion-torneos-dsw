@@ -24,9 +24,8 @@
             }"
           >
             <img
-              src="https://placehold.co/120x120/1e293b/white?text={{
-                participant.name | slice: 0 : 2
-              }}"
+              [src]="getAvatarPath(participant.user!.avatarId)"
+              class="rounded-full w-8 h-8"
               [attr.alt]="{
                 Champion: participant.rank === 1,
                 'Second Place': participant.rank === 2,
@@ -97,11 +96,11 @@
                       <div
                         class="flex items-center justify-center bg-primary text-primary-content rounded-full w-8"
                       >
-                        {{
-                          inscription.user.name
-                            ? inscription.user!.name!.charAt(0).toUpperCase()
-                            : '?'
-                        }}
+                        <img
+                          [src]="getAvatarPath(inscription.user!.avatarId)"
+                          alt="participantPic"
+                          class="rounded-full w-8 h-8"
+                        />
                       </div>
                     </div>
                   </div>
