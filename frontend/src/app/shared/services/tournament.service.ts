@@ -240,6 +240,18 @@ export class TournamentService {
       );
   }
 
+  getStandings(tournamentId: number): Observable<any> {
+    return this.http
+      .get<ApiResponse<any>>(`${environment.apiUrl}/tournaments/${tournamentId}/standings`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error(error);
+          return throwError(() => error.error?.message || 'Failed to fetch tournament standings');
+        }),
+      );
+  }
+
   isLoggedUserCreator(tournamentId: number): Observable<boolean> {
     return this.getTournament(tournamentId).pipe(
       map((response) => {
