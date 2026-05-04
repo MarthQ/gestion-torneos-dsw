@@ -12,6 +12,7 @@ import { BracketMatch } from '../bracket/bracket-match.entity.js'
 
 import { sseManager } from './sse.store.js'
 import { TournamentSchema } from './tournament.schema.js'
+import { User } from '../user/user.entity.js'
 
 const em = ORM.em
 
@@ -85,12 +86,48 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+        populate: ['game', 'creator', 'location', 'region', 'tags'],
     })
 
     res.status(200).json({
         message: 'Found all user tournaments',
         data: Tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+    })
+}
+
+async function findInscribedTournaments(req: RequestWithUser, res: Response) {
+    const user = req.user!
+
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
+
+    const query = req.query.query ? String(req.query.query) : undefined
+    const tag = req.query.tag ? Number(req.query.tag) : undefined
+    const location = req.query.location ? Number(req.query.location) : undefined
+    const region = req.query.region ? Number(req.query.region) : undefined
+    const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
+
+    const filter: any = { creator: user.id }
+
+    if (query) filter.name = { $like: `%${query}%` }
+    if (tag) filter.tags = { $some: { id: tag } }
+    if (location) filter.location = location
+    if (region) filter.region = region
+    if (game) filter.game = game
+    if (status) filter.status = status
+
+    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
+        populate: ['game', 'creator', 'location', 'region', 'tags'],
+    })
+
+    res.status(200).json({
+        message: 'Found all inscribed tournaments',
+        data: tournaments,
         meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
@@ -607,4 +644,5 @@ export {
     cancelTournament,
     reshuffleBracket,
     reopenTournament,
+    findInscribedTournaments,
 }
