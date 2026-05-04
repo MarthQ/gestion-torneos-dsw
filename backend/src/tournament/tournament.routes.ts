@@ -19,6 +19,7 @@ import {
     reshuffleBracket,
     reopenTournament,
     streamTournamentBracket,
+    findMyTournaments,
     getStandings,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
@@ -193,7 +194,7 @@ tournamentRouter.delete('/:id', authenticationMiddleware, isOwnerOrAdminMiddlewa
  * @swagger
  * /tournaments/userTournaments:
  *   get:
- *     summary: Lista los torneos del usuario autenticado
+ *     summary: Lista los torneos creados por el usuario autenticado
  *     tags: [Tournaments]
  *     security:
  *       - cookieAuth: []
@@ -206,6 +207,26 @@ tournamentRouter.delete('/:id', authenticationMiddleware, isOwnerOrAdminMiddlewa
  *         description: Error interno
  */
 tournamentRouter.get('/userTournaments', authenticationMiddleware, wrapController(findUserTournaments))
+
+// Find tournaments that the user is registered in
+
+/**
+ * @swagger
+ * /tournaments/myInscriptions:
+ *   get:
+ *     summary: Lista los torneos en los que el usuario está inscripto
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Torneos encontrados
+ *       401:
+ *         description: No autenticado
+ *       500:
+ *         description: Error interno
+ */
+tournamentRouter.get('/myInscriptions', authenticationMiddleware, wrapController(findMyTournaments))
 
 //* Tournament created by wizard user panel
 // Create tournament

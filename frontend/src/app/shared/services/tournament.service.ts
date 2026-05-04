@@ -153,6 +153,34 @@ export class TournamentService {
       );
   }
 
+  getTournamentByInscriptions(
+    query?: string,
+    queryFilters?: QueryFilter,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Observable<PaginatedApiResponse<Tournament>> {
+    const params: any = { page, pageSize };
+
+    if (query) params.query = query;
+    if (queryFilters?.location) params.location = queryFilters.location.id;
+    if (queryFilters?.role) params.role = queryFilters.role.id;
+    if (queryFilters?.game) params.game = queryFilters.game.id;
+    return this.http
+      .get<
+        PaginatedApiResponse<Tournament>
+      >(`${environment.apiUrl}/tournaments/myInscriptions`, { params })
+      .pipe(
+        map((response) => ({
+          data: response.data,
+          meta: response.meta,
+          message: response.message,
+        })),
+        catchError((error) => {
+          return throwError(() => error.error?.message || 'Failed to fetch user tournaments');
+        }),
+      );
+  }
+
   reportMatchResult(tournamentId: number, matchId: number, score: string): Observable<any> {
     return this.http
       .post<
