@@ -1,61 +1,131 @@
-<div class="my-3">
-  @if (inscriptionResource.value()?.length === 0) {
-    <!-- Notificaciones rápidas -->
-    <div class="flex justify-center">
-      <div class="alert bg-info text-info-content text-sm inline-flex">
-        <span class="icon-[mdi--edit-outline]" style="width: 24px; height: 24px"></span>
-        <span>Aún no hay participantes inscriptos en este torneo. Sé el primero!</span>
-      </div>
-    </div>
-  } @else {
-    <div class="bg-base-300 rounded-2xl border border-base-300 overflow-auto shadow-xl">
-      <table class="table w-full border-base-100">
-        <thead class="text-primary-content">
-          <tr>
-            <th class="w-16">#</th>
-            <th>Foto</th>
-            <th>Nickname</th>
-            <th>Nombre</th>
-            <th>Fecha de registro</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (inscription of inscriptionResource.value(); track inscription.id; let $i = $index) {
-            <tr class="bg-base-200">
-              <th class="font-mono text-sm text-primary-content">{{ $i + 1 }}</th>
-              <td>
-                <div class="flex items-center gap-3">
-                  <div class="avatar placeholder">
-                    <div
-                      class="flex items-center justify-center bg-primary text-primary-content rounded-full w-8"
-                    >
-                      {{
-                        inscription.user.name
-                          ? inscription.user!.name!.charAt(0).toUpperCase()
-                          : '?'
-                      }}
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="font-bold">{{ inscription.nickname }}</span>
-              </td>
-              <td>
-                <span class="text-primary-content/20">{{ inscription.user!.name }}</span>
-              </td>
-              <td class="text-xs text-primary-content">
-                {{ inscription.inscriptionDate | date: 'medium' }}
-              </td>
-              <!-- <td class="text-right font-mono">{{ inscription.points }}</td> -->
-            </tr>
+@if (tournamentResource.hasValue()) {
+  @if (tournamentResource.value().status === 'finished') {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end my-5">
+      @for (participant of podiumParticipants(); track participant.id) {
+        <div
+          class="flex flex-col items-center"
+          [ngClass]="{
+            'order-1 md:order-2': participant.rank === 1,
+            'order-2 md:order-1': participant.rank === 2,
+            'order-3 md:order-3': participant.rank === 3,
+          }"
+        >
+          @if (participant.rank === 1) {
+            <span
+              class="icon-[material-symbols--crown] text-yellow-400 text-4xl mb-2 animate-bounce"
+            ></span>
           }
-        </tbody>
-      </table>
-
-      <div class="py-2">
-        <app-pagination [inputPage]="page()" [entityMeta]="inscriptionsMeta()" />
-      </div>
+          <div
+            class="rounded-full border-4 overflow-hidden mb-4"
+            [class]="{
+              'w-32 h-32 border-yellow-400 glow-gold': participant.rank === 1,
+              'w-24 h-24 border-gray-400': participant.rank === 2,
+              'w-24 h-24 border-orange-500': participant.rank === 3,
+            }"
+          >
+            <img
+              [src]="getAvatarPath(participant.user!.avatarId)"
+              class="rounded-full w-8 h-8"
+              [attr.alt]="{
+                Champion: participant.rank === 1,
+                'Second Place': participant.rank === 2,
+                'Third Place': participant.rank === 3,
+              }"
+            />
+          </div>
+          <div
+            class="w-full p-8 rounded-t-2xl text-center shadow-2xl relative"
+            [class]="{
+              'podium-1': participant.rank === 1,
+              'podium-2': participant.rank === 2,
+              'podium-3': participant.rank === 3,
+            }"
+          >
+            <span
+              class="font-black text-black text-5xl"
+              [class]="{
+                'text-5xl': participant.rank === 1,
+                'text-2xl': participant.rank !== 1,
+              }"
+              >{{ participant.rank }}º</span
+            >
+            <p class="font-black text-xl text-black block truncate">
+              {{ participant.nickname }}
+            </p>
+            @if (participant.rank === 1) {
+              <div class="badge badge-ghost bg-black/10 border-none text-yellow-950 font-bold mt-2">
+                CAMPEÓN
+              </div>
+            }
+          </div>
+        </div>
+      }
     </div>
   }
-</div>
+  <div class="my-3">
+    @if (standingResource.value()?.length === 0) {
+      <!-- Notificaciones rápidas -->
+      <div class="flex justify-center">
+        <div class="alert bg-info text-info-content text-sm inline-flex">
+          <span class="icon-[mdi--edit-outline]" style="width: 24px; height: 24px"></span>
+          <span>Aún no hay participantes inscriptos en este torneo. Sé el primero!</span>
+        </div>
+      </div>
+    } @else {
+      <div class="bg-base-300 rounded-2xl border border-base-300 overflow-auto shadow-xl">
+        <table class="table w-full border-base-100">
+          <thead class="text-primary-content">
+            <tr>
+              <th class="w-16">#</th>
+              <th>Foto</th>
+              <th>Nickname</th>
+              <th>Nombre</th>
+              <th>Fecha de registro</th>
+              @if (tournamentResource.value().status === 'finished') {
+                <th>Posición</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (inscription of participantsToShow(); track inscription.id; let $i = $index) {
+              <tr class="bg-base-200">
+                <th class="font-mono text-sm text-primary-content">{{ $i + 1 }}</th>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="avatar placeholder">
+                      <div
+                        class="flex items-center justify-center bg-primary text-primary-content rounded-full w-8"
+                      >
+                        <img
+                          [src]="getAvatarPath(inscription.user!.avatarId)"
+                          alt="participantPic"
+                          class="rounded-full w-8 h-8"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="font-bold">{{ inscription.nickname }}</span>
+                </td>
+                <td>
+                  <span class="text-primary-content/20">{{ inscription.user!.name }}</span>
+                </td>
+                <td class="text-xs text-primary-content">
+                  {{ inscription.inscriptionDate | date: 'medium' }}
+                </td>
+                @if (tournamentResource.value().status === 'finished') {
+                  <td>{{ inscription.rank }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="py-2">
+          <app-pagination [inputPage]="page()" [entityMeta]="inscriptionsMeta()" />
+        </div>
+      </div>
+    }
+  </div>
+}

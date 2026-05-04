@@ -4,6 +4,7 @@ import { Location } from '../location/location.entity.js'
 import { Inscription } from '../inscription/inscription.entity.js'
 import { Role } from '../role/role.entity.js'
 import { Tournament } from '../tournament/tournament.entity.js'
+import { string } from 'zod'
 
 @Entity()
 export class User extends BaseEntity {
@@ -13,6 +14,10 @@ export class User extends BaseEntity {
     password?: string
     @Property({ unique: true })
     mail!: string
+    @Property({ nullable: true })
+    avatarId?: string
+    @Property({ nullable: true })
+    nameChangedOn?: Date
     @ManyToOne(() => Location, { nullable: false })
     location!: Rel<Location>
     @ManyToOne(() => Role, { nullable: false })

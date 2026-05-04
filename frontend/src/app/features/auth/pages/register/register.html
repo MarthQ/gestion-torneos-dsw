@@ -25,12 +25,19 @@
 
   <fieldset class="fieldset">
     <legend class="fieldset-legend">Contraseña del usuario</legend>
-    <input
-      type="password"
-      class="input input-primary border-base-300 input-bordered"
-      placeholder="Ingrese la contraseña del usuario"
-      formControlName="password"
-    />
+    <div class="relative">
+      <input
+        [type]="showPassword ? 'text' : 'password'"
+        class="input input-primary border-base-300 input-bordered"
+        placeholder="Ingrese la contraseña del usuario"
+        formControlName="password"
+      />
+      <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100"
+        (click)="showPassword = !showPassword">
+        <span [class]="showPassword ? 'icon-[mdi--eye-off]' : 'icon-[mdi--eye]'" class="size-5"></span>
+      </button>
+    </div>
+
     <form-error-label [control]="registerForm.get('password')!"></form-error-label>
   </fieldset>
 

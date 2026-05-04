@@ -20,6 +20,7 @@ export class Register {
   private locationService = inject(LocationService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  showPassword = false;
 
   locationResource = rxResource({
     stream: () => {

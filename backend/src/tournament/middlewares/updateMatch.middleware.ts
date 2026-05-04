@@ -28,17 +28,17 @@ export async function updateMatchMiddleware(req: RequestWithUser, res: Response,
             populate: ['inscriptions', 'creator'],
         })
 
-        // ADMIN
+        // Checks if the user role is the admin.
         if (user.role?.name === USER_ROLE.ADMIN) {
             return next()
         }
 
-        // DUEÑO DEL TORNEO
+        // Checks if the user is the creator
         if (tournament.creator.id === user.id) {
             return next()
         }
 
-        // TRAER DATA NECESARIA
+        // Fetch necessary data
         const data = await manager.get.tournamentData(tournamentId)
         const participants = data.participant
 
@@ -46,13 +46,13 @@ export async function updateMatchMiddleware(req: RequestWithUser, res: Response,
         if (matchs?.length === 0) return
         const match = matchs!.at(0)!
 
-        // IDs de los oponentes
+        // Look for matchup participants id
         const opponentIds = [match.opponent1?.id, match.opponent2?.id].filter(Boolean)
 
-        // Buscar nombres de esos participantes
+        // Look for all participant's name
         const opponentNames = participants.filter((p) => opponentIds.includes(p.id)).map((p) => p.name)
 
-        // Buscar inscription del usuario
+        // Look for user's inscription
         await tournament.inscriptions.loadItems()
 
         const userInscription = tournament.inscriptions.getItems().find((ins: any) => ins.user.id === user.id)
@@ -61,7 +61,7 @@ export async function updateMatchMiddleware(req: RequestWithUser, res: Response,
             return res.status(403).json({ message: 'User not in tournament' })
         }
 
-        // VALIDACIÓN FINAL
+        // Final validation
         const isPlayerInMatch = opponentNames.includes(userInscription.nickname)
 
         if (!isPlayerInMatch) {

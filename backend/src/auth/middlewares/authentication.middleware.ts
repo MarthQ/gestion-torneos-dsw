@@ -21,9 +21,7 @@ export async function authenticationMiddleware(req: RequestWithUser, res: Respon
         }
 
         const decoded = JWTUtils.verify(token)
-
         const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
-
         req.user = user
 
         // Sliding session: renew cookie on each successful request

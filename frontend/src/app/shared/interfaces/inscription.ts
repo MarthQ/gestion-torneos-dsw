@@ -7,4 +7,5 @@ export interface Inscription {
   tournament: Tournament;
   inscriptionDate: Date;
   user: User;
+  rank: number;
 }

@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { compareSync, hashSync } from 'bcrypt'
 
@@ -12,6 +11,7 @@ import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { UserMapper } from '../shared/mappers/user.mapper.js'
 import { JWTUtils } from '../shared/auth/jwt.utils.js'
 import { Mailer } from '../shared/mailer/mailer.service.js'
+import { loginSchema, registerSchema, forgotPasswordSchema, setupPasswordSchema, setupPasswordQuerySchema } from './auth.schema.js';
 
 const em = ORM.em
 
@@ -38,25 +38,14 @@ function clearJwtCookie(res: Response) {
     })
 }
 
-//* VALIDATORS
-const loginSchema = z.object({
-    mail: z.string({ message: 'Mail must be a string' }).email({ message: 'Mail must be a valid email' }),
-    password: z.string({ message: 'Password must be a string.' }),
-})
-
-const registerSchema = z.object({
-    name: z.string({ message: 'Username must be a string' }),
-    password: z.string({ message: 'Password must be a string.' }),
-    mail: z.string({ message: 'Mail must be a string' }).email({ message: 'Mail must be a valid email' }),
-    location: z.number({ message: 'Location must be valid number.' }),
-})
-
 //* PUBLIC METHODS
 async function login(req: Request, res: Response) {
     const sanitizedLogin = loginSchema.safeParse(req.body)
     //* DTO
     if (!sanitizedLogin.success) {
-        throw fromZodError(sanitizedLogin.error)
+        const error = fromZodError(sanitizedLogin.error)
+        ;(error as any).details = sanitizedLogin.error.issues 
+        throw error
     }
 
     const { password, mail } = sanitizedLogin.data
@@ -129,58 +118,49 @@ async function register(req: Request, res: Response) {
 }
 
 //TODO (USER) Reset password from "Forgot your password?"
+//In Documentation branch -> changed this method to be sanitized 
 async function forgotPassword(req: Request, res: Response) {
-    const reqUser: User = req.body
+    const sanitized = forgotPasswordSchema.safeParse(req.body)
+
+    if (!sanitized.success) {
+            const error = new Error(fromZodError(sanitized.error).message)
+            ;(error as any).statusCode = 400
+            throw error
+        }
+
     const frontendUrl = env.frontendURL
-
-    if (!reqUser) {
-        const error = new Error('No user has been provided')
-        ;(error as any).statusCode = 401
-        throw error
-    }
-
-    const user = await em.findOne(User, { mail: reqUser.mail }, { populate: ['location', 'role'] })
-
-    if (!user) {
-        const error = new Error('Credential is not valid')
-        ;(error as any).statusCode = 401
-        throw error
-    }
+    const user = await em.findOneOrFail(User, { mail: sanitized.data.mail }, { populate: ['location', 'role'] })
 
     mailer.sendPasswordReset(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
+
+    res.status(200).json({ message: 'Password reset email sent' })
 }
 
-//TODO (USER) Setup password
 async function setupPassword(req: Request, res: Response) {
-    const mailToken = String(req.query.mailToken)
-
-    if (!mailToken) {
-        const error = new Error('No token has been supplied')
+    const queryValidation = setupPasswordQuerySchema.safeParse(req.query)
+    if (!queryValidation.success) {
+        const error = new Error(fromZodError(queryValidation.error).message)
         ;(error as any).statusCode = 400
         throw error
     }
 
-    const decoded = JWTUtils.verify(mailToken)
-
-    const user = await em.findOne(User, { id: decoded.userId }, { populate: ['location', 'role'] })
-
-    if (!user) {
-        const error = new Error('Credential is not valid')
-        ;(error as any).statusCode = 401
+    const sanitized = setupPasswordSchema.safeParse(req.body)
+    if (!sanitized.success) {
+        const error = new Error(fromZodError(sanitized.error).message)
+        ;(error as any).statusCode = 400
         throw error
     }
 
-    const password = req.body.password
-
-    console.log(`La password que estamos cargando es: -${password}-`)
+    const decoded = JWTUtils.verify(queryValidation.data.mailToken)
+    
+    const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
     const userWithNewPassword = em.assign(user, {
-        password: hashSync(password, Number(env.defaultSaltRounds)),
+        password: hashSync(sanitized.data.password, Number(env.defaultSaltRounds)),
     })
 
     await em.persistAndFlush(userWithNewPassword)
 
-    // Generate JWT and set as HttpOnly cookie
     const token = JWTUtils.getJWT({ userId: user.id! })
     setJwtCookie(res, token)
 

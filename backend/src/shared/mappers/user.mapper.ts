@@ -6,6 +6,8 @@ export class UserMapper {
             id: user.id,
             name: user.name,
             mail: user.mail,
+            avatarId: user.avatarId,
+            nameChangedOn: user.nameChangedOn,
             location: user.location,
             role: user.role,
         }

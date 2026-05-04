@@ -11,6 +11,7 @@ import { Toaster } from '@shared/utils/toaster';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
 import { map, tap } from 'rxjs';
 import { ConfirmModal } from '@features/tournament/components/confirm-modal/confirm-modal';
+import { getAvatarPath } from '@shared/constants/avatar.constant';
 
 @Component({
   imports: [I18nSelectPipe, DatePipe, TitleCasePipe, InscriptionModal, ConfirmModal],
@@ -25,6 +26,7 @@ export class Overview {
   getBackgroundStyle = TournamentUtils.GetGameImage;
   tournamentStatusMap = TournamentUtils.tournamentStatusMap;
   tournamentStatusBadgeMap = TournamentUtils.tournamentStatusBadgeMap;
+  getAvatarPath = getAvatarPath;
 
   // Inscription modal
   isModalOpen = signal(false);

@@ -1,14 +1,11 @@
 import { Request, Response } from 'express'
 import { Region } from './region.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { RegionSchema } from './region.schema.js'
 
 const em = ORM.em
 
-const RegionSchema = z.object({
-    name: z.string({ message: 'Name must be a string' }),
-})
 
 async function findAll(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : undefined
