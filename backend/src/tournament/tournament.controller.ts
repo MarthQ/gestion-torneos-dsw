@@ -204,9 +204,17 @@ async function update(req: Request, res: Response) {
 }
 
 async function remove(req: Request, res: Response) {
+    console.log(`Entré wacho ${req.params.id}`)
+
     const id = Number.parseInt(req.params.id)
     const tournament = em.getReference(Tournament, id)
-    await manager.delete.tournament(id)
+
+    const stages = await storage.select('stage', { tournament_id: id })
+
+    if (stages) {
+        await manager.delete.tournament(id)
+    }
+
     await em.removeAndFlush(tournament)
     res.status(200).send({ message: 'Tournament deleted' })
 }

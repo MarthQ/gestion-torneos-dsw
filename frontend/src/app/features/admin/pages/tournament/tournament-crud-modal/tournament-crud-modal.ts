@@ -7,6 +7,7 @@ import {
   inject,
   input,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 import {
@@ -15,6 +16,7 @@ import {
   FormBuilder,
   FormControl,
   ReactiveFormsModule,
+  ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
@@ -30,6 +32,7 @@ import { CrudAction } from '@shared/interfaces/crudAction';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, EMPTY } from 'rxjs';
 import { Region } from '@shared/interfaces/region';
+import { FormUtils } from '@shared/utils/form-utils';
 
 @Component({
   selector: 'tournament-crud-modal',
@@ -48,6 +51,16 @@ export class TournamentCrudModal {
   tagResource = input.required<Tag[]>();
   userResource = input.required<User[]>();
   regionResource = input.required<Region[]>();
+  tournamentTypes = signal([
+    {
+      value: 'single_elimination',
+      name: 'Single Elimination',
+    },
+    {
+      value: 'double_elimination',
+      name: 'Double Elimination',
+    },
+  ]);
 
   tournamentModal = viewChild.required<ElementRef<HTMLDialogElement>>('tournamentModal');
 
@@ -65,16 +78,27 @@ export class TournamentCrudModal {
     delete: 'Borrar un torneo',
   };
 
+  dateGreaterThanNowValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const inputDate = new Date(control.value);
+    const now = new Date();
+
+    return inputDate > now ? null : { dateNotGreaterThanNow: true };
+  };
+
   tournamentForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    datetimeinit: [new Date(), Validators.required],
-    status: ['', Validators.required],
+    datetimeinit: ['', [Validators.required, this.dateGreaterThanNowValidator]],
     maxParticipants: [0, [Validators.required, Validators.min(2)]],
     creator: [0, [Validators.required, Validators.min(1)]],
     location: [0],
     region: [0],
     game: [0, [Validators.required, Validators.min(1)]],
+    type: ['single_elimination', [Validators.required]],
     tags: this.fb.array<FormControl<number>>([]),
   });
 
@@ -206,8 +230,7 @@ export class TournamentCrudModal {
       this.tournamentForm.patchValue({
         name: this.tournament().name ?? '',
         description: this.tournament().description ?? '',
-        datetimeinit: this.tournament().datetimeinit ?? new Date(),
-        status: this.tournament().status ?? 'Abierto',
+        datetimeinit: FormUtils.formatDateForInput(this.tournament().datetimeinit!),
         maxParticipants: this.tournament().maxParticipants ?? 10,
         creator: this.tournament().creator?.id ?? 0,
         location: this.tournament().location?.id ?? 0,
@@ -222,42 +245,51 @@ export class TournamentCrudModal {
   onDialogClose() {
     this.closed.emit();
   }
-  emitTournament() {
-    if (this.tournamentForm.valid) {
-      const type = this.eventType();
 
-      const tournament = this.tournamentForm.value as Omit<TournamentFormDTO, 'id'>;
+  emitDeleteTournament() {
+    const id = this.tournament()?.id;
+    console.log('Emitiendo desde delete');
+    this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
+  }
 
-      if (type === 'virtual' || type === null) {
-        tournament.region = this.tournamentForm.value.region;
-        tournament.location = undefined;
-      }
-      if (type === 'presencial' || type === null) {
-        tournament.location = this.tournamentForm.value.location;
-        tournament.region = undefined;
-      }
-      const id = this.tournament()?.id;
+  emitTournament(event: Event) {
+    // event.preventDefault();
 
-      switch (this.type()) {
-        case 'add':
-          this.confirmAction.emit({
-            actionType: 'create',
-            data: tournament,
-          });
-          break;
-        case 'edit':
-          this.confirmAction.emit({
-            actionType: 'update',
-            data: {
-              id: id!,
-              ...tournament,
-            },
-          });
-          break;
-        case 'delete':
-          this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
-          break;
-      }
+    if (this.tournamentForm.invalid) {
+      this.tournamentForm.markAllAsTouched();
+      return;
+    }
+
+    const type = this.eventType();
+
+    const tournament = this.tournamentForm.value as Omit<TournamentFormDTO, 'id'>;
+
+    if (type === 'virtual' || type === null) {
+      tournament.region = this.tournamentForm.value.region;
+      tournament.location = undefined;
+    }
+    if (type === 'presencial' || type === null) {
+      tournament.location = this.tournamentForm.value.location;
+      tournament.region = undefined;
+    }
+    const id = this.tournament()?.id;
+
+    switch (this.type()) {
+      case 'add':
+        this.confirmAction.emit({
+          actionType: 'create',
+          data: tournament,
+        });
+        break;
+      case 'edit':
+        this.confirmAction.emit({
+          actionType: 'update',
+          data: {
+            id: id!,
+            ...tournament,
+          },
+        });
+        break;
     }
   }
 }

@@ -1,8 +1,8 @@
 <dialog #tournamentModal class="modal" (close)="onDialogClose()">
   <div class="modal-box max-h-11/12">
     <h3 class="text-lg font-bold">{{ type() | i18nSelect: titleMap }}</h3>
-    <form [formGroup]="tournamentForm">
-      @if (type() === 'add' || type() === 'edit') {
+    @if (type() === 'add' || type() === 'edit') {
+      <form [formGroup]="tournamentForm" (ngSubmit)="emitTournament($event)">
         <div class="py-4">
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Nombre del Torneo</legend>
@@ -28,7 +28,7 @@
             <legend class="fieldset-legend">Fecha y Hora del torneo</legend>
             <input
               type="datetime-local"
-              class="input input-primary border-base-300 input-bordered"
+              class="input input-primary border-base-300 input-bordered w-full"
               formControlName="datetimeinit"
             />
             <form-error-label [control]="tournamentForm.get('datetimeinit')!"></form-error-label>
@@ -37,15 +37,39 @@
             <legend class="fieldset-legend">Cupo Máximo</legend>
             <input
               type="number"
-              class="input input-primary border-base-300 input-bordered"
+              class="input input-primary border-base-300 input-bordered w-full"
               placeholder="Ingrese el cupo máximo"
               formControlName="maxParticipants"
             />
             <form-error-label [control]="tournamentForm.get('maxParticipants')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
+            <legend class="fieldset-legend">Juego del torneo</legend>
+            <select class="select w-full" formControlName="game">
+              <option disabled selected>Seleccione el juego del torneo</option>
+              @for (game of gameResource(); track game.id) {
+                <option [ngValue]="game.id">
+                  {{ game.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Tipo de torneo</legend>
+            <select class="select w-full" formControlName="type">
+              <option readonly value="0">Seleccione el tipo de torneo</option>
+              @for (tournamentType of tournamentTypes(); track tournamentType.value) {
+                <option [ngValue]="tournamentType.value">
+                  {{ tournamentType.name }}
+                </option>
+              }
+            </select>
+            <form-error-label [control]="tournamentForm.get('type')!"></form-error-label>
+          </fieldset>
+          <fieldset class="fieldset">
             <legend class="fieldset-legend">Creador del torneo</legend>
-            <select class="select" formControlName="creator">
+            <select class="select w-full" formControlName="creator">
               <option disabled selected>Seleccione el creador del torneo</option>
               @for (user of userResource(); track user.id) {
                 <option [ngValue]="user.id">
@@ -58,7 +82,7 @@
           @if (eventType() === 'presencial') {
             <fieldset class="fieldset">
               <legend class="fieldset-legend">Localidad del torneo</legend>
-              <select class="select" formControlName="location">
+              <select class="select w-full" formControlName="location">
                 <option disabled selected>Seleccione la localidad del torneo</option>
                 @for (location of locationResource(); track location.id) {
                   <option [ngValue]="location.id">
@@ -83,18 +107,7 @@
               <span class="label">Obligatorio</span>
             </fieldset>
           }
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">Juego del torneo</legend>
-            <select class="select" formControlName="game">
-              <option disabled selected>Seleccione el juego del torneo</option>
-              @for (game of gameResource(); track game.id) {
-                <option [ngValue]="game.id">
-                  {{ game.name }}
-                </option>
-              }
-            </select>
-            <span class="label">Obligatorio</span>
-          </fieldset>
+
           <fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-4">
             <legend class="fieldset-legend">Etiquetas del torneo</legend>
             <div class="flex flex-col gap-3">
@@ -112,31 +125,29 @@
             </div>
           </fieldset>
         </div>
-      } @else {
-        <p>
-          ¿Está seguro de que desea eliminar al torneo
-          <strong>{{ tournamentForm.get('name')?.value }}</strong
-          >?
-        </p>
-      }
-      <div class="modal-action">
-        <form method="dialog" class="flex gap-2">
-          @if (type() === 'add' || type() === 'edit') {
-            <button
-              class="btn btn-primary"
-              [disabled]="!tournamentForm.valid"
-              (click)="emitTournament()"
-            >
-              Guardar cambios
-            </button>
-          } @else {
-            <button class="btn btn-primary hover:btn-warning" (click)="emitTournament()">
-              Borrar Torneo
-            </button>
-          }
+        <div class="flex w-full justify-end gap-4 mt-4">
+          <button class="btn btn-primary" [disabled]="!tournamentForm.valid" type="submit">
+            Guardar cambios
+          </button>
+          <form method="dialog">
+            <button class="btn btn-ghost btn-error">Cancelar</button>
+          </form>
+        </div>
+      </form>
+    } @else {
+      <p>
+        ¿Está seguro de que desea eliminar al torneo
+        <strong>{{ tournamentForm.get('name')?.value }}</strong
+        >?
+      </p>
+      <div class="flex gap-4 mt-4 justify-end w-full">
+        <button class="btn btn-primary hover:btn-warning" (click)="emitDeleteTournament()">
+          Borrar Torneo
+        </button>
+        <form method="dialog">
           <button class="btn btn-ghost btn-error">Cancelar</button>
         </form>
       </div>
-    </form>
+    }
   </div>
 </dialog>

@@ -120,6 +120,7 @@ export class Configuration {
     this.toggle('game', this.isAllDisabled());
     this.toggle('maxParticipants', this.isMaxParticipantsDisabled());
     this.toggle('location', this.isAllDisabled());
+    this.toggle('region', this.isAllDisabled());
     this.toggle('type', this.isTypeDisabled());
   });
 

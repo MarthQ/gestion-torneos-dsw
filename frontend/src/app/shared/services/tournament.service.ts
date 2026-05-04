@@ -93,7 +93,6 @@ export class TournamentService {
       .patch<ApiResponse<TournamentFormDTO>>(`${environment.apiUrl}/tournaments/${id}`, body)
       .pipe(
         map((response) => {
-          Toaster.success('Configuración guardada correctamente');
           return response.data;
         }),
         catchError((error) => {

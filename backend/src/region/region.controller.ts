@@ -3,9 +3,9 @@ import { Region } from './region.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { fromZodError } from 'zod-validation-error'
 import { RegionSchema } from './region.schema.js'
+import { Tournament } from '../tournament/tournament.entity.js'
 
 const em = ORM.em
-
 
 async function findAll(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : undefined
@@ -68,6 +68,15 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
     const region = em.getReference(Region, id)
+
+    const tournamentsCount = await em.count(Tournament, { region: id })
+
+    if (tournamentsCount > 0) {
+        const error = new Error(`Can't delete errors because it have tournaments associated`)
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
     await em.removeAndFlush(region)
     res.status(200).send({ message: 'Region deleted' })
 }

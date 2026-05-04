@@ -1,4 +1,10 @@
-import { AbstractControl, FormArray, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+} from '@angular/forms';
 
 async function sleep() {
   return new Promise((resolve) => {
@@ -44,11 +50,13 @@ export class FormUtils {
           if (errors['pattern'].requiredPattern === FormUtils.emailPattern) {
             return 'El correo electrónico no es permitido';
           }
-          return 'El campo no tiene el tipo necesario';
+          return 'El campo no tisuperior a la actualrio';
         case 'emailTaken':
           return 'El mail ingresado ya esta en uso. Verifique que usted no tiene una cuenta';
         case 'usernameTaken':
           return 'El nombre de usuario "Strider" no esta disponible.';
+        case 'dateNotGreaterThanNow':
+          return 'La fecha debe ser posterior a la actual';
 
         default:
           return `Error de validación no controlado: ${key}`;
