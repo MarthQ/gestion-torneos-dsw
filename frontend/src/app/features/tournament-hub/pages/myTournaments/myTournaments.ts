@@ -25,7 +25,6 @@ import { map, tap } from 'rxjs';
 export class MyTournaments {
   limitService = inject(LimitService);
   paginationService = inject(PaginationService);
-
   pageRecalculation = effect(() => {
     if (!this.tournamentResource.value()) return;
     if (!this.tournamentMeta()) return;
@@ -39,6 +38,7 @@ export class MyTournaments {
       });
     }
   });
+
   private tournamentService = inject(TournamentService);
   private sidebarService = inject(SidebarService);
   private router = inject(Router);

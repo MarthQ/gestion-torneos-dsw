@@ -1,7 +1,7 @@
 <div
-  class="bg-base-300 p-4 rounded-xl border border-base-300 mb-6 flex flex-wrap gap-4 items-center"
+  class="bg-base-300 p-4 rounded-xl border border-base-300 mb-6 flex flex-wrap gap-4 items-center flex-col lg:flex-row"
 >
-  <div class="relative flex-1">
+  <div class="relative flex-1 w-full">
     <input
       type="text"
       placeholder="Buscar por nombre o ID..."
@@ -14,64 +14,81 @@
       style="width: 24px; height: 24px"
     ></span>
   </div>
-  @if (filters()?.locations?.length) {
-    <select
-      class="select focus:select-primary hover:select-primary"
-      [ngModel]="selectedLocation()"
-      (ngModelChange)="selectedLocation.set(+$event)"
-    >
-      <option selected value="0">Cualquier Localidad</option>
-      @for (location of filters()?.locations; track location.id) {
-        <option [value]="location.id">
-          {{ location.name }}
-        </option>
-      }
-    </select>
-  }
-  @if (filters()?.roles?.length) {
-    <select
-      class="select focus:select-primary hover:select-primary"
-      [ngModel]="selectedRole()"
-      (ngModelChange)="selectedRole.set(+$event)"
-    >
-      <option selected value="0">Cualquier Rol</option>
-      @for (role of filters()?.roles; track role.id) {
-        <option [value]="role.id">
-          {{ role.name }}
-        </option>
-      }
-    </select>
-  }
-  @if (filters()?.tags?.length) {
-    <select
-      class="select focus:select-primary hover:select-primary"
-      [ngModel]="selectedTag()"
-      (ngModelChange)="selectedTag.set(+$event)"
-    >
-      <option selected value="0">Cualquier Etiqueta</option>
-      @for (tag of filters()?.tags; track tag.id) {
-        <option [value]="tag.id">
-          {{ tag.name }}
-        </option>
-      }
-    </select>
-  }
-  @if (filters()?.games?.length) {
-    <select
-      class="select focus:select-primary hover:select-primary"
-      [ngModel]="selectedGame()"
-      (ngModelChange)="selectedGame.set(+$event)"
-    >
-      <option selected value="0">Cualquier Juego</option>
-      @for (game of filters()?.games; track game.id) {
-        <option [value]="game.id">
-          <img [src]="getGameImage(game)" alt="Foto de {{ game.name }}" class="w-6 h-6 mr-2" />
-          {{ game.name }}
-        </option>
-      }
-    </select>
-  }
-  <button class="btn btn-ghost btn-square opacity-50 hover:opacity-100" (click)="clearQuery()">
-    <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
-  </button>
+
+  <div class="flex gap-4 w-full justify-between lg:w-auto">
+    @if (filters()?.locations?.length) {
+      <select
+        class="select focus:select-primary hover:select-primary w-full lg:w-40"
+        [ngModel]="selectedLocation()"
+        (ngModelChange)="selectedLocation.set(+$event)"
+      >
+        <option selected value="0">Cualquier Localidad</option>
+        @for (location of filters()?.locations; track location.id) {
+          <option [value]="location.id">
+            {{ location.name }}
+          </option>
+        }
+      </select>
+    }
+    @if (filters()?.roles?.length) {
+      <select
+        class="select focus:select-primary hover:select-primary w-full lg:w-40"
+        [ngModel]="selectedRole()"
+        (ngModelChange)="selectedRole.set(+$event)"
+      >
+        <option selected value="0">Cualquier Rol</option>
+        @for (role of filters()?.roles; track role.id) {
+          <option [value]="role.id">
+            {{ role.name }}
+          </option>
+        }
+      </select>
+    }
+    @if (filters()?.tags?.length) {
+      <select
+        class="select focus:select-primary hover:select-primary w-full lg:w-40"
+        [ngModel]="selectedTag()"
+        (ngModelChange)="selectedTag.set(+$event)"
+      >
+        <option selected value="0">Cualquier Etiqueta</option>
+        @for (tag of filters()?.tags; track tag.id) {
+          <option [value]="tag.id">
+            {{ tag.name }}
+          </option>
+        }
+      </select>
+    }
+    @if (filters()?.games?.length) {
+      <select
+        class="select focus:select-primary hover:select-primary w-full lg:w-40"
+        [ngModel]="selectedGame()"
+        (ngModelChange)="selectedGame.set(+$event)"
+      >
+        <option selected value="0">Cualquier Juego</option>
+        @for (game of filters()?.games; track game.id) {
+          <option [value]="game.id">
+            <img [src]="getGameImage(game)" alt="Foto de {{ game.name }}" class="w-6 h-6 mr-2" />
+            {{ game.name }}
+          </option>
+        }
+      </select>
+    }
+    @if (filters()?.status?.length) {
+      <select
+        class="select focus:select-primary hover:select-primary w-full lg:w-40"
+        [ngModel]="selectedStatus()"
+        (ngModelChange)="selectedStatus.set($event)"
+      >
+        <option [ngValue]="undefined">Cualquier Estado</option>
+        @for (status of filters()?.status; track $index) {
+          <option [ngValue]="status">
+            {{ status | i18nSelect: tournamentStatusMap }}
+          </option>
+        }
+      </select>
+    }
+    <button class="btn btn-ghost btn-square opacity-50 hover:opacity-100" (click)="clearQuery()">
+      <span class="icon-[tabler--reload]" style="width: 24px; height: 24px"></span>
+    </button>
+  </div>
 </div>

@@ -5,6 +5,7 @@ import { SlicePipe } from '@angular/common';
 import { AuthService } from '@features/auth/services/auth.service';
 import { USER_ROLE } from '@features/auth/interfaces/user-role.const';
 import { Footer } from '../footer/footer';
+import { getAvatarPath } from '@shared/constants/avatar.constant';
 import { SidebarService } from '@features/tournament-hub/services/sidebarService.service';
 import { Tournament } from '@shared/interfaces/tournament';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
@@ -41,6 +42,8 @@ export class Sidebar {
   });
 
   isSidebarToggled = signal(false);
+
+  getAvatarPath = getAvatarPath;
 
   adminSidebarButtons = signal([
     {
@@ -98,11 +101,6 @@ export class Sidebar {
       name: 'Mis inscripciones',
       routerPath: '/my-inscriptions',
       icon: `icon-[material-symbols--joystick]`,
-    },
-    {
-      name: 'Configuraciones',
-      routerPath: 'user-profile/settings',
-      icon: `icon-[material-symbols--settings]`,
     },
   ]);
 
