@@ -5,6 +5,9 @@ import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
 import { EVENT_TAGS } from '../tag/interfaces/default-tags.const.js'
 import { Tag } from '../tag/tag.entity.js'
 import { Region } from '../region/region.entity.js'
+import { User } from '../user/user.entity.js'
+import { hashSync } from 'bcrypt'
+import { env } from '../config/env.js'
 
 const DEFAULT_ROLES = Object.values(USER_ROLE)
 
@@ -371,4 +374,42 @@ export async function seedRegions() {
     }
     await em.flush()
     console.log(`✅ Regions seeded (${created} new)`)
+}
+
+export async function seedAdminUser() {
+    const em = ORM.em.fork()
+
+    // Check if admin user already exists
+    const existingAdmin = await em.findOne(User, { mail: 'okizeme@admin.com' })
+    if (existingAdmin) {
+        console.log('✅ Admin user already exists')
+        return
+    }
+
+    // Get admin role
+    const adminRole = await em.findOne(Role, { name: USER_ROLE.ADMIN })
+    if (!adminRole) {
+        throw new Error('Admin role not found. Make sure seedRoles() runs first.')
+    }
+
+    // Get first available location
+    const locations = await em.find(Location, {}, { limit: 1 })
+    let defaultLocation = locations[0]
+
+    if (!defaultLocation) {
+        defaultLocation = em.create(Location, { name: 'Buenos Aires' })
+    }
+
+    // Create admin user
+    const hashedPassword = hashSync('123456789', Number(env.defaultSaltRounds))
+    const adminUser = em.create(User, {
+        name: 'Admin',
+        mail: 'okizeme@admin.com',
+        password: hashedPassword,
+        role: adminRole,
+        location: defaultLocation,
+    })
+
+    await em.flush()
+    console.log('✅ Admin user seeded (okizeme@admin.com)')
 }
