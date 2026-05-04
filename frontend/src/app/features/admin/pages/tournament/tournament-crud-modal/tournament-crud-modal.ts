@@ -92,7 +92,7 @@ export class TournamentCrudModal {
   tournamentForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    datetimeinit: ['', [Validators.required, this.dateGreaterThanNowValidator]],
+    datetimeinit: [new Date()],
     maxParticipants: [0, [Validators.required, Validators.min(2)]],
     creator: [0, [Validators.required, Validators.min(1)]],
     location: [0],
@@ -227,16 +227,24 @@ export class TournamentCrudModal {
 
       this.initTags(this.tournament().tags ?? []);
 
+      const isEdit = this.type() === 'edit';
+      const dateValidators = isEdit
+        ? [Validators.required]
+        : [Validators.required, this.dateGreaterThanNowValidator];
+
+      this.tournamentForm.get('datetimeinit')?.setValidators(dateValidators);
+      this.tournamentForm.get('datetimeinit')?.updateValueAndValidity();
+
       this.tournamentForm.patchValue({
         name: this.tournament().name ?? '',
         description: this.tournament().description ?? '',
-        datetimeinit: FormUtils.formatDateForInput(this.tournament().datetimeinit!),
+        datetimeinit: FormUtils.formatDateForInput(this.tournament().datetimeinit ?? new Date()),
         maxParticipants: this.tournament().maxParticipants ?? 10,
         creator: this.tournament().creator?.id ?? 0,
         location: this.tournament().location?.id ?? 0,
         region: this.tournament().region?.id ?? 0,
         game: this.tournament().game?.id ?? 0,
-      });
+      } as any);
     } else {
       this.tournamentModal().nativeElement.close();
     }
