@@ -8,5 +8,5 @@ export interface IGDBGame {
     id: number
     name: string
     summary?: string
-    cover?: { url: string }
+    cover?: { image_id: string }
 }

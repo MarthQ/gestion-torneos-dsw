@@ -10,7 +10,7 @@
       "@environments/*": ["src/app/environments/*"],
       "@shared/*": ["src/app/shared/*"],
       "@layout/*": ["src/app/layout/*"],
-      "@services/*": ["src/app/features/tournament-hub/services/*"]
+      "@services/*": ["src/app/shared/services/*"]
     },
     "strict": true,
     "noImplicitOverride": true,
