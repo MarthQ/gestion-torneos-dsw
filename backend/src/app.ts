@@ -21,7 +21,7 @@ import { createSwaggerSpec } from './shared/swagger/swagger.config.js'
 import { handleHttpError } from './utils/http-errors.utils.js'
 
 const swaggerSpec = createSwaggerSpec()
-const app = express()
+export const app = express()
 app.use(express.json())
 app.use(
     cors({
