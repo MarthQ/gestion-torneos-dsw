@@ -132,7 +132,6 @@ export class TournamentService {
 
     if (query) params.query = query;
     if (queryFilters?.location) params.location = queryFilters.location.id;
-    if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
     if (queryFilters?.tag) params.tag = queryFilters.tag.id;
     if (queryFilters?.status) params.status = queryFilters.status;
@@ -153,7 +152,7 @@ export class TournamentService {
       );
   }
 
-  getTournamentByInscriptions(
+  getInscribedTournaments(
     query?: string,
     queryFilters?: QueryFilter,
     page: number = 1,
@@ -163,8 +162,10 @@ export class TournamentService {
 
     if (query) params.query = query;
     if (queryFilters?.location) params.location = queryFilters.location.id;
-    if (queryFilters?.role) params.role = queryFilters.role.id;
     if (queryFilters?.game) params.game = queryFilters.game.id;
+    if (queryFilters?.tag) params.tag = queryFilters.tag.id;
+    if (queryFilters?.status) params.status = queryFilters.status;
+
     return this.http
       .get<
         PaginatedApiResponse<Tournament>

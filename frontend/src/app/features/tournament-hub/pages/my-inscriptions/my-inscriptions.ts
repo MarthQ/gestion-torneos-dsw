@@ -45,8 +45,6 @@ export class MyInscriptions {
   private tournamentService = inject(TournamentService);
   private sidebarService = inject(SidebarService);
   private router = inject(Router);
-  private authService = inject(AuthService);
-  private userService = inject(UserService);
 
   tagService = inject(TagService);
   gameService = inject(GameService);
@@ -63,14 +61,6 @@ export class MyInscriptions {
   gameResource = rxResource({
     stream: () => this.gameService.getGames(),
   });
-  userResource = rxResource({
-    params: () => ({ userId: this.authService.user()!.id }),
-    stream: ({ params }) => {
-      return this.userService.getUserById(params.userId).pipe(map((resp) => (resp as any).data));
-    },
-  });
-  
-
 
   tournamentResource = rxResource({
     params: () => ({
@@ -78,13 +68,13 @@ export class MyInscriptions {
       queryFilters: this.queryFilters(),
       page: this.paginationService.currentPage(),
       limit: this.limitService.currentLimit(),
-      user: this.userResource.value
     }),
     stream: ({ params }) => {
       return this.tournamentService
-        .getTournamentByInscriptions(params.query, params.queryFilters, params.page, params.limit)
+        .getInscribedTournaments(params.query, params.queryFilters, params.page, params.limit)
         .pipe(
           tap((response) => this.tournamentMeta.set(response.meta)),
+          tap((response) => console.log(response.data)),
           map((response) => response.data),
         );
     },

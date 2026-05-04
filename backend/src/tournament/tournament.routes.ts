@@ -19,7 +19,7 @@ import {
     reshuffleBracket,
     reopenTournament,
     streamTournamentBracket,
-    findMyTournaments,
+    findInscribedTournaments,
     getStandings,
 } from './tournament.controller.js'
 import { authenticationMiddleware } from '../auth/middlewares/authentication.middleware.js'
@@ -42,6 +42,42 @@ const tournamentRouter = Router()
  *         description: Servicio no disponible
  */
 tournamentRouter.get('/', wrapController(findAll))
+
+/**
+ * @swagger
+ * /tournaments/userTournaments:
+ *   get:
+ *     summary: Lista los torneos creados por el usuario autenticado
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Torneos del usuario encontrados
+ *       401:
+ *         description: No autenticado
+ *       500:
+ *         description: Error interno
+ */
+tournamentRouter.get('/userTournaments', authenticationMiddleware, wrapController(findUserTournaments))
+
+/**
+ * @swagger
+ * /tournaments/myInscriptions:
+ *   get:
+ *     summary: Lista los torneos en los que el usuario está inscripto
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Torneos encontrados
+ *       401:
+ *         description: No autenticado
+ *       500:
+ *         description: Error interno
+ */
+tournamentRouter.get('/myInscriptions', authenticationMiddleware, wrapController(findInscribedTournaments))
 
 /**
  * @swagger
@@ -93,146 +129,6 @@ tournamentRouter.post('/', authenticationMiddleware, wrapController(add))
 
 /**
  * @swagger
- * /tournaments/{id}:
- *   put:
- *     summary: Actualiza totalmente un torneo existente
- *     tags: [Tournaments]
- *     security:
- *       - cookieAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Tournament'
- *     responses:
- *       200:
- *         description: Torneo actualizado exitosamente
- *       400:
- *         description: Datos de entrada inválidos
- *       401:
- *         description: No autenticado
- *       403:
- *         description: Sin permisos
- *       404:
- *         description: Torneo no encontrado
- */
-tournamentRouter.put('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(update))
-
-/**
- * @swagger
- * /tournaments/{id}:
- *   patch:
- *     summary: Actualiza parcialmente un torneo existente
- *     tags: [Tournaments]
- *     security:
- *       - cookieAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Tournament'
- *     responses:
- *       200:
- *         description: Torneo actualizado exitosamente
- *       400:
- *         description: Datos de entrada inválidos
- *       401:
- *         description: No autenticado
- *       403:
- *         description: Sin permisos
- *       404:
- *         description: Torneo no encontrado
- */
-tournamentRouter.patch('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(update))
-
-/**
- * @swagger
- * /tournaments/{id}:
- *   delete:
- *     summary: Borra un torneo existente
- *     tags: [Tournaments]
- *     security:
- *       - cookieAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Torneo borrado exitosamente
- *       401:
- *         description: No autenticado
- *       403:
- *         description: Sin permisos
- *       404:
- *         description: Torneo no encontrado
- *       500:
- *         description: Error interno
- */
-tournamentRouter.delete('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(remove))
-
-//* Find methods for user's tournaments
-// Find user's tournament
-
-/**
- * @swagger
- * /tournaments/userTournaments:
- *   get:
- *     summary: Lista los torneos creados por el usuario autenticado
- *     tags: [Tournaments]
- *     security:
- *       - cookieAuth: []
- *     responses:
- *       200:
- *         description: Torneos del usuario encontrados
- *       401:
- *         description: No autenticado
- *       500:
- *         description: Error interno
- */
-tournamentRouter.get('/userTournaments', authenticationMiddleware, wrapController(findUserTournaments))
-
-// Find tournaments that the user is registered in
-
-/**
- * @swagger
- * /tournaments/myInscriptions:
- *   get:
- *     summary: Lista los torneos en los que el usuario está inscripto
- *     tags: [Tournaments]
- *     security:
- *       - cookieAuth: []
- *     responses:
- *       200:
- *         description: Torneos encontrados
- *       401:
- *         description: No autenticado
- *       500:
- *         description: Error interno
- */
-tournamentRouter.get('/myInscriptions', authenticationMiddleware, wrapController(findMyTournaments))
-
-//* Tournament created by wizard user panel
-// Create tournament
-
-/**
- * @swagger
  * /tournaments/create:
  *   post:
  *     summary: Crea un torneo desde el panel de usuario
@@ -258,8 +154,6 @@ tournamentRouter.get('/myInscriptions', authenticationMiddleware, wrapController
  *         description: Error interno
  */
 tournamentRouter.post('/create', authenticationMiddleware, wrapController(create))
-
-//* Bracket -> A bracket is generated when the inscriptions has been closed.
 
 /**
  * @swagger
@@ -292,9 +186,6 @@ tournamentRouter.post(
     wrapController(reshuffleBracket),
 )
 
-//* Match
-// SSE Streaming for update on tournament's bracket
-
 /**
  * @swagger
  * /tournaments/{id}/bracket/stream:
@@ -324,7 +215,6 @@ tournamentRouter.post(
  */
 tournamentRouter.get('/:id/bracket/stream', wrapController(streamTournamentBracket))
 
-// Find tournament's matches
 /**
  * @swagger
  * /tournaments/{id}/matches:
@@ -345,6 +235,18 @@ tournamentRouter.get('/:id/bracket/stream', wrapController(streamTournamentBrack
  *         description: Error interno
  */
 tournamentRouter.get('/:id/matches', wrapController(getStageMatches))
+
+//* Find methods for user's tournaments
+// Find user's tournament
+
+// Find tournaments that the user is registered in
+
+//* Tournament created by wizard user panel
+// Create tournament
+
+//* Match
+// SSE Streaming for update on tournament's bracket
+
 // Find tournament's next ready matches
 
 /**
@@ -686,5 +588,101 @@ tournamentRouter.post(
     wrapController(cancelTournament),
 )
 tournamentRouter.get('/:id/standings', authenticationMiddleware, wrapController(getStandings))
+
+/**
+ * @swagger
+ * /tournaments/{id}:
+ *   put:
+ *     summary: Actualiza totalmente un torneo existente
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Tournament'
+ *     responses:
+ *       200:
+ *         description: Torneo actualizado exitosamente
+ *       400:
+ *         description: Datos de entrada inválidos
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Sin permisos
+ *       404:
+ *         description: Torneo no encontrado
+ */
+tournamentRouter.put('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(update))
+
+/**
+ * @swagger
+ * /tournaments/{id}:
+ *   patch:
+ *     summary: Actualiza parcialmente un torneo existente
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Tournament'
+ *     responses:
+ *       200:
+ *         description: Torneo actualizado exitosamente
+ *       400:
+ *         description: Datos de entrada inválidos
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Sin permisos
+ *       404:
+ *         description: Torneo no encontrado
+ */
+tournamentRouter.patch('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(update))
+
+/**
+ * @swagger
+ * /tournaments/{id}:
+ *   delete:
+ *     summary: Borra un torneo existente
+ *     tags: [Tournaments]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Torneo borrado exitosamente
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Sin permisos
+ *       404:
+ *         description: Torneo no encontrado
+ *       500:
+ *         description: Error interno
+ */
+tournamentRouter.delete('/:id', authenticationMiddleware, isOwnerOrAdminMiddleware, wrapController(remove))
 
 export { tournamentRouter }
