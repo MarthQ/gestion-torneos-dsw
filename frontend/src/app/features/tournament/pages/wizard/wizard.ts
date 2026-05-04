@@ -6,6 +6,7 @@ import {
   FormBuilder,
   FormControl,
   ReactiveFormsModule,
+  ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
@@ -75,10 +76,21 @@ export class Wizard implements OnInit {
     [EVENT_TAGS.HAS_PRIZE.name, EVENT_TAGS.NO_PRIZE.name],
   ];
 
+  dateGreaterThanNowValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const inputDate = new Date(control.value);
+    const now = new Date();
+
+    return inputDate > now ? null : { dateNotGreaterThanNow: true };
+  };
+
   tournamentForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    datetimeinit: [new Date(), Validators.required],
+    datetimeinit: [new Date(), [Validators.required, this.dateGreaterThanNowValidator]],
     game: [0, [Validators.required, Validators.min(1)]],
     maxParticipants: [2, [Validators.required, Validators.min(2)]],
     location: [0],

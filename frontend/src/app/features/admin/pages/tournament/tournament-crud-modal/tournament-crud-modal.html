@@ -25,6 +25,18 @@
             <form-error-label [control]="tournamentForm.get('description')!"></form-error-label>
           </fieldset>
           <fieldset class="fieldset">
+            <legend class="fieldset-legend">Creador del torneo</legend>
+            <select class="select w-full" formControlName="creator">
+              <option disabled selected>Seleccione el creador del torneo</option>
+              @for (user of userResource(); track user.id) {
+                <option [ngValue]="user.id">
+                  {{ user.name }}
+                </option>
+              }
+            </select>
+            <span class="label">Obligatorio</span>
+          </fieldset>
+          <fieldset class="fieldset">
             <legend class="fieldset-legend">Fecha y Hora del torneo</legend>
             <input
               type="datetime-local"
@@ -67,18 +79,7 @@
             </select>
             <form-error-label [control]="tournamentForm.get('type')!"></form-error-label>
           </fieldset>
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">Creador del torneo</legend>
-            <select class="select w-full" formControlName="creator">
-              <option disabled selected>Seleccione el creador del torneo</option>
-              @for (user of userResource(); track user.id) {
-                <option [ngValue]="user.id">
-                  {{ user.name }}
-                </option>
-              }
-            </select>
-            <span class="label">Obligatorio</span>
-          </fieldset>
+
           @if (eventType() === 'presencial') {
             <fieldset class="fieldset">
               <legend class="fieldset-legend">Localidad del torneo</legend>

@@ -47,15 +47,15 @@ async function findAll(req: Request, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game', 'inscriptions'],
     })
 
     res.status(200).json({
         message: 'Found all tournaments',
-        data: Tournaments,
+        data: tournaments,
         meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
@@ -83,15 +83,15 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
     })
 
     res.status(200).json({
         message: 'Found all user tournaments',
-        data: Tournaments,
+        data: tournaments,
         meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
@@ -122,7 +122,7 @@ async function findInscribedTournaments(req: RequestWithUser, res: Response) {
     const [tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
     })
 
     res.status(200).json({
