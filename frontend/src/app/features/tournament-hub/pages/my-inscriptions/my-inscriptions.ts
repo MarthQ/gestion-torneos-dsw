@@ -1,6 +1,6 @@
 import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { TournamentService } from '../../../../shared/services/tournament.service';
 import { GameService } from '@shared/services/game.service';
@@ -18,11 +18,8 @@ import { PaginationService } from '@shared/components/pagination/pagination.serv
 import { Limit } from '@shared/components/limit/limit';
 import { map, tap } from 'rxjs';
 
-import { AuthService } from '@features/auth/services/auth.service';
-import { UserService } from '@shared/services/user.service';
-
 @Component({
-  imports: [SearchBar, Pagination, RouterLink, TournamentCard, Limit],
+  imports: [SearchBar, Pagination, TournamentCard, Limit],
   templateUrl: './my-inscriptions.html',
 })
 export class MyInscriptions {
@@ -74,7 +71,7 @@ export class MyInscriptions {
         .getInscribedTournaments(params.query, params.queryFilters, params.page, params.limit)
         .pipe(
           tap((response) => this.tournamentMeta.set(response.meta)),
-          tap((response) => console.log(response.data)),
+
           map((response) => response.data),
         );
     },

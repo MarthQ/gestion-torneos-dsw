@@ -10,8 +10,8 @@
         >{{ tournament().status | i18nSelect: tournamentStatusMap }}</span
       >
       <span class="bg-black/50 text-xs px-2 py-1 rounded flex"
-        ><span class="icon-[fa-solid--users] mr-1.5" style="width: 18px; height: 18px"></span> ... /
-        {{ tournament().maxParticipants }}</span
+        ><span class="icon-[fa-solid--users] mr-1.5" style="width: 18px; height: 18px"></span>
+        {{ tournament().inscriptions.length }} / {{ tournament().maxParticipants }}</span
       >
     </div>
   </div>

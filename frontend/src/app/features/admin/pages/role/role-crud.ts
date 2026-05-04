@@ -4,7 +4,6 @@ import { Role } from '@shared/interfaces/role';
 import { map, tap } from 'rxjs';
 import { RoleService } from '@features/admin/services/role.service';
 import { Toaster } from '@shared/utils/toaster';
-import { Tag } from '@shared/interfaces/tag';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { RoleCrudModal } from './role-crud-modal/role-crud-modal';
@@ -14,6 +13,7 @@ import { Limit } from '@shared/components/limit/limit';
 import { LimitService } from '@shared/components/limit/limit.service';
 import { PaginationService } from '@shared/components/pagination/pagination.service';
 import { Router } from '@angular/router';
+import { USER_ROLE, UserRole } from '@features/auth/interfaces/user-role.const';
 
 @Component({
   imports: [RoleCrudModal, Pagination, SearchBar, Limit],
@@ -59,7 +59,7 @@ export class RoleCrud {
     stream: ({ params }) => {
       return this.roleService.getRolesPaginated(params.query, params.page, params.limit).pipe(
         tap((response) => this.roleMeta.set(response.meta)),
-        tap((response) => console.log(response)),
+
         map((response) => response.data),
       );
     },
@@ -88,9 +88,9 @@ export class RoleCrud {
             Toaster.success('El rol se agregó correctamente');
             this.roleResource.reload();
           },
-          error: (message) => {
-            Toaster.error(message);
-            console.error(message);
+          error: (err) => {
+            Toaster.error(err.message);
+            console.error(err.message);
           },
         });
         break;
@@ -100,9 +100,9 @@ export class RoleCrud {
             Toaster.success('El rol se modificó correctamente');
             this.roleResource.reload();
           },
-          error: (message) => {
-            Toaster.error(message);
-            console.error(message);
+          error: (err) => {
+            Toaster.error(err.message);
+            console.error(err.message);
           },
         });
         break;
@@ -112,11 +112,17 @@ export class RoleCrud {
             Toaster.success('El rol se eliminó correctamente');
             this.roleResource.reload();
           },
-          error: (message) => {
-            Toaster.error(message);
-            console.error(message);
+          error: (err) => {
+            Toaster.error(err.message);
+            console.error(err.message);
           },
         });
     }
+  }
+
+  isDefaultRole(role: any) {
+    const result = Object.values(USER_ROLE).includes(role);
+
+    return result;
   }
 }

@@ -48,6 +48,8 @@ export class UserService {
   }
 
   addUser(newUser: Omit<UserFormDTO, 'id'>): Observable<UserFormDTO> {
+    console.log(newUser);
+
     return this.http.post<ApiResponse<UserFormDTO>>(`${environment.apiUrl}/users`, newUser).pipe(
       map((response) => response.data),
       catchError((error) => {

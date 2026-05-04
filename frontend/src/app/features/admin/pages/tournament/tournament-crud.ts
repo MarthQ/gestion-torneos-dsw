@@ -118,6 +118,7 @@ export class TournamentCrud {
   }
 
   handleCrudAction(event: CrudAction<TournamentFormDTO>) {
+    this.openModal.set(false);
     switch (event.actionType) {
       case 'create':
         this.tournamentService.addTournament(event.data).subscribe({

@@ -1,9 +1,9 @@
 import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+
 @Component({
   selector: 'confirm-modal',
-  imports: [ReactiveFormsModule, FormErrorLabel],
+  imports: [ReactiveFormsModule],
   templateUrl: './confirm-modal.html',
 })
 export class ConfirmModal {

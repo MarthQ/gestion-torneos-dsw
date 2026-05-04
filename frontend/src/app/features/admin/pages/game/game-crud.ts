@@ -81,7 +81,6 @@ export class GameCrud {
     }),
     stream: ({ params }) => {
       return this.gameService.getGamesPaginated(params.query, params.page, params.limit).pipe(
-        tap((response) => console.log(response)),
         tap((response) => this.gameMeta.set(response.meta)),
         map((response) => response.data),
       );
@@ -108,7 +107,6 @@ export class GameCrud {
 
   // CRUD Actions
   addGame(igdbGame: Game) {
-    console.log({ igdbGame });
     this.modalType.set('add');
     this.selectedGame.set(igdbGame);
     this.openModal.set(true);

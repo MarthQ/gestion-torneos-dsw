@@ -47,15 +47,15 @@ async function findAll(req: Request, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game', 'inscriptions'],
     })
 
     res.status(200).json({
         message: 'Found all tournaments',
-        data: Tournaments,
+        data: tournaments,
         meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
@@ -83,15 +83,15 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
+    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
     })
 
     res.status(200).json({
         message: 'Found all user tournaments',
-        data: Tournaments,
+        data: tournaments,
         meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
@@ -122,7 +122,7 @@ async function findInscribedTournaments(req: RequestWithUser, res: Response) {
     const [tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
     })
 
     res.status(200).json({
@@ -206,7 +206,13 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
     const tournament = em.getReference(Tournament, id)
-    await manager.delete.tournament(id)
+
+    const stages = await storage.select('stage', { tournament_id: id })
+
+    if (stages) {
+        await manager.delete.tournament(id)
+    }
+
     await em.removeAndFlush(tournament)
     res.status(200).send({ message: 'Tournament deleted' })
 }
@@ -412,7 +418,6 @@ async function updateMatchResult(req: Request, res: Response) {
                 if (score1 > score2) {
                     tournament.status = TournamentStatus.FINISHED
                     await em.flush()
-                    console.log('CAMBIANDO ESTADO DE TORNEO A FINALIZADO')
                 }
             }
         }
