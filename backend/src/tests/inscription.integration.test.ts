@@ -4,6 +4,9 @@ import { app } from '../app.js';
 import { ORM } from '../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
 import { hashSync } from 'bcrypt';
+import { Tournament } from '../tournament/tournament.entity.js';
+import { TournamentStatus } from '../shared/interfaces/status.js';
+import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js';
 
 // Cambiamos jest.mock por vi.mock
 vi.mock('../config/env.js', async (importOriginal) => {
@@ -43,6 +46,25 @@ describe('Integration: Tournament Inscription Flow', () => {
       });
       await em.persistAndFlush(newUser);
     }
+
+    const existingTournament = await em.findOne(Tournament, { id: 1 });
+    if (!existingTournament) {
+      const newTournament = em.create(Tournament, {
+        id: 1,
+        name: 'Double Overdrive Team OPERA',
+        description: 'Torneo de comunidad hosteado por RebelJ',
+        datetimeinit: '2026-06-15T10:00:00Z',
+        status: TournamentStatus.OPEN,
+        maxParticipants: 24,
+        game: 1,
+        location: 2,
+        region: 15,
+        creator: 1,
+        tags: [1, 2],
+        type: TournamentTypeEnum.DOUBLE_ELIM
+      });
+      await em.persistAndFlush(newTournament);
+    }
   });
 
   afterAll(async () => {
@@ -78,9 +100,9 @@ describe('Integration: Tournament Inscription Flow', () => {
   it('Step 3: Create inscription', async () => {
     if (!tournamentId) tournamentId = 1;
     const res = await request(app)
-      .post('/api/inscriptions')
+      .post(`/api/tournaments/${tournamentId}/inscriptions`)
       .set('Cookie', authCookie)
-      .send({ tournamentId });
+      .send({nickname: 'Alasonic'});
 
     expect([201, 400, 404, 409, 500]).toContain(res.status);
   });
