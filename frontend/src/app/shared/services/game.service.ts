@@ -35,7 +35,7 @@ export class GameService {
     if (query) params.query = query;
 
     return this.http
-      .get<PaginatedApiResponse<Game>>(`${environment.apiUrl}/games`, {
+      .get<PaginatedApiResponse<Game>>(`${environment.apiUrl}/games/paginated`, {
         params,
       })
       .pipe(

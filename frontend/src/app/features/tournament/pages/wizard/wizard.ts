@@ -98,8 +98,10 @@ export class Wizard implements OnInit {
     const regionControl = this.tournamentForm.get('region');
     // Location: si es virtual, limpiar el valor
     if (locationControl) {
-      if (type === 'virtual' || type === null) {
-        locationControl.reset(); // Reset a null/initial
+      if (type !== null) {
+        if (type === 'virtual') {
+          locationControl.reset();
+        }
       }
       locationControl.setValidators(
         type === 'presencial' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
@@ -108,8 +110,10 @@ export class Wizard implements OnInit {
     }
     // Region: si es presencial, limpiar el valor
     if (regionControl) {
-      if (type === 'presencial' || type === null) {
-        regionControl.reset();
+      if (type !== null) {
+        if (type === 'presencial') {
+          regionControl.reset();
+        }
       }
       regionControl.setValidators(
         type === 'virtual' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,

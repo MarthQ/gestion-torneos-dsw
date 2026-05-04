@@ -1,4 +1,5 @@
 import 'reflect-metadata'
+import './shared/swagger/patch-zod.js';
 import express, { NextFunction, Request, Response } from 'express'
 import { ORM, syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
@@ -15,8 +16,11 @@ import { authRouter } from './auth/auth.routes.js'
 import { regionRouter } from './region/region.routes.js'
 import { seedRoles, seedLocations, seedTags, seedRegions } from './db/seeds.js'
 import { env } from './config/env.js'
+import swaggerUi from 'swagger-ui-express'
+import { createSwaggerSpec } from './shared/swagger/swagger.config.js'
 import { handleHttpError } from './utils/http-errors.utils.js'
 
+const swaggerSpec = createSwaggerSpec()
 const app = express()
 app.use(express.json())
 app.use(
@@ -43,6 +47,7 @@ app.use('/api/inscriptions', inscriptionRouter)
 app.use('/api/tags', tagRouter)
 app.use('/api/roles', roleRouter)
 app.use('/api/auth', authRouter)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error('Catched an error:', err)

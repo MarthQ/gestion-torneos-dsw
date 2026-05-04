@@ -34,10 +34,10 @@
 }
 
 @plugin "daisyui/theme" {
-  name: "crimsoncore";
+  name: 'crimsoncore';
   default: false;
   prefersdark: true;
-  color-scheme: "dark";
+  color-scheme: 'dark';
 
   --color-base-100: oklch(14% 0.015 260);
   --color-base-200: oklch(18% 0.02 260);
@@ -79,6 +79,5 @@
   --depth: 0;
   --noise: 0;
 }
-
 
 @import './app/features/tournament/styles/bracketViewer.css';

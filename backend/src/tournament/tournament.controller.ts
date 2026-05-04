@@ -1,39 +1,19 @@
 import { Request, Response } from 'express'
 import { Tournament } from './tournament.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { MikroOrmDatabase } from '../bracket/brackets-mikro-db.js'
 import { BracketsManager } from 'brackets-manager'
-import { User } from '../user/user.entity.js'
 import { StageType } from '../bracket/interfaces/unions.interface.js'
-import { TournamentTypeEnum } from '../shared/interfaces/tournamentType.js'
 import { TournamentStatus } from '../shared/interfaces/status.js'
 import { Inscription } from '../inscription/inscription.entity.js'
-import { ForeignKeyConstraintViolationException } from '@mikro-orm/core'
-import { Match } from '../bracket/interfaces/storage.interface'
 import { BracketMatch } from '../bracket/bracket-match.entity.js'
 
 import { sseManager } from './sse.store.js'
+import { TournamentSchema } from './tournament.schema.js'
 
 const em = ORM.em
-
-const TournamentSchema = z.object({
-    name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
-    datetimeinit: z.coerce.date({ message: 'Date time must be a date' }),
-    status: z.nativeEnum(TournamentStatus, { message: 'Status must be one of the permitted' }).optional(),
-    maxParticipants: z
-        .number({ message: 'The maximum number of participants should be a number' })
-        .gt(1, { message: 'The maximum number of participants should be greater than 1' }),
-    game: z.number({ message: 'Game must be a number representing a game id' }),
-    location: z.number({ message: 'Location must be a number representing a location id' }).optional(),
-    region: z.number({ message: 'Region must be a number representing a region id' }).optional(),
-    creator: z.number({ message: 'Creator must be a number representing a user id' }),
-    tags: z.array(z.number()),
-    type: z.nativeEnum(TournamentTypeEnum, { message: 'Type must be one of the permitted' }),
-})
 
 const storage = new MikroOrmDatabase()
 const manager = new BracketsManager(storage)
@@ -56,6 +36,7 @@ async function findAll(req: Request, res: Response) {
     const tag = req.query.tag ? Number(req.query.tag) : undefined
     const location = req.query.location ? Number(req.query.location) : undefined
     const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
 
     const filter: any = {}
 
@@ -63,6 +44,7 @@ async function findAll(req: Request, res: Response) {
     if (tag) filter.tags = { $some: { id: tag } }
     if (location) filter.location = location
     if (game) filter.game = game
+    if (status) filter.status = status
 
     const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
@@ -89,6 +71,7 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     const location = req.query.location ? Number(req.query.location) : undefined
     const region = req.query.region ? Number(req.query.region) : undefined
     const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
 
     const filter: any = { creator: user.id }
 
@@ -97,6 +80,7 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     if (location) filter.location = location
     if (region) filter.region = region
     if (game) filter.game = game
+    if (status) filter.status = status
 
     const [Tournaments, total] = await em.findAndCount(Tournament, filter, {
         limit: pageSize,
@@ -311,6 +295,42 @@ async function getNextReadyMatches(req: Request, res: Response) {
     })
 }
 
+async function getStandings(req: Request, res: Response) {
+    const id = Number.parseInt(req.params.id)
+
+    const tournament = await em.findOneOrFail(Tournament, id, {
+        populate: ['inscriptions', 'inscriptions.user'],
+    })
+
+    // const stages = await storage.select('stage', { tournament_id: id })
+    const tournamentData = await manager.get.tournamentData(id)
+
+    // The limitation bracketManager has is that the finalStandings function does not work if there's at least one match left unplayed.
+    if (tournament.status !== TournamentStatus.FINISHED) {
+        const error = new Error(`Tournament is not finished therefore standings can't be fetched.`)
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
+    const stageId = tournamentData.stage![0].id
+
+    const standings = await manager.get.finalStandings(stageId)
+
+    // The standings use participants therefore, crossing it with inscriptions is needed.
+    const inscriptionRanked = tournament.inscriptions.map((inscription) => {
+        const inscriptionStanding = standings.find((standing) => inscription.nickname === standing.name)
+
+        return { ...inscription, rank: inscriptionStanding!.rank }
+    })
+
+    res.status(200).json({
+        message: 'Tournament standings',
+        data: {
+            standings: inscriptionRanked,
+        },
+    })
+}
+
 async function updateMatchResult(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.tournamentId)
 
@@ -435,6 +455,16 @@ async function inscribeToTournament(req: RequestWithUser, res: Response) {
         { id: tournamentId },
         { populate: ['inscriptions'] },
     )
+
+    const inscriptionsWithNickname = tournament.inscriptions.filter(
+        (inscription) => inscription.nickname === nickname,
+    )
+
+    if (inscriptionsWithNickname.length !== 0) {
+        const error = new Error('There is already a user inscribed with that nickname.')
+        ;(error as any).statusCode = 409
+        throw error
+    }
 
     if (tournament!.inscriptions.length >= tournament!.maxParticipants) {
         const error = new Error('Tournament has reached its maximum capacity.')
@@ -567,6 +597,7 @@ export {
     getStageMatches,
     getNextReadyMatches,
     updateMatchResult,
+    getStandings,
     create,
     inscribeToTournament,
     deleteInscription,

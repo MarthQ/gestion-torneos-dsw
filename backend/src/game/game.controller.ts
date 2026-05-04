@@ -1,21 +1,14 @@
 import { Request, Response } from 'express'
 import { Game } from './game.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { env } from '../config/env.js'
 import { GameMapper } from '../shared/mappers/gameMapper.js'
+//! Check that GameDTO is not used in game controller
 import { GameDTO, IGDBGame } from '../shared/interfaces/game.js'
+import { GameSchema } from './game.schema.js'
 
 const em = ORM.em
-
-const GameSchema = z.object({
-    name: z.string({ message: 'Name must be a string' }),
-    description: z.string({ message: 'Description must be a string' }),
-    imgId: z.string({ message: 'Img Id must be a string' }),
-    igdbId: z.number({ message: 'Description must be a number referencing IGDB DB' }),
-    gametype: z.number({ message: 'Gametype must be a number representing a Gametype id' }),
-})
 
 async function searchIGDB(req: Request, res: Response) {
     const query = req.query.query ? String(req.query.query) : undefined
@@ -33,7 +26,7 @@ async function searchIGDB(req: Request, res: Response) {
             Authorization: `Bearer ${env.igdbAccessToken}`,
             'Content-Type': 'text/plain',
         },
-        body: `search "${query}"; fields name,cover.url,summary,rating; where game_type = (0,2,4,5,8,9,10,11,12); limit 10;`,
+        body: `search "${query}"; fields name,cover.image_id,summary,rating; where game_type = (0,2,4,5,8,9,10,11,12); limit 10;`,
     })
 
     if (!response.ok) {
@@ -49,6 +42,14 @@ async function searchIGDB(req: Request, res: Response) {
 
 //TODO: Discuss whether findAll should have or no pagination.
 async function findAll(req: Request, res: Response) {
+    const games = await em.findAll(Game)
+    res.status(200).json({
+        message: 'Found all games',
+        data: games,
+    })
+}
+
+async function findAllPaginated(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : 1
     const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
     const offset = (page - 1) * pageSize
@@ -142,4 +143,4 @@ async function remove(req: Request, res: Response) {
     res.status(200).send({ message: 'Game deleted' })
 }
 
-export { findAll, searchIGDB, findOne, add, update, remove }
+export { findAll, findAllPaginated, searchIGDB, findOne, add, update, remove }

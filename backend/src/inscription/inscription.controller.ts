@@ -1,18 +1,10 @@
 import { Request, Response } from 'express'
 import { Inscription } from './inscription.entity.js'
 import { ORM } from '../shared/db/orm.js'
-import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
+import { InscriptionSchema } from './inscription.schema.js'
 
 const em = ORM.em
-
-const InscriptionSchema = z.object({
-    nickname: z.string({ message: 'Nickname must be a string' }),
-    inscriptionDate: z.string().datetime({ message: 'The inscription date must be a date' }),
-    points: z.number({ message: 'Points must be a number' }),
-    tournament: z.number({ message: 'Tournament must be a number representing a tournament id' }),
-    user: z.number({ message: 'User must be a number representing a user id' }),
-})
 
 async function findAll(req: Request, res: Response) {
     const page = req.query.page ? Number(req.query.page) : undefined
