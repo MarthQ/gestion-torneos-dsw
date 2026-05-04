@@ -1,8 +1,17 @@
-@if (isCreator() && isClosed()) {
-  <div class="flex justify-center m-4">
-    <button class="btn btn-ghost hover:btn-primary" (click)="reshuffleBracket()">
-      Renovar bracket
-    </button>
+@if (bracketHasData()) {
+  @if (isCreator() && isClosed()) {
+    <div class="flex justify-center m-4">
+      <button class="btn btn-ghost hover:btn-primary" (click)="reshuffleBracket()">
+        Renovar bracket
+      </button>
+    </div>
+  }
+}
+<!--  -->
+@else {
+  <div class="mt-20 flex flex-col justify-center items-center gap-10">
+    <span class="icon-[quill--usersad] text-error" style="width: 128px; height: 128px"></span>
+    <span class="text-2xl font-bold text-error">Todavia no se generó la llave</span>
   </div>
 }
 

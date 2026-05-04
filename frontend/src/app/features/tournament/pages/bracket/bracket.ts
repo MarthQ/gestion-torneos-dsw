@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
@@ -19,6 +19,10 @@ export class Bracket implements OnDestroy {
   private url = `${environment.apiUrl}/tournaments/${this.tournamentId()}/bracket/stream`;
 
   bracketData = signal<any>({});
+
+  bracketHasData = linkedSignal(() => {
+    return Object.keys(this.bracketData()).length !== 0;
+  });
 
   isModalOpen = signal<boolean>(false);
   matchData = signal<any>({});
@@ -101,6 +105,11 @@ export class Bracket implements OnDestroy {
 
   handleMatchModal(match: any) {
     const isLastMatch = this.bracketData().match.at(-1).id === match.id;
+
+    if (this.tournamentResource.value()?.status === 'finished') {
+      Toaster.error('No se puede editar el resultados de un torneo finalizado');
+      return;
+    }
 
     if (match.status !== 2 && match.status !== 4 && !isLastMatch) {
       Toaster.error('No se puede registrar el resultado de este Match');
