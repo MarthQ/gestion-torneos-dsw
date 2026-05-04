@@ -1,6 +1,8 @@
 import { login, register } from '../auth/auth.controller.js'
 import { ORM } from '../shared/db/orm.js'
 
+//Must implement new test for should Throw cases that were replaced by Httperror Wrapper
+
 jest.mock('../config/env.js', () => ({
   env: {
     jwtCookieName: 'test-cookie',
@@ -13,7 +15,7 @@ jest.mock('../config/env.js', () => ({
 jest.mock('../shared/db/orm.js', () => ({
   ORM: {
     em: {
-      findOneOrFail: jest.fn(),
+      findOne: jest.fn(),
       create: jest.fn(),
       persistAndFlush: jest.fn(),
     }
@@ -46,29 +48,24 @@ describe('Auth Controller', () => {
   })
 
   describe('Login Validation', () => {
-    it('should return 400 if mail is not a valid email format', async () => {
+    it('should throw if mail is not a valid email format', async () => {
       req.body = { mail: 'notNicole', password: '444' }
 
-      await login(req, res)
+      await expect(login(req, res)).rejects.toThrow()
 
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        message: 'Invalid login request'
-      }))
     })
 
-    it('should return 400 if mail is missing', async () => {
+    it('should throw if mail is missing', async () => {
       req.body = { password: '123' }
 
-      await login(req, res)
+      await expect(login(req, res)).rejects.toThrow()
 
-      expect(res.status).toHaveBeenCalledWith(400)
     })
 
     it('should proceed if login data is valid', async () => {
       req.body = { mail: 'test@example.com', password: 'securePassword' }
       
-      ;(ORM.em.findOneOrFail as jest.Mock).mockResolvedValue({
+      ;(ORM.em.findOne as jest.Mock).mockResolvedValue({
         id: 1,
         mail: 'test@example.com',
         password: 'hashed-password',
@@ -83,7 +80,7 @@ describe('Auth Controller', () => {
   })
 
   describe('Register Validation', () => {
-    it('should return 400 if location is not a number', async () => {
+    it('should throw if location is not a number', async () => {
       req.body = {
         name: 'Not nicole',
         mail: 'NotNicole@example.com',
@@ -91,24 +88,20 @@ describe('Auth Controller', () => {
         location: 'aguantelarenga'
       }
 
-      await register(req, res)
-
-      expect(res.status).toHaveBeenCalledWith(400)
+      await expect(register(req, res)).rejects.toThrow()
     })
 
-    it('should return 400 if name is missing', async () => {
+    it('should throw if name is missing', async () => {
       req.body = {
         mail: 'Nicole@example.com',
         password: 'solojuegoaxl123',
         location: 1
       }
 
-      await register(req, res)
-
-      expect(res.status).toHaveBeenCalledWith(400)
+      await expect(register(req, res)).rejects.toThrow()
     })
 
-    it('should return 400 if email is invalid', async () => {
+    it('should throw if email is invalid', async () => {
       req.body = {
         name: 'Nicole',
         mail: 'Nicole-email',
@@ -116,9 +109,8 @@ describe('Auth Controller', () => {
         location: 1
       }
 
-      await register(req, res)
+      await expect(register(req, res)).rejects.toThrow()
 
-      expect(res.status).toHaveBeenCalledWith(400)
     })
 
     it('should proceed if register data is valid', async () => {
@@ -129,7 +121,7 @@ describe('Auth Controller', () => {
         location: 1
       }
 
-      ;(ORM.em.findOneOrFail as jest.Mock).mockResolvedValue({ id: 1, name: 'USER' })
+      ;(ORM.em.findOne as jest.Mock).mockResolvedValue({ id: 2, name: 'user' })
       ;(ORM.em.create as jest.Mock).mockReturnValue({ id: 1, ...req.body })
 
       await register(req, res)

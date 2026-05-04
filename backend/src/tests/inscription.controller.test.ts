@@ -1,6 +1,8 @@
 import { findAll, add } from '../inscription/inscription.controller.js'
 import { ORM } from '../shared/db/orm.js'
 
+//Must implement new test for should Throw cases that were replaced by Httperror Wrapper
+
 jest.mock('../shared/db/orm.js', () => ({
   ORM: {
     em: {
@@ -37,12 +39,10 @@ describe('Inscription Controller', () => {
     }))
   })
 
-  it('should return 500 when db throws on findAll', async () => {
+  it('should throw when db throws on findAll', async () => {
     ;(ORM.em.find as jest.Mock).mockRejectedValue(new Error('DB error'))
 
-    await findAll(req, res)
-
-    expect(res.status).toHaveBeenCalledWith(500)
+    await expect(findAll(req, res)).rejects.toThrow('DB error');
   })
 
   it('should return 201 when inscription is added successfully', async () => {
@@ -70,8 +70,6 @@ describe('Inscription Controller', () => {
 it('should return 500 when add receives invalid data', async () => {
   req.body = { nickname: 123 } // nickname debería ser string
 
-  await add(req, res)
-
-  expect(res.status).toHaveBeenCalledWith(500)
+  await expect(add(req, res)).rejects.toThrow()
 })
 })

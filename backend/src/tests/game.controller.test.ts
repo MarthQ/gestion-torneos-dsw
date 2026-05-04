@@ -1,6 +1,8 @@
 import { update } from '../game/game.controller.js'
 import { ORM } from '../shared/db/orm.js'
 
+//Must implement new test for should Throw cases that were replaced by Httperror Wrapper
+
 jest.mock('../config/env.js', () => ({
   env: {
     igdbClientId: 'mock-id',
@@ -34,30 +36,22 @@ describe('Game Controller', () => {
     jest.clearAllMocks()
   })
 
-  it('should return 500 if "name" is not a string', async () => {
+  it('should throw if "name" is not a string', async () => {
     req.body = { name: 12345 }
 
-    await update(req, res)
-
-    expect(res.status).toHaveBeenCalledWith(500)
-    expect(res.json).toHaveBeenCalledWith(expect.stringContaining('Name must be a string'))
+    await expect(update(req, res)).rejects.toThrow()
   })
 
-  it('should return 500 if "igdbId" is not a number', async () => {
+  it('should throw if "igdbId" is not a number', async () => {
     req.body = { igdbId: "invalid-type" }
 
-    await update(req, res)
-
-    expect(res.status).toHaveBeenCalledWith(500)
-    expect(res.json).toHaveBeenCalledWith(expect.stringContaining('Description must be a number referencing IGDB DB'))
+    await expect(update(req, res)).rejects.toThrow()
   })
 
-  it('should return 500 if "id" in request body is 0 or less', async () => {
+  it('should throw if "id" in request body is 0 or less', async () => {
     req.body = { id: 0 } 
 
-    await update(req, res)
-
-    expect(res.status).toHaveBeenCalledWith(500)
+    await expect(update(req, res)).rejects.toThrow()
   })
 
   it('should succeed when providing a single valid field', async () => {

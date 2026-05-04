@@ -5,6 +5,7 @@ import { MikroOrmDatabase } from '../bracket/brackets-mikro-db.js'
 import { BracketsManager } from 'brackets-manager'
 import { ORM } from '../shared/db/orm.js'
 
+//Must implement new test for should Throw cases that were replaced by Httperror Wrapper
 
 jest.mock('../bracket/brackets-mikro-db.js', () => ({
   MikroOrmDatabase: jest.fn().mockImplementation(() => ({}))
