@@ -30,7 +30,6 @@ export class SetupPassword {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    console.log(this.mailToken);
 
     if (this.setPasswordForm.invalid) {
       this.setPasswordForm.markAllAsTouched();

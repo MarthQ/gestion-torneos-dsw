@@ -60,7 +60,6 @@ export class Bracket implements OnDestroy {
       try {
         const data = JSON.parse(event.data);
 
-        console.log(`[SSE] Datos recibidos:`, data);
         // Check if the data received is from a bracket update or a heartbeat
         if (data.stage || data.match) {
           this.renderBracket(data);
@@ -80,8 +79,6 @@ export class Bracket implements OnDestroy {
   isClosed = computed(() => this.tournamentResource.value()?.status === 'closed');
 
   renderBracket(bracketData: any) {
-    console.log('[Bracket] Rendering with data:', bracketData);
-
     try {
       (window as any).bracketsViewer.render(
         {

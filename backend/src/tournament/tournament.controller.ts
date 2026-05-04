@@ -204,8 +204,6 @@ async function update(req: Request, res: Response) {
 }
 
 async function remove(req: Request, res: Response) {
-    console.log(`Entré wacho ${req.params.id}`)
-
     const id = Number.parseInt(req.params.id)
     const tournament = em.getReference(Tournament, id)
 
@@ -420,7 +418,6 @@ async function updateMatchResult(req: Request, res: Response) {
                 if (score1 > score2) {
                     tournament.status = TournamentStatus.FINISHED
                     await em.flush()
-                    console.log('CAMBIANDO ESTADO DE TORNEO A FINALIZADO')
                 }
             }
         }

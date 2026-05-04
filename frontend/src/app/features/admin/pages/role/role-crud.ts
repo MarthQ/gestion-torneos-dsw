@@ -59,7 +59,7 @@ export class RoleCrud {
     stream: ({ params }) => {
       return this.roleService.getRolesPaginated(params.query, params.page, params.limit).pipe(
         tap((response) => this.roleMeta.set(response.meta)),
-        tap((response) => console.log(response)),
+
         map((response) => response.data),
       );
     },

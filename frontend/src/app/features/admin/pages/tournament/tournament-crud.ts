@@ -118,7 +118,6 @@ export class TournamentCrud {
   }
 
   handleCrudAction(event: CrudAction<TournamentFormDTO>) {
-    console.log(event.data);
     this.openModal.set(false);
     switch (event.actionType) {
       case 'create':

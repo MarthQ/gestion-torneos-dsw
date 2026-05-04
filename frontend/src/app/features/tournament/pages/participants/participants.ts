@@ -62,7 +62,7 @@ export class Participants {
 
       return this.inscriptionService.getInscriptionsPaginated(tournamentId).pipe(
         tap((response) => this.inscriptionsMeta.set(response.meta)),
-        tap((response) => console.log(response)),
+
         map((response) => response.data),
       );
     },
@@ -73,9 +73,7 @@ export class Participants {
     stream: ({ params }) => {
       const tournamentId = Number(params.id);
 
-      return this.tournamentService
-        .getStandings(tournamentId)
-        .pipe(tap((response) => console.log(response)));
+      return this.tournamentService.getStandings(tournamentId);
     },
   });
 

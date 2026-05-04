@@ -71,7 +71,7 @@ export class MyInscriptions {
         .getInscribedTournaments(params.query, params.queryFilters, params.page, params.limit)
         .pipe(
           tap((response) => this.tournamentMeta.set(response.meta)),
-          tap((response) => console.log(response.data)),
+
           map((response) => response.data),
         );
     },

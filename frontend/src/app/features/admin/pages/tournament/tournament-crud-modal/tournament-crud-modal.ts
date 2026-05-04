@@ -256,7 +256,7 @@ export class TournamentCrudModal {
 
   emitDeleteTournament() {
     const id = this.tournament()?.id;
-    console.log('Emitiendo desde delete');
+
     this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
   }
 
