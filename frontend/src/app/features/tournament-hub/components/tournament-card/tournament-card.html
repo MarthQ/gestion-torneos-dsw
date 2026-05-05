@@ -1,4 +1,7 @@
-<div class="tournament-card bg-base-300 rounded-xl overflow-hidden border border-base-300">
+<div
+  class="tournament-card bg-base-300 rounded-xl overflow-hidden border border-base-300 cursor-pointer hover:outline-4 outline-0 outline-primary/50 transition-all"
+  (click)="hasClicked.emit(tournament())"
+>
   <div
     class="h-40 bg-cover bg-center"
     [style.background-image]="'url(' + getBackgroundStyle(tournament().game!, 'big') + ')'"
