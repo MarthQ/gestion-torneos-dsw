@@ -25,7 +25,7 @@ Inicialmente, los torneos se limitan a juegos con un único ganador por partida,
 
 ## Modelo
 
-Modelo de Dominio y DER: https://drive.google.com/file/d/1vmKh96SPnYbbzmiK3RvOFFA7i3dR8jJX/view?usp=sharing
+Se detallan las clases que están presentes en el trabajo. Se denotan, anteponiendo la palabra "Bracket" en el nombre, a aquellas clases que surgen de la integración con [BracketManager](https://github.com/Drarig29/brackets-manager.js/). Si bien no es adecuado que, siendo la base de datos MySQL (relacional), se guarden tipos de datos json, ya teniamos definido MySQL como base de datos previo a tener la necesidad de usar BracketManager.
 
 ### Visualización del DER en Mermaid
 
@@ -92,22 +92,52 @@ int torneo FK
 int usuario FK
 }
 
-Matchup {
-int id PK
-int player1Rounds
-int player2Rounds
-string status
-string bracket
-int round
-int player1Inscription FK "nullable"
-int player2Inscription FK "nullable"
-int winnerInscription FK "nullable"
-int torneo FK
-int winnerNextMatchup FK "nullable"
-int losersNextMatchup FK "nullable"
+BracketStage {
+int tournament_id PK
+string name
+string type
+int number
+json settings
+}
+
+BracketGroup {
+int number PK
+int stage_id FK
+}
+
+BracketRound {
+int number PK
+int stage_id FK
+int group_id FK
+}
+
+BracketMatch {
+int status
+json opponent1 "nullable"
+json opponent2 "nullable"
+int stage_id FK
+int group_id FK
+int round_id FK
+int number
+int child_count
+}
+
+BracketMatchGame {
+json opponent1 "nullable"
+json opponent2 "nullable"
+int parent_id FK "BracketMatch"
+int stage_id FK
+int status
+int number
+}
+
+BracketParticipant {
+string name
+int tournament_id FK
 }
 
     Usuario }|--|| Rol: Tiene
+    Usuario ||--o{ Torneo: Crea
     Usuario }o--|| Localidad: Pertenece
     Usuario ||--o{ Inscripcion: Realiza
 
@@ -119,8 +149,19 @@ int losersNextMatchup FK "nullable"
 
     Tag }o--o{ Torneo: Posee
 
-    Matchup }o--o| Inscripcion: Jugador1
-    Matchup }o--o| Inscripcion: Jugador2
+    %% Relaciones de Bracket (jerarquía real implementada)
+    Torneo ||--|| BracketStage: "Necesario para BracketManager"
+    Torneo ||--o{ BracketParticipant: "Tiene participantes"
+    BracketStage ||--o{ BracketGroup: "Tiene grupos"
+    BracketStage ||--o{ BracketRound: "Tiene rondas"
+    BracketStage ||--o{ BracketMatch: "Tiene partidos"
+    BracketGroup ||--o{ BracketRound: "Tiene rondas"
+    BracketGroup ||--o{ BracketMatch: "Tiene partidos"
+    BracketRound ||--o{ BracketMatch: "Tiene partidos"
+    BracketMatch ||--o{ BracketMatchGame: "Tiene juegos"
+    BracketMatch }o--o{ BracketParticipant: "Participantes"
+
+
 ```
 
 ## Alcance funcional
@@ -132,7 +173,7 @@ _Regularidad:_
 |:-|:-|
 |CRUD simple|1. CRUD Localidad<br>2. CRUD Roles<br>3. CRUD Juego|
 |CRUD dependiente|1. CRUD de Usuario {depende de} CRUD Localidades<br>2. CRUD Torneos {depende de} CRUD Juego|
-|Listado<br>+<br>detalle| 1. Podio de cada Torneo filtrado por Puntaje/Condición de Victoria => Detalle: Localidad<br>2. Listado de Torneos filtrado por juego => Detalle: Fecha|
+|Listado<br>+<br>detalle| 1. Podio de cada Torneo ordenado por Puntaje/Posición => Detalle: Nickname y el nombre asociado<br>2. Listado de Torneos filtrado por juego, tag, estado y nombre => Detalle: Fecha|
 |CUU/Epic|1. Creacion de Torneo<br>2. Inscribir usuario a torneo|
 
 _Adicionales para Aprobación:_
@@ -143,8 +184,8 @@ _Adicionales para Aprobación:_
 
 ### Alcance Adicional Voluntario
 
-| Req      | Detalle                                                                                                                                       |
-| :------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| Listados | - Listado de Usuarios filtrado por Localidad (Ordenado por Torneos ganados)<br>- Listado de Partidas filtrado por Jugador(Ordenado por fecha) |
-| CUU/Epic | - Gestionar Perfil de Usuario<br> - Recuperar Contraseña<br>- Enviar Resultados de un Torneo<br>- Notificar Torneos próximos                  |
-| Otros    | - Generar automáticamente imagen personalizada para los puestos de cada torneo (por juego)                                                    |
+| Req      | Detalle                                                                                                                                                         |
+| :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Listados | - Listado de Participantes por Torneo (con estado de inscripción)<br>- Listado de Torneos filtrado por Creador(Ordenado por fecha)                              |
+| CUU/Epic | - Gestionar Perfil de Usuario<br> - Recuperar Contraseña<br>- Actualización en tiempo real de resultados de un match<br>- Regeneración de llave para randomizar |
+| Otros    | - Generar podio para los puestos de cada torneo cuando este finaliza                                                                                            |
