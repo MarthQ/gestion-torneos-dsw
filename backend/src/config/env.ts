@@ -25,6 +25,7 @@ export const env = {
 
     // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
     jwtCookieSecure: process.env.JWT_COOKIE_SECURE === 'true',
+    jwtSameSiteCookie: process.env.JWT_SAMESITE_COOKIE as 'strict' | 'lax' | 'none' | undefined,
 
     // Cookie config (4 horas en ms)
     jwtCookieMaxAge: 4 * 60 * 60 * 1000,
