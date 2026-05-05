@@ -7,12 +7,13 @@
 
 ## Tabla de Contenidos
 
-- [Descripción](#-descripción)
-- [Tecnologías](#-tecnologías)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación](#-instalación)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Variables de Entorno](#-variables-de-entorno)
+- [Descripción](descripción)
+- [Tecnologías](#tecnologías)
+- [Requisitos Previos](#requisitos-previos)
+- [Instalación](#instalación)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Variables de Entorno](#variables-de-entorno)
+- [Testing](#testing)
 
 ## Descripción
 
@@ -22,7 +23,7 @@ Esta carpeta contiene el frontend de una aplicación web que permite a los usuar
 
 - **Explorar torneos**: Listado con filtros por juego, ubicación y tags
 - **Inscripción**: Participantes pueden inscribirse a torneos abiertos
-- **Gestión de perfil**: Usuarios pueden gestionar su información personal
+- **Gestión de perfil**: Usuarios pueden gestionar su información personal y la configuración visual de la página.
 - **Panel de administración**: CRUD completo para juegos, localidades, tags, roles, torneos y regiones
 - **Autenticación**: Sistema de login/registro con JWT y Cookies httpOnly
 
@@ -34,7 +35,7 @@ Esta carpeta contiene el frontend de una aplicación web que permite a los usuar
 | Lenguaje                 | TypeScript 5.9.2              |
 | Estilos                  | TailwindCSS 4.x + DaisyUI 5.x |
 | Iconos                   | Iconify                       |
-| Testing                  | -                             |
+| Testing                  | Jasmine, Karma + Cypress            |
 | Notificaciones (Toaster) | ngx-sonner                    |
 | Auth                     | JWT con cookies httpOnly      |
 
@@ -42,7 +43,7 @@ Esta carpeta contiene el frontend de una aplicación web que permite a los usuar
 
 - **Node.js**
 - **npm**
-- Backend corriendo en `http://localhost:3000` (que tenga hosteado el [backend](https://github.com/MarthQ/gestion-torneos-dsw/tree/main/backend))
+- **Backend/API en ejecución**
 
 ## Instalación
 
@@ -81,30 +82,39 @@ Esta carpeta contiene el frontend de una aplicación web que permite a los usuar
 ## Estructura del Proyecto
 
 ```
-src/app/
-├── features/                    # Módulos por funcionalidad
-│   ├── admin/                   # Panel de administración
-│   │   ├── pages/               # Páginas CRUD (game, location, region, role, tag, tournament, user)
-│   │   ├── services/            # Servicios específicos de admin
-│   │   └── interfaces/          # Tipos e interfaces de admin
-│   ├── auth/                    # Autenticación
-│   │   ├── pages/               # Login, registro, recuperación
-│   │   ├── guards/              # Guardias de autenticación
-│   │   ├── interceptors/        # Interceptor para token JWT
-│   │   ├── services/            # AuthService
-│   │   └── layout/              # Layouts de auth
-│   └── tournament-hub/          # Funcionalidad principal
-│       ├── pages/               # Explore, MyInscriptions, UserProfile, SetupPassword
-│       ├── components/          # Componentes reutilizables del hub
-│       └── layout/              # MainLayout
-├── shared/                      # Código compartido entre features
-│   ├── components/              # Componentes UI compartidos (search-bar, pagination, etc.)
-│   ├── services/                # Servicios HTTP compartidos
-│   ├── interfaces/              # Tipos e interfaces compartidos
-│   └── utils/                   # Funciones utilitarias
-├── app.config.ts                # Configuración de la aplicación
-├── app.routes.ts                # Rutas principales
-└── app.ts                       # Componente raíz
+├── features/                        # Módulos por funcionalidad
+│   ├── admin/                       # Panel de administración
+│   │   ├── interfaces/              # Tipos e interfaces de admin
+│   │   ├── pages/                   # Páginas CRUD
+│   │   └── services/                # Servicios específicos de admin
+│   ├── auth/                        # Autenticación
+│   │   ├── guards/                  # Guardias de autenticación
+│   │   ├── interceptors/            # Interceptor para token JWT         
+│   │   ├── interfaces/              # Tipos e interfaces de Auth
+│   │   ├── layout/                  # Layouts de auth
+│   │   ├── pages/                   # Login, registro, recuperación
+│   │   └── services/                # AuthService
+│   ├── tournament/                                          
+│   │   ├── components/              # Componentes reutilizables de bracket y gestión de torneo
+│   │   ├── guards/                  # Guardias de bracket y gestión de torneo  
+│   │   ├── layout/                  # Tournament Layout
+│   │   ├── pages/                   # Bracket, Configuración, Overview, Participants, Wizard
+│   │   ├── services/                # Servicios especificos de bracket y gestión de torneo  
+│   │   └── styles/                  # Estilos especificos de Bracket Viewer
+│   └── tournament-hub/              # Funcionalidad principal         
+│       ├── components/              # Componentes reutilizables del Hub
+│       ├── layout/                  # Main Layout
+│       ├── pages/                   # Explore, MyInscriptions, UserProfile, SetupPassword, MyTournaments
+│       └── services/                # Servicios de Hub principal
+├── shared/                          # Código compartido entre features
+│    ├── components/                 # Componentes UI compartidos (search-bar, pagination, etc.)
+│    ├── constants/                  # Constantes compartidas
+│    ├── interfaces/                 # Tipos e interfaces compartidos
+│    ├── services/                   # Servicios compartidos
+│    └── utils/                      # Funciones utilitarias
+├── app.config.ts                    # Configuración de la aplicación
+├── app.routes.ts                    # Rutas principales
+└── app.ts                           # Componente raíz
 ```
 
 ## Variables de Entorno
@@ -117,6 +127,30 @@ Archivos de entorno:
 
 - `src/environments/environment.ts` - Producción
 - `src/environments/environment.development.ts` - Desarrollo
+
+## Testing
+### End to End (E2E)
+El testing E2E simula la experiencia de un usuario real atravesando alguna funcionalidad o caso de uso asegurando que la aplicación funciona correctamente.
+**Antes de realizar el test E2E** asegurarse de que el usuario a testear existe en la BD.
+
+Test E2E sin interfaz de usuario: 
+```bash 
+npx cypress run --spec "cypress/e2e/login.cy.ts"
+```
+Con interfaz de usuario:
+``` bash
+npx cypress open
+```
+E2E testing -> Elegir Electron -> login.cy.ts
+### Test de componentes unitarios
+Componentes a testear:
+- Tournament Utils
+- Tournament Service
+- App (que funcione)
+
+```bash
+ng test
+```
 
 ## Links Útiles
 

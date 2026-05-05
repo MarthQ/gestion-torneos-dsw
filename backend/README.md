@@ -153,7 +153,7 @@ La documentación de la API esta funcionando en [Swagger](!https://swagger.io/).
 - **Node versión 22 o mayor**
 ### **Comandos para testear el backend**
 
-``` 
+``` bash
 Tests unitarios: pnpm test:unit
 Test de integración: pnpm test:integration
 ```
