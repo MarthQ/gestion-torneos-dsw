@@ -91,7 +91,6 @@ export class AuthService {
   }
 
   handleAuthSuccess(resp: AuthResponse): boolean {
-    console.log(resp.message);
     const { user } = resp.data;
     this._user.set(user);
     this._authStatus.set(AUTH_STATUS.AUTHENTICATED);

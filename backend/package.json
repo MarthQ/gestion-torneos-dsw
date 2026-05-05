@@ -7,7 +7,9 @@
     "scripts": {
         "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env ./dist/app.js \"",
         "test:unit": "npx jest --testPathPatterns='src/tests/.*\\.controller\\.test\\.ts'",
-        "test:integration": "cross-env NODE_ENV=test node --import tsx/esm node_modules/vitest/dist/cli.js run src/tests/inscription.integration.test.ts"
+        "test:integration": "cross-env NODE_ENV=test node --import tsx/esm node_modules/vitest/dist/cli.js run src/tests/inscription.integration.test.ts",
+        "build": "tsc",
+        "start": "node dist/app.js"
     },
     "keywords": [],
     "author": "",

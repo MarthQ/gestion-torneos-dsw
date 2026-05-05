@@ -14,8 +14,8 @@ export interface User {
 }
 
 //Flexibility for patch/partial updates
-export interface UserUpdateDTO{
-  id: number,
+export interface UserUpdateDTO {
+  id: number;
   name?: string;
   mail?: string;
   location?: number;
@@ -30,6 +30,7 @@ export interface UserFormDTO {
   mail: string;
   location: number;
   role: number;
+  avatarId?: string;
 }
 
 export interface UserRegisterDTO {
@@ -39,6 +40,7 @@ export interface UserRegisterDTO {
   mail: string;
   location: number;
   role?: string;
+  avatarId?: string;
 }
 
 export interface UserFormLogin {

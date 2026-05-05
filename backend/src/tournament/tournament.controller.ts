@@ -11,6 +11,7 @@ import { Inscription } from '../inscription/inscription.entity.js'
 import { BracketMatch } from '../bracket/bracket-match.entity.js'
 
 import { sseManager } from './sse.store.js'
+import { env } from 'process'
 import { TournamentSchema } from './tournament.schema.js'
 
 const getEm = () => ORM.em
@@ -46,15 +47,15 @@ async function findAll(req: Request, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [Tournaments, total] = await getEm().findAndCount(Tournament, filter, {
+    const [tournaments, total] = await getEm().findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'game', 'inscriptions'],
     })
 
     res.status(200).json({
         message: 'Found all tournaments',
-        data: Tournaments,
+        data: tournaments,
         meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
@@ -82,15 +83,51 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [Tournaments, total] = await getEm().findAndCount(Tournament, filter, {
+    const [tournaments, total] = await getEm().findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
-        populate: ['game', 'creator', 'location', 'region', 'tags', 'game'],
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
     })
 
     res.status(200).json({
         message: 'Found all user tournaments',
-        data: Tournaments,
+        data: tournaments,
+        meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+    })
+}
+
+async function findInscribedTournaments(req: RequestWithUser, res: Response) {
+    const user = req.user!
+
+    const page = req.query.page ? Number(req.query.page) : 1
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const offset = (page - 1) * pageSize
+
+    const query = req.query.query ? String(req.query.query) : undefined
+    const tag = req.query.tag ? Number(req.query.tag) : undefined
+    const location = req.query.location ? Number(req.query.location) : undefined
+    const region = req.query.region ? Number(req.query.region) : undefined
+    const game = req.query.game ? Number(req.query.game) : undefined
+    const status = req.query.status ? req.query.status : undefined
+
+    const filter: any = { inscriptions: { user: user.id } }
+
+    if (query) filter.name = { $like: `%${query}%` }
+    if (tag) filter.tags = { $some: { id: tag } }
+    if (location) filter.location = location
+    if (region) filter.region = region
+    if (game) filter.game = game
+    if (status) filter.status = status
+
+    const [tournaments, total] = await getEm().findAndCount(Tournament, filter, {
+        limit: pageSize,
+        offset,
+        populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
+    })
+
+    res.status(200).json({
+        message: 'Found all inscribed tournaments',
+        data: tournaments,
         meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     })
 }
@@ -169,7 +206,13 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
     const tournament = getEm().getReference(Tournament, id)
-    await manager.delete.tournament(id)
+
+    const stages = await storage.select('stage', { tournament_id: id })
+
+    if (stages) {
+        await manager.delete.tournament(id)
+    }
+
     await getEm().removeAndFlush(tournament)
     res.status(200).send({ message: 'Tournament deleted' })
 }
@@ -407,28 +450,44 @@ async function updateMatchResult(req: Request, res: Response) {
 async function streamTournamentBracket(req: Request, res: Response) {
     const tournamentId = Number.parseInt(req.params.id)
 
+    const origin = req.headers.origin || env.frontendURL || 'https://okizeme.matiascatala.com'
+
+    // Handle preflight ANTES de setear headers SSE
+    if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Origin', origin)
+        res.setHeader('Access-Control-Allow-Credentials', 'true')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+        res.writeHead(204)
+        res.end()
+        return
+    }
+
     // SSE Headers
     res.setHeader('Content-Type', 'text/event-stream')
-    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Cache-Control', 'no-cache, no-store')
     res.setHeader('Connection', 'keep-alive')
-    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('X-Accel-Buffering', 'no')
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+
+    res.flushHeaders() // Ahora sí, solo para SSE
+
+    res.write(`: connected\n\n`)
 
     sseManager.addConnection(tournamentId, res)
 
     const bracketData = await manager.get.tournamentData(tournamentId)
     if (bracketData) {
-        // Send bracketData formatted as a SSE response
-        const payload = `data: ${JSON.stringify(bracketData)}\n\n`
-        res.write(payload)
+        res.write(`data: ${JSON.stringify(bracketData)}\n\n`)
     }
 
-    // On disconnection we remove the connection from sseManager
     req.on('close', () => {
+        clearInterval(heartbeat)
         sseManager.removeConnection(tournamentId, res)
         res.end()
     })
 
-    // The idea behind the heartbeat is to keep the connection alive when no changes are done to the bracket
     const heartbeat = setInterval(() => {
         try {
             res.write(`: heartbeat\n\n`)
@@ -437,7 +496,6 @@ async function streamTournamentBracket(req: Request, res: Response) {
             sseManager.removeConnection(tournamentId, res)
         }
     }, 30000)
-    req.on('close', () => clearInterval(heartbeat))
 }
 
 async function inscribeToTournament(req: RequestWithUser, res: Response) {
@@ -607,4 +665,5 @@ export {
     cancelTournament,
     reshuffleBracket,
     reopenTournament,
+    findInscribedTournaments,
 }

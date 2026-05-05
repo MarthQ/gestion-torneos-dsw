@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ThemeService } from '@shared/services/theme.service';
 import { NgxSonnerToaster } from 'ngx-sonner';
 
 @Component({
@@ -9,5 +10,9 @@ import { NgxSonnerToaster } from 'ngx-sonner';
   styleUrl: './app.css',
 })
 export class App {
+  themeService = inject(ThemeService);
   protected readonly title = signal('Okizeme');
+  constructor() {
+    this.themeService.initTheme();
+  }
 }

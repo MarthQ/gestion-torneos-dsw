@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
@@ -19,6 +19,10 @@ export class Bracket implements OnDestroy {
   private url = `${environment.apiUrl}/tournaments/${this.tournamentId()}/bracket/stream`;
 
   bracketData = signal<any>({});
+
+  bracketHasData = linkedSignal(() => {
+    return Object.keys(this.bracketData()).length !== 0;
+  });
 
   isModalOpen = signal<boolean>(false);
   matchData = signal<any>({});
@@ -56,7 +60,6 @@ export class Bracket implements OnDestroy {
       try {
         const data = JSON.parse(event.data);
 
-        console.log(`[SSE] Datos recibidos:`, data);
         // Check if the data received is from a bracket update or a heartbeat
         if (data.stage || data.match) {
           this.renderBracket(data);
@@ -76,8 +79,6 @@ export class Bracket implements OnDestroy {
   isClosed = computed(() => this.tournamentResource.value()?.status === 'closed');
 
   renderBracket(bracketData: any) {
-    console.log('[Bracket] Rendering with data:', bracketData);
-
     try {
       (window as any).bracketsViewer.render(
         {
@@ -101,6 +102,11 @@ export class Bracket implements OnDestroy {
 
   handleMatchModal(match: any) {
     const isLastMatch = this.bracketData().match.at(-1).id === match.id;
+
+    if (this.tournamentResource.value()?.status === 'finished') {
+      Toaster.error('No se puede editar el resultados de un torneo finalizado');
+      return;
+    }
 
     if (match.status !== 2 && match.status !== 4 && !isLastMatch) {
       Toaster.error('No se puede registrar el resultado de este Match');
@@ -133,7 +139,12 @@ export class Bracket implements OnDestroy {
   }
 
   reshuffleBracket() {
-    this.tournamentService.refreshBracket(+this.tournamentId()!);
+    this.tournamentService.refreshBracket(+this.tournamentId()!).subscribe({
+      error: (message) => {
+        Toaster.error(message);
+        console.log(message);
+      },
+    });
   }
 
   ngOnDestroy() {

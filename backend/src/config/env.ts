@@ -10,6 +10,8 @@ export const env = {
     dbPort: process.env.DB_PORT || '3306',
     dbUsername: process.env.DB_USERNAME,
 
+    deployPort: process.env.PORT || '3000',
+
     smtpHost: process.env.SMTP_HOST,
     smtpPort: process.env.SMTP_PORT,
     smtpUser: process.env.SMTP_USER,

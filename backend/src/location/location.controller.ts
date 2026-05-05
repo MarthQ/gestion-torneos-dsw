@@ -3,6 +3,7 @@ import { Location } from './location.entity.js'
 import { ORM } from '../shared/db/orm.js'
 import { fromZodError } from 'zod-validation-error'
 import { LocationSchema } from './location.schema.js'
+import { Tournament } from '../tournament/tournament.entity.js'
 
 const em = ORM.em
 
@@ -67,6 +68,15 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
     const location = em.getReference(Location, id)
+
+    const tournamentsCount = await em.count(Tournament, { location: id })
+
+    if (tournamentsCount > 0) {
+        const error = new Error(`Can't delete errors because it have tournaments associated`)
+        ;(error as any).statusCode = 409
+        throw error
+    }
+
     await em.removeAndFlush(location)
     res.status(200).send({ message: 'Location deleted' })
 }

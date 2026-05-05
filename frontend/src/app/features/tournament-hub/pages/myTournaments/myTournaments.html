@@ -27,7 +27,6 @@
 
 <!-- Grid de torneos -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
-  <!-- Card 1 -->
   @if (tournamentResource.hasValue()) {
     @for (tournament of tournamentResource.value(); track tournament.id) {
       <tournament-card [tournament]="tournament" (hasClicked)="clickedTournament(tournament)" />

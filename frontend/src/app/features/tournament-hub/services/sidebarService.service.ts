@@ -33,8 +33,6 @@ export class SidebarService {
 
     recentTournaments = recentTournaments.slice(0, 5);
 
-    console.log(recentTournaments);
-
     recentTournamentsData[user.id] = recentTournaments;
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recentTournamentsData));
 

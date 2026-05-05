@@ -130,7 +130,8 @@
                     {{ authService.user()!.name }}
                   </span>
                   <span class="is-drawer-close:hidden text-xs font-mono truncate">
-                    {{ authService.user()!.mail }}
+                    {{ authService.user()!.mail | slice: 0 : 22
+                    }}{{ authService.user()!.mail.length > 22 ? '...' : '' }}
                   </span>
                 </div>
               </button>

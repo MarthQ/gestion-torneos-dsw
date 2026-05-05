@@ -1,4 +1,4 @@
-import { Component, inject, viewChild, ElementRef, computed} from '@angular/core';
+import { Component, inject, viewChild, ElementRef, computed } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthService } from '@features/auth/services/auth.service';
 import { UserService } from '@shared/services/user.service';
@@ -6,17 +6,21 @@ import { map } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { AVATARS, getAvatarPath } from '@shared/constants/avatar.constant';
 import { Toaster } from '@shared/utils/toaster';
+import { ThemeService } from '@shared/services/theme.service';
+import { AvailableLocale, LocaleService } from '@shared/services/locale.service';
 import { User, UserUpdateDTO } from '@shared/interfaces/user';
 
 @Component({
   imports: [RouterLink],
   templateUrl: './user-profile.html',
 })
-export class UserProfile{
+export class UserProfile {
   //TODO implement a button to change password -> send email with link that redirect to a page to change the password (We can reuse the request setup-password-page).
 
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  themeService = inject(ThemeService);
+  private localeService = inject(LocaleService);
 
   private modalRef = viewChild<ElementRef<HTMLDialogElement>>('avatarModal');
   readonly availableAvatars = AVATARS;
@@ -29,15 +33,26 @@ export class UserProfile{
     },
   });
 
+  changeTheme(newtheme: string) {
+    this.themeService.setTheme(newtheme);
+  }
+
+  getLocale() {
+    return this.localeService.getLocale;
+  }
+
+  changeLocale(locale: string) {
+    this.localeService.changeLocale(locale as AvailableLocale);
+  }
+
   canChangeName = computed(() => {
     const currentUser = this.authService.user();
     if (!currentUser?.nameChangedOn) return true;
-    
+
     const fechaLimite = new Date(currentUser.nameChangedOn);
     fechaLimite.setMonth(fechaLimite.getMonth() + 3);
     return new Date() >= fechaLimite;
-  })
-
+  });
 
   updateAvatar(avatarId: string) {
     const currentUser = this.authService.user();
@@ -46,11 +61,10 @@ export class UserProfile{
       Toaster.error('Tu sesión ha expirado. Por favor, vuelve a ingresar.');
       return;
     }
-    
-    const { id, name } = currentUser
+
+    const { id, name } = currentUser;
     const updatedUser = { id, name, avatarId } as UserUpdateDTO;
 
-    
     this.userService.updateUserNonAdmin(updatedUser).subscribe({
       next: () => {
         this.authService.updateUserData({ avatarId });
@@ -61,16 +75,16 @@ export class UserProfile{
       error: (err) => {
         Toaster.error('No se pudo actualizar el avatar');
         console.error(err);
-      }
+      },
     });
   }
 
   updateUsername(changedName: string) {
     if (!changedName || changedName.trim().length < 1) {
-    Toaster.error('El nombre no puede estar vacío');
-    return;
+      Toaster.error('El nombre no puede estar vacío');
+      return;
     }
-    
+
     const currentUser = this.authService.user();
 
     if (!currentUser) {
@@ -78,24 +92,23 @@ export class UserProfile{
       this.modalRef()?.nativeElement.close();
       return;
     }
-    if(currentUser.nameChangedOn){
+    if (currentUser.nameChangedOn) {
       const fechaLimite = new Date(currentUser.nameChangedOn);
       fechaLimite.setMonth(fechaLimite.getMonth() + 3);
-      if( new Date < fechaLimite ){
+      if (new Date() < fechaLimite) {
         Toaster.error('Aún no podés cambiar tu nombre.');
         this.modalRef()?.nativeElement.close();
-        return
+        return;
       }
     }
 
-    const { id } = currentUser
+    const { id } = currentUser;
     const updatedUser: UserUpdateDTO = {
       id,
       name: changedName,
-      nameChangedOn: new Date()
-    }
+      nameChangedOn: new Date(),
+    };
 
-    
     this.userService.updateUserNonAdmin(updatedUser).subscribe({
       next: () => {
         this.authService.updateUserData({ name: changedName, nameChangedOn: new Date() });
@@ -104,13 +117,13 @@ export class UserProfile{
         Toaster.success('Nombre de usuario actualizado correctamente');
       },
       error: (err) => {
-        if(err.status === 409) {
-          Toaster.error('El nombre de usuario ya existe. Elige uno nuevo.')
-        } else{
+        if (err.status === 409) {
+          Toaster.error('El nombre de usuario ya existe. Elige uno nuevo.');
+        } else {
           Toaster.error('No se pudo actualizar el nombre de usuario');
           console.error(err);
         }
-      }
+      },
     });
   }
 
