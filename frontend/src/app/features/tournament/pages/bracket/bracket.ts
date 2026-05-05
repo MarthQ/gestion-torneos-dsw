@@ -139,7 +139,12 @@ export class Bracket implements OnDestroy {
   }
 
   reshuffleBracket() {
-    this.tournamentService.refreshBracket(+this.tournamentId()!);
+    this.tournamentService.refreshBracket(+this.tournamentId()!).subscribe({
+      error: (message) => {
+        Toaster.error(message);
+        console.log(message);
+      },
+    });
   }
 
   ngOnDestroy() {

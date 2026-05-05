@@ -4,7 +4,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { InscriptionService } from '@features/tournament/services/inscription.service';
 import { PaginationMeta } from '@shared/interfaces/api-response';
-import { map, tap } from 'rxjs';
+import { map, of, tap } from 'rxjs';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { getAvatarPath } from '@shared/constants/avatar.constant';
 import { TournamentService } from '@shared/services/tournament.service';
@@ -69,9 +69,13 @@ export class Participants {
   });
 
   standingResource = rxResource({
-    params: () => ({ id: this.tournamentId() }),
+    params: () => ({ id: this.tournamentId(), status: this.tournamentResource.value()?.status }),
     stream: ({ params }) => {
       const tournamentId = Number(params.id);
+
+      if (params.status !== 'finished') {
+        return of(undefined);
+      }
 
       return this.tournamentService.getStandings(tournamentId);
     },
