@@ -14,7 +14,7 @@ import { sseManager } from './sse.store.js'
 import { env } from 'process'
 import { TournamentSchema } from './tournament.schema.js'
 
-const em = ORM.em
+const getEm = () => ORM.em
 
 const storage = new MikroOrmDatabase()
 const manager = new BracketsManager(storage)
@@ -47,7 +47,7 @@ async function findAll(req: Request, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
+    const [tournaments, total] = await getEm().findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
         populate: ['game', 'creator', 'location', 'region', 'tags', 'game', 'inscriptions'],
@@ -83,7 +83,7 @@ async function findUserTournaments(req: RequestWithUser, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
+    const [tournaments, total] = await getEm().findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
         populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
@@ -119,7 +119,7 @@ async function findInscribedTournaments(req: RequestWithUser, res: Response) {
     if (game) filter.game = game
     if (status) filter.status = status
 
-    const [tournaments, total] = await em.findAndCount(Tournament, filter, {
+    const [tournaments, total] = await getEm().findAndCount(Tournament, filter, {
         limit: pageSize,
         offset,
         populate: ['game', 'creator', 'location', 'region', 'tags', 'inscriptions'],
@@ -134,7 +134,7 @@ async function findInscribedTournaments(req: RequestWithUser, res: Response) {
 
 async function findOne(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
-    const tournamentData = await em.findOneOrFail(
+    const tournamentData = await getEm().findOneOrFail(
         Tournament,
         { id },
         { populate: ['game', 'location', 'region', 'creator', 'inscriptions', 'tags', 'inscriptions.user'] },
@@ -163,9 +163,9 @@ async function create(req: RequestWithUser, res: Response) {
         throw fromZodError(sanitizedTournament.error)
     }
 
-    const tournamentData = em.create(Tournament, tournament)
+    const tournamentData = getEm().create(Tournament, tournament)
 
-    await em.flush()
+    await getEm().flush()
 
     res.status(201).json({ message: 'Tournament created', data: tournamentData })
 }
@@ -175,8 +175,8 @@ async function add(req: Request, res: Response) {
     if (!sanitizedTournament.success) {
         throw fromZodError(sanitizedTournament.error)
     } else {
-        const tournament = em.create(Tournament, sanitizedTournament.data)
-        await em.flush()
+        const tournament = getEm().create(Tournament, sanitizedTournament.data)
+        await getEm().flush()
         res.status(201).json({ message: 'Tournament created', data: tournament })
     }
 }
@@ -195,17 +195,17 @@ async function update(req: Request, res: Response) {
         }
 
         const id = Number.parseInt(req.params.id)
-        const tournament = await em.findOneOrFail(Tournament, id)
+        const tournament = await getEm().findOneOrFail(Tournament, id)
 
-        em.assign(tournament, sanitizedTournament.data)
-        await em.flush()
+        getEm().assign(tournament, sanitizedTournament.data)
+        await getEm().flush()
     }
     res.status(200).json({ message: 'Tournament updated' })
 }
 
 async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
-    const tournament = em.getReference(Tournament, id)
+    const tournament = getEm().getReference(Tournament, id)
 
     const stages = await storage.select('stage', { tournament_id: id })
 
@@ -213,7 +213,7 @@ async function remove(req: Request, res: Response) {
         await manager.delete.tournament(id)
     }
 
-    await em.removeAndFlush(tournament)
+    await getEm().removeAndFlush(tournament)
     res.status(200).send({ message: 'Tournament deleted' })
 }
 
@@ -223,7 +223,7 @@ function getNearestPowerOfTwo(input: number): number {
 
 async function closeInscriptions(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
-    const tournament = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+    const tournament = await getEm().findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
 
     if (tournament.status !== TournamentStatus.OPEN) {
         const error = new Error('Tournament is not open.')
@@ -238,9 +238,9 @@ async function closeInscriptions(req: Request, res: Response) {
     }
 
     tournament.status = TournamentStatus.CLOSED
-    await em.flush()
+    await getEm().flush()
 
-    const foundTournament = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+    const foundTournament = await getEm().findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
 
     const { name, type, inscriptions } = foundTournament
 
@@ -268,7 +268,7 @@ async function closeInscriptions(req: Request, res: Response) {
 
 async function reshuffleBracket(req: RequestWithUser, res: Response) {
     const id = Number.parseInt(req.params.id)
-    const tournament = await em.findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
+    const tournament = await getEm().findOneOrFail(Tournament, { id }, { populate: ['inscriptions'] })
 
     if (tournament.status !== TournamentStatus.CLOSED) {
         const error = new Error('Tournament is not closed.')
@@ -341,7 +341,7 @@ async function getNextReadyMatches(req: Request, res: Response) {
 async function getStandings(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id)
 
-    const tournament = await em.findOneOrFail(Tournament, id, {
+    const tournament = await getEm().findOneOrFail(Tournament, id, {
         populate: ['inscriptions', 'inscriptions.user'],
     })
 
@@ -391,7 +391,7 @@ async function updateMatchResult(req: Request, res: Response) {
         throw new Error('Invalid score format. Scores must be numbers')
     }
 
-    const tournament = await em.findOneOrFail(Tournament, { id: tournamentId })
+    const tournament = await getEm().findOneOrFail(Tournament, { id: tournamentId })
 
     if (tournament.status !== TournamentStatus.RUNNING) {
         const error = new Error(`Tournament is not running therefore matches can't be updated.`)
@@ -402,11 +402,11 @@ async function updateMatchResult(req: Request, res: Response) {
     const nextMatches = await manager.find.nextMatches(id)
 
     if (nextMatches.length === 0) {
-        const match = await em.getReference(BracketMatch, id)
-        em.assign(match, { status: 4 })
+        const match = await getEm().getReference(BracketMatch, id)
+        getEm().assign(match, { status: 4 })
 
         tournament.status = TournamentStatus.FINISHED
-        await em.flush()
+        await getEm().flush()
     }
 
     if (tournament.type === 'double_elimination' && nextMatches.length !== 0) {
@@ -417,7 +417,8 @@ async function updateMatchResult(req: Request, res: Response) {
             if (allMatches[allMatches.length - 2].id === id) {
                 if (score1 > score2) {
                     tournament.status = TournamentStatus.FINISHED
-                    await em.flush()
+                    await getEm().flush()
+                    console.log('CAMBIANDO ESTADO DE TORNEO A FINALIZADO')
                 }
             }
         }
@@ -507,7 +508,7 @@ async function inscribeToTournament(req: RequestWithUser, res: Response) {
         throw error
     }
 
-    const tournament = await em.findOneOrFail(
+    const tournament = await getEm().findOneOrFail(
         Tournament,
         { id: tournamentId },
         { populate: ['inscriptions'] },
@@ -530,7 +531,7 @@ async function inscribeToTournament(req: RequestWithUser, res: Response) {
     }
 
     // Checks if the user is not already inscribed
-    const existingInscription = await em.findOne(Inscription, {
+    const existingInscription = await getEm().findOne(Inscription, {
         tournament,
         user: req.user!.id,
     })
@@ -541,14 +542,14 @@ async function inscribeToTournament(req: RequestWithUser, res: Response) {
         throw error
     }
 
-    const inscription = em.create(Inscription, {
+    const inscription = getEm().create(Inscription, {
         nickname,
         inscriptionDate: new Date(),
         tournament,
         user: req.user!,
     })
 
-    await em.flush()
+    await getEm().flush()
     res.status(201).json({ message: 'Inscription added!', data: inscription })
 }
 
@@ -561,17 +562,17 @@ async function deleteInscription(req: RequestWithUser, res: Response) {
         throw error
     }
 
-    const tournament = em.getReference(Tournament, tournamentId)
+    const tournament = getEm().getReference(Tournament, tournamentId)
 
-    const inscription = await em.findOneOrFail(Inscription, { tournament, user: req.user })
+    const inscription = await getEm().findOneOrFail(Inscription, { tournament, user: req.user })
 
-    await em.removeAndFlush(inscription)
+    await getEm().removeAndFlush(inscription)
     res.status(200).send({ message: 'Inscription deleted' })
 }
 
 async function closeTournament(req: RequestWithUser, res: Response) {
     const id = Number(req.params.id)
-    const tournament = await em.findOneOrFail(Tournament, { id })
+    const tournament = await getEm().findOneOrFail(Tournament, { id })
 
     if (tournament.status !== TournamentStatus.OPEN) {
         const error = new Error('Tournament is not open.')
@@ -580,12 +581,12 @@ async function closeTournament(req: RequestWithUser, res: Response) {
     }
 
     tournament.status = TournamentStatus.CLOSED
-    await em.flush()
+    await getEm().flush()
     res.status(200).send({ message: 'Tournament has been closed!', data: tournament })
 }
 async function startTournament(req: RequestWithUser, res: Response) {
     const id = Number(req.params.id)
-    const tournament = await em.findOneOrFail(Tournament, { id })
+    const tournament = await getEm().findOneOrFail(Tournament, { id })
 
     if (tournament.status !== TournamentStatus.CLOSED) {
         const error = new Error('Tournament is not closed.')
@@ -594,13 +595,13 @@ async function startTournament(req: RequestWithUser, res: Response) {
     }
 
     tournament.status = TournamentStatus.RUNNING
-    await em.flush()
+    await getEm().flush()
     res.status(200).send({ message: 'Tournament is now running!', data: tournament })
 }
 
 async function endTournament(req: RequestWithUser, res: Response) {
     const id = Number(req.params.id)
-    const tournament = await em.findOneOrFail(Tournament, { id })
+    const tournament = await getEm().findOneOrFail(Tournament, { id })
 
     if (tournament.status !== TournamentStatus.RUNNING) {
         const error = new Error('Tournament is not running.')
@@ -609,13 +610,13 @@ async function endTournament(req: RequestWithUser, res: Response) {
     }
 
     tournament.status = TournamentStatus.FINISHED
-    await em.flush()
+    await getEm().flush()
     res.status(200).send({ message: 'The tournament has finished!', data: tournament })
 }
 
 async function reopenTournament(req: RequestWithUser, res: Response) {
     const id = Number(req.params.id)
-    const tournament = await em.findOneOrFail(Tournament, { id })
+    const tournament = await getEm().findOneOrFail(Tournament, { id })
 
     if (tournament.status !== TournamentStatus.FINISHED) {
         const error = new Error('Tournament is not finished.')
@@ -624,13 +625,13 @@ async function reopenTournament(req: RequestWithUser, res: Response) {
     }
 
     tournament.status = TournamentStatus.RUNNING
-    await em.flush()
+    await getEm().flush()
     res.status(200).send({ message: 'The tournament has been reopen!', data: tournament })
 }
 
 async function cancelTournament(req: RequestWithUser, res: Response) {
     const id = Number(req.params.id)
-    const tournament = await em.findOneOrFail(Tournament, { id })
+    const tournament = await getEm().findOneOrFail(Tournament, { id })
 
     if (tournament.status === TournamentStatus.FINISHED) {
         const error = new Error('Tournament is finished and therefore cannot be cancelled.')
@@ -639,7 +640,7 @@ async function cancelTournament(req: RequestWithUser, res: Response) {
     }
 
     tournament.status = TournamentStatus.CANCELED
-    await em.flush()
+    await getEm().flush()
     res.status(200).send({ message: 'The tournament has been canceled.', data: tournament })
 }
 
