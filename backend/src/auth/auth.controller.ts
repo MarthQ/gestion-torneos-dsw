@@ -11,7 +11,13 @@ import { RequestWithUser } from '../shared/interfaces/requestWithUser.js'
 import { UserMapper } from '../shared/mappers/user.mapper.js'
 import { JWTUtils } from '../shared/auth/jwt.utils.js'
 import { Mailer } from '../shared/mailer/mailer.service.js'
-import { loginSchema, registerSchema, forgotPasswordSchema, setupPasswordSchema, setupPasswordQuerySchema } from './auth.schema.js';
+import {
+    loginSchema,
+    registerSchema,
+    forgotPasswordSchema,
+    setupPasswordSchema,
+    setupPasswordQuerySchema,
+} from './auth.schema.js'
 
 const em = ORM.em
 
@@ -22,7 +28,7 @@ function setJwtCookie(res: Response, token: string) {
     res.cookie(env.jwtCookieName, token, {
         httpOnly: true,
         secure: env.jwtCookieSecure, // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
-        sameSite: 'lax',
+        sameSite: env.jwtSameSiteCookie,
         maxAge: env.jwtCookieMaxAge,
         path: '/',
     })
@@ -33,7 +39,7 @@ function clearJwtCookie(res: Response) {
     res.clearCookie(env.jwtCookieName, {
         httpOnly: true,
         secure: env.jwtCookieSecure,
-        sameSite: 'lax',
+        sameSite: env.jwtSameSiteCookie,
         path: '/',
     })
 }
@@ -44,7 +50,7 @@ async function login(req: Request, res: Response) {
     //* DTO
     if (!sanitizedLogin.success) {
         const error = fromZodError(sanitizedLogin.error)
-        ;(error as any).details = sanitizedLogin.error.issues 
+        ;(error as any).details = sanitizedLogin.error.issues
         throw error
     }
 
@@ -118,18 +124,22 @@ async function register(req: Request, res: Response) {
 }
 
 //TODO (USER) Reset password from "Forgot your password?"
-//In Documentation branch -> changed this method to be sanitized 
+//In Documentation branch -> changed this method to be sanitized
 async function forgotPassword(req: Request, res: Response) {
     const sanitized = forgotPasswordSchema.safeParse(req.body)
 
     if (!sanitized.success) {
-            const error = new Error(fromZodError(sanitized.error).message)
-            ;(error as any).statusCode = 400
-            throw error
-        }
+        const error = new Error(fromZodError(sanitized.error).message)
+        ;(error as any).statusCode = 400
+        throw error
+    }
 
     const frontendUrl = env.frontendURL
-    const user = await em.findOneOrFail(User, { mail: sanitized.data.mail }, { populate: ['location', 'role'] })
+    const user = await em.findOneOrFail(
+        User,
+        { mail: sanitized.data.mail },
+        { populate: ['location', 'role'] },
+    )
 
     mailer.sendPasswordReset(user.mail, `${frontendUrl}/auth/setup-password`, { userId: user.id! })
 
@@ -152,7 +162,7 @@ async function setupPassword(req: Request, res: Response) {
     }
 
     const decoded = JWTUtils.verify(queryValidation.data.mailToken)
-    
+
     const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
 
     const userWithNewPassword = em.assign(user, {
