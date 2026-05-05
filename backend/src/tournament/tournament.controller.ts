@@ -110,7 +110,7 @@ async function findInscribedTournaments(req: RequestWithUser, res: Response) {
     const game = req.query.game ? Number(req.query.game) : undefined
     const status = req.query.status ? req.query.status : undefined
 
-    const filter: any = { creator: user.id }
+    const filter: any = { inscriptions: { user: user.id } }
 
     if (query) filter.name = { $like: `%${query}%` }
     if (tag) filter.tags = { $some: { id: tag } }

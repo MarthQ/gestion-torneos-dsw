@@ -1,5 +1,5 @@
-import { DatePipe, I18nSelectPipe, JsonPipe, TitleCasePipe } from '@angular/common';
-import { Component, inject, input, signal } from '@angular/core';
+import { DatePipe, I18nSelectPipe, TitleCasePipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@features/auth/services/auth.service';
@@ -9,7 +9,7 @@ import { TournamentStatus } from '@shared/interfaces/tournamentStatus';
 import { TournamentService } from '@shared/services/tournament.service';
 import { Toaster } from '@shared/utils/toaster';
 import { TournamentUtils } from '@shared/utils/tournament-utils';
-import { map, tap } from 'rxjs';
+import { map } from 'rxjs';
 import { ConfirmModal } from '@features/tournament/components/confirm-modal/confirm-modal';
 import { getAvatarPath } from '@shared/constants/avatar.constant';
 
