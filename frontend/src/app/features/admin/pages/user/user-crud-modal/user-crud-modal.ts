@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
+import { DEFAULT_AVATAR_ID } from '@shared/constants/avatar.constant';
 import { CrudAction } from '@shared/interfaces/crudAction';
 import { Location } from '@shared/interfaces/location';
 import { Role } from '@shared/interfaces/role';
@@ -48,6 +49,7 @@ export class UserCrudModal {
     mail: ['', [Validators.required, Validators.pattern(FormUtils.emailPattern)]],
     location: [0, [Validators.required, Validators.min(1)]],
     role: [0, [Validators.required, Validators.min(1)]],
+    avatarId: [DEFAULT_AVATAR_ID, [Validators.required]],
   });
 
   openEffect = effect(() => {
@@ -58,6 +60,7 @@ export class UserCrudModal {
         mail: this.user().mail ?? '',
         location: this.user().location?.id ?? 0,
         role: this.user().role?.id ?? 0,
+        avatarId: this.user().avatarId ?? DEFAULT_AVATAR_ID,
       });
     } else {
       this.userModal().nativeElement.close();
@@ -69,19 +72,19 @@ export class UserCrudModal {
   }
   emitUser() {
     if (this.userForm.valid) {
-      const { name, mail, location, role } = this.userForm.getRawValue();
+      const { name, mail, location, role, avatarId } = this.userForm.getRawValue();
       const id = this.user()?.id;
       switch (this.type()) {
         case 'add':
           this.confirmAction.emit({
             actionType: 'create',
-            data: { name, mail, location, role },
+            data: { name, mail, location, role, avatarId },
           });
           break;
         case 'edit':
           this.confirmAction.emit({
             actionType: 'update',
-            data: { id: id!, name, mail, location, role },
+            data: { id: id!, name, mail, location, role, avatarId },
           });
           break;
         case 'delete':

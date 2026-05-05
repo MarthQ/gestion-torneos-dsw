@@ -1,29 +1,46 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Role } from '@shared/interfaces/role';
 import { map, tap } from 'rxjs';
 import { RoleService } from '@features/admin/services/role.service';
 import { Toaster } from '@shared/utils/toaster';
-import { Tag } from '@shared/interfaces/tag';
 import { Pagination } from '@shared/components/pagination/pagination';
 import { SearchBar } from '@shared/components/search-bar/search-bar';
 import { RoleCrudModal } from './role-crud-modal/role-crud-modal';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { PaginationMeta } from '@shared/interfaces/api-response';
+import { Limit } from '@shared/components/limit/limit';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Router } from '@angular/router';
+import { USER_ROLE, UserRole } from '@features/auth/interfaces/user-role.const';
 
 @Component({
-  imports: [RoleCrudModal, Pagination, SearchBar],
+  imports: [RoleCrudModal, Pagination, SearchBar, Limit],
   templateUrl: './role-crud.html',
 })
 export class RoleCrud {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  router = inject(Router);
   roleService = inject(RoleService);
+
+  pageRecalculation = effect(() => {
+    if (!this.roleResource.value()) return;
+    if (!this.roleMeta()) return;
+    const maxPage = Math.ceil(this.roleMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
 
   // API Get parameters (for table)
   query = signal('');
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -34,18 +51,19 @@ export class RoleCrud {
   roleMeta = signal<PaginationMeta | undefined>(undefined);
 
   roleResource = rxResource({
-    params: () => ({ query: this.query(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
-      return this.roleService.getRolesPaginated(params.query, params.page, this.pageSize).pipe(
+      return this.roleService.getRolesPaginated(params.query, params.page, params.limit).pipe(
         tap((response) => this.roleMeta.set(response.meta)),
-        tap((response) => console.log(response)),
+
         map((response) => response.data),
       );
     },
   });
-  pageChangedTo(newPage: number) {
-    this.page.set(newPage);
-  }
 
   addRole() {
     this.modalType.set('add');
@@ -70,9 +88,9 @@ export class RoleCrud {
             Toaster.success('El rol se agregó correctamente');
             this.roleResource.reload();
           },
-          error: (message) => {
-            Toaster.error(message);
-            console.error(message);
+          error: (err) => {
+            Toaster.error(err.message);
+            console.error(err.message);
           },
         });
         break;
@@ -82,9 +100,9 @@ export class RoleCrud {
             Toaster.success('El rol se modificó correctamente');
             this.roleResource.reload();
           },
-          error: (message) => {
-            Toaster.error(message);
-            console.error(message);
+          error: (err) => {
+            Toaster.error(err.message);
+            console.error(err.message);
           },
         });
         break;
@@ -94,11 +112,17 @@ export class RoleCrud {
             Toaster.success('El rol se eliminó correctamente');
             this.roleResource.reload();
           },
-          error: (message) => {
-            Toaster.error(message);
-            console.error(message);
+          error: (err) => {
+            Toaster.error(err.message);
+            console.error(err.message);
           },
         });
     }
+  }
+
+  isDefaultRole(role: any) {
+    const result = Object.values(USER_ROLE).includes(role);
+
+    return result;
   }
 }

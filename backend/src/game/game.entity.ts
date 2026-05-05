@@ -20,7 +20,7 @@ export class Game extends BaseEntity {
     @Property({ columnType: 'text' })
     description!: string
     @Property()
-    imgUrl?: string
+    imgId?: string
     @Property({ unique: true })
     igdbId!: number
     @OneToMany(() => Tournament, (tournament) => tournament.game, { cascade: [Cascade.ALL] })

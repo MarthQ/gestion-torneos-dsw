@@ -78,13 +78,19 @@ export class AuthService {
     });
   }
 
+  updateUserData(partialUser: Partial<User>) {
+    const current = this._user();
+    if (current) {
+      this._user.set({ ...current, ...partialUser });
+    }
+  }
+
   private clearLocalState() {
     this._user.set(null);
     this._authStatus.set(AUTH_STATUS.NOT_AUTHENTICATED);
   }
 
   handleAuthSuccess(resp: AuthResponse): boolean {
-    console.log(resp.message);
     const { user } = resp.data;
     this._user.set(user);
     this._authStatus.set(AUTH_STATUS.AUTHENTICATED);

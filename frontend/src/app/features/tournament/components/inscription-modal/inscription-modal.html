@@ -1,0 +1,38 @@
+<dialog #inscriptionModal class="modal" (close)="onCancel()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">
+      {{ type() === 'add' ? 'Inscribirme al torneo' : 'Borrar inscripción' }}
+    </h3>
+    @if (type() === 'add') {
+      <form [formGroup]="inscriptionForm">
+        <div class="py-4">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Nickname de inscripción</legend>
+            <input
+              type="text"
+              class="input input-bordered input-primary w-full"
+              placeholder="Ingresá tu nickname"
+              formControlName="nickname"
+            />
+            <form-error-label [control]="inscriptionForm.get('nickname')!" />
+          </fieldset>
+        </div>
+      </form>
+    } @else {
+      <p>
+        ¿Está seguro de que desea eliminar tu
+        <strong>inscripción</strong>?
+      </p>
+    }
+    <div class="modal-action">
+      @if (type() === 'add') {
+        <button class="btn btn-primary" [disabled]="!inscriptionForm.valid" (click)="onConfirm()">
+          Inscribirme
+        </button>
+      } @else {
+        <button class="btn btn-warning" (click)="onConfirm()">Borrar Inscripción</button>
+      }
+      <button class="btn btn-ghost" (click)="onCancel()">Cancelar</button>
+    </div>
+  </div>
+</dialog>

@@ -9,13 +9,28 @@ export interface User {
   location: Location;
   role: Role;
   hasPassword: boolean;
+  avatarId?: string;
+  nameChangedOn?: Date;
 }
+
+//Flexibility for patch/partial updates
+export interface UserUpdateDTO {
+  id: number;
+  name?: string;
+  mail?: string;
+  location?: number;
+  role?: number;
+  avatarId?: string;
+  nameChangedOn?: Date;
+}
+
 export interface UserFormDTO {
   id: number;
   name: string;
   mail: string;
   location: number;
   role: number;
+  avatarId?: string;
 }
 
 export interface UserRegisterDTO {
@@ -25,6 +40,7 @@ export interface UserRegisterDTO {
   mail: string;
   location: number;
   role?: string;
+  avatarId?: string;
 }
 
 export interface UserFormLogin {

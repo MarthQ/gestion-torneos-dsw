@@ -4,6 +4,10 @@ import { Location } from '../location/location.entity.js'
 import { USER_ROLE } from '../auth/interfaces/user-role.const.js'
 import { EVENT_TAGS } from '../tag/interfaces/default-tags.const.js'
 import { Tag } from '../tag/tag.entity.js'
+import { Region } from '../region/region.entity.js'
+import { User } from '../user/user.entity.js'
+import { hashSync } from 'bcrypt'
+import { env } from '../config/env.js'
 
 const DEFAULT_ROLES = Object.values(USER_ROLE)
 
@@ -319,6 +323,31 @@ const ARGENTINIAN_LOCATIONS = [
     'Puerto Esperanza',
 ]
 
+const REGIONS = [
+    'GLOBAL',
+
+    // Americas
+    'NA', // North America
+    'LAN', // Latin America North
+    'LAS', // Latin America South
+    'BR', // Brazil
+
+    // Europe
+    'EUW', // Europe West
+    'EUNE', // Europe Nordic & East
+    'EU', // General Europe
+    'TR', // Turkey
+
+    // Asia
+    'JP', // Japan
+    'CN', // China
+
+    // Oceania
+    'OCE', // Oceania
+    'AU', // Australia
+    'NZ', // New Zealand
+]
+
 export async function seedLocations() {
     const em = ORM.em.fork()
     let created = 0
@@ -331,4 +360,56 @@ export async function seedLocations() {
     }
     await em.flush()
     console.log(`✅ Locations seeded (${created} new)`)
+}
+
+export async function seedRegions() {
+    const em = ORM.em.fork()
+    let created = 0
+    for (const name of REGIONS) {
+        const exists = await em.findOne(Region, { name: name.trim() })
+        if (!exists) {
+            em.create(Region, { name: name.trim() })
+            created++
+        }
+    }
+    await em.flush()
+    console.log(`✅ Regions seeded (${created} new)`)
+}
+
+export async function seedAdminUser() {
+    const em = ORM.em.fork()
+
+    // Check if admin user already exists
+    const existingAdmin = await em.findOne(User, { mail: 'okizeme@admin.com' })
+    if (existingAdmin) {
+        console.log('✅ Admin user already exists')
+        return
+    }
+
+    // Get admin role
+    const adminRole = await em.findOne(Role, { name: USER_ROLE.ADMIN })
+    if (!adminRole) {
+        throw new Error('Admin role not found. Make sure seedRoles() runs first.')
+    }
+
+    // Get first available location
+    const locations = await em.find(Location, {}, { limit: 1 })
+    let defaultLocation = locations[0]
+
+    if (!defaultLocation) {
+        defaultLocation = em.create(Location, { name: 'Buenos Aires' })
+    }
+
+    // Create admin user
+    const hashedPassword = hashSync('123456789', Number(env.defaultSaltRounds))
+    const adminUser = em.create(User, {
+        name: 'Admin',
+        mail: 'okizeme@admin.com',
+        password: hashedPassword,
+        role: adminRole,
+        location: defaultLocation,
+    })
+
+    await em.flush()
+    console.log('✅ Admin user seeded (okizeme@admin.com)')
 }

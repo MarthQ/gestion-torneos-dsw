@@ -5,6 +5,7 @@ import { TournamentCrud } from './pages/tournament/tournament-crud';
 import { UserCrud } from './pages/user/user-crud';
 import { TagCrud } from './pages/tag/tag-crud';
 import { RoleCrud } from './pages/role/role-crud';
+import { RegionCrud } from './pages/region/region-crud';
 
 export const adminRoutes: Routes = [
   {
@@ -30,6 +31,10 @@ export const adminRoutes: Routes = [
   {
     path: 'role',
     component: RoleCrud,
+  },
+  {
+    path: 'region',
+    component: RegionCrud,
   },
   {
     path: '**',

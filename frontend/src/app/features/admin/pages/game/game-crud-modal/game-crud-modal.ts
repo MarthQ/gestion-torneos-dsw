@@ -10,11 +10,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GameService } from '@shared/services/game.service';
 import { Game } from '@shared/interfaces/game';
-import { debounceTime, switchMap, tap } from 'rxjs';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 
 @Component({
@@ -44,7 +41,7 @@ export class GameCrudModal {
     name: ['', Validators.required],
     description: ['', Validators.required],
     igdbId: [0, [Validators.required, Validators.min(1)]],
-    imgUrl: ['', Validators.required],
+    imgId: ['', Validators.required],
   });
   openEffect = effect(() => {
     if (this.open()) {
@@ -54,7 +51,7 @@ export class GameCrudModal {
         name: this.game().name ?? '',
         description: this.game().description ?? '',
         igdbId: this.game().igdbId ?? 0,
-        imgUrl: this.game().imgUrl ?? '',
+        imgId: this.game().imgId ?? '',
       });
     } else {
       this.gameModal().nativeElement.close();

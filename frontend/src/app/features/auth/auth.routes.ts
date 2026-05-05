@@ -14,7 +14,7 @@ export const authRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'explore',
+        redirectTo: '',
         pathMatch: 'full',
       },
       {

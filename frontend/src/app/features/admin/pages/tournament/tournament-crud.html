@@ -41,7 +41,7 @@
       </thead>
       <tbody>
         @for (tournament of tournamentResource.value(); track tournament.id) {
-          <tr class="hover:bg-neutral-content hover:text-neutral transition-colors">
+          <tr class="hover:bg-neutral hover:text-neutral-content transition-colors">
             <td>
               <div class="font-mono text-sm">{{ tournament.id }}</div>
             </td>
@@ -78,10 +78,18 @@
               </div>
             </td>
             <td>
-              <div class="font-bold badge badge-info h-max">
-                <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
-                {{ tournament.location.name }}
-              </div>
+              @if (tournament.location) {
+                <div class="font-bold badge badge-info h-max">
+                  <span class="icon-[mdi--location]" style="width: 18px; height: 18px"></span>
+                  {{ tournament.location.name }}
+                </div>
+              }
+              @if (tournament.region) {
+                <div class="font-bold badge badge-info h-max">
+                  <span class="icon-[mdi--world]" style="width: 18px; height: 18px"></span>
+                  {{ tournament.region.name }}
+                </div>
+              }
             </td>
             <td>
               <div class="text-sm text-center">
@@ -101,8 +109,9 @@
             <td>
               <div class="flex justify-center gap-2">
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning"
+                  class="btn btn-square btn-sm btn-ghost hover:border-warning-content hover:bg-warning-content hover:text-warning tooltip"
                   (click)="editTournament(tournament)"
+                  data-tip="Editar"
                 >
                   <span
                     class="icon-[boxicons--edit-filled]"
@@ -110,8 +119,9 @@
                   ></span>
                 </button>
                 <button
-                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error"
+                  class="btn btn-square btn-sm btn-ghost hover:border-error-content hover:bg-error-content hover:text-error tooltip"
                   (click)="deleteTournament(tournament)"
+                  data-tip="Eliminar"
                 >
                   <span class="icon-[boxicons--trash]" style="width: 24px; height: 24px"></span>
                 </button>
@@ -140,7 +150,8 @@
   gameResource.hasValue() &&
   locationResource.hasValue() &&
   userResource.hasValue() &&
-  tagResource.hasValue()
+  tagResource.hasValue() &&
+  regionResource.hasValue()
 ) {
   <tournament-crud-modal
     [tournament]="selectedTournament()"
@@ -150,13 +161,14 @@
     [locationResource]="locationResource.value()"
     [userResource]="userResource.value()"
     [tagResource]="tagResource.value()"
+    [regionResource]="regionResource.value()"
     (closed)="openModal.set(false)"
     (confirmAction)="handleCrudAction($event)"
   />
 }
 
-<app-pagination
-  [inputPage]="page()"
-  [entityMeta]="tournamentMeta()"
-  (currentPage)="pageChangedTo($event)"
-/>
+<div class="flex items-center justify-center gap-10">
+  <app-pagination [inputPage]="paginationService.currentPage()" [entityMeta]="tournamentMeta()" />
+
+  <app-limit [limit]="limitService.currentLimit()" />
+</div>

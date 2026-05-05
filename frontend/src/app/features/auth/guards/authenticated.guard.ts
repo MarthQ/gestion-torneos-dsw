@@ -9,8 +9,6 @@ export const AuthenticatedGuard: CanMatchFn = async (route: Route, segments: Url
 
   const isAuthenticated = authService.authStatus() === AUTH_STATUS.AUTHENTICATED;
 
-  console.log({ isAuthenticated }, { authStatus: authService.authStatus() });
-
   if (!isAuthenticated) {
     router.navigateByUrl('/auth/login');
     return false;

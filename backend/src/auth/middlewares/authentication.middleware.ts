@@ -6,21 +6,22 @@ import { ORM } from '../../shared/db/orm.js'
 import { User } from '../../user/user.entity.js'
 import { JWTUtils } from '../../shared/auth/jwt.utils.js'
 import { env } from '../../config/env.js'
+import { handleHttpError } from '../../utils/http-errors.utils.js'
 
 const em = ORM.em
 
 export async function authenticationMiddleware(req: RequestWithUser, res: Response, next: NextFunction) {
     const token = req.cookies[env.jwtCookieName]
 
-    if (!token) {
-        return res.status(401).json({ message: 'No token' })
-    }
-
     try {
+        if (!token) {
+            const error = new Error('No token')
+            ;(error as any).statusCode = 401
+            throw error
+        }
+
         const decoded = JWTUtils.verify(token)
-
         const user = await em.findOneOrFail(User, { id: decoded.userId }, { populate: ['location', 'role'] })
-
         req.user = user
 
         // Sliding session: renew cookie on each successful request
@@ -34,13 +35,6 @@ export async function authenticationMiddleware(req: RequestWithUser, res: Respon
 
         next()
     } catch (error: any) {
-        // MikroORM Error
-        if (error.name === 'NotFoundError') {
-            return res.status(401).json({
-                message: 'Credentials are not valid (email)',
-            })
-        }
-
-        return res.status(401).json({ message: 'Invalid token' })
+        handleHttpError(error, res)
     }
 }

@@ -5,6 +5,7 @@ import { UserProfile } from './pages/user-profile/user-profile';
 import { MainLayout } from './layout/main-layout/main-layout';
 import { AuthenticatedGuard } from '@features/auth/guards/authenticated.guard';
 import { SetupPassword } from './pages/setup-password/setup-password';
+import { MyTournaments } from './pages/myTournaments/myTournaments';
 
 export const TournamentHubRoutes: Routes = [
   {
@@ -33,9 +34,19 @@ export const TournamentHubRoutes: Routes = [
         component: SetupPassword,
       },
       {
+        path: 'my-tournaments',
+        canActivate: [AuthenticatedGuard],
+        component: MyTournaments,
+      },
+      {
         path: 'admin',
         canMatch: [AuthenticatedGuard],
         loadChildren: () => import('../admin/admin.routes'),
+      },
+      {
+        path: 'tournament',
+        canMatch: [AuthenticatedGuard],
+        loadChildren: () => import('../tournament/tournament.routes'),
       },
     ],
   },

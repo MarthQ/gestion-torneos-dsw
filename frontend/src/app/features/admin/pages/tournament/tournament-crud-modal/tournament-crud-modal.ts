@@ -1,11 +1,22 @@
 import { I18nSelectPipe } from '@angular/common';
-import { Component, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {
   AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
   ReactiveFormsModule,
+  ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
@@ -18,6 +29,10 @@ import { Location } from '@shared/interfaces/location';
 import { FormErrorLabel } from '@shared/components/formErrorLabel/formErrorLabel';
 import { EVENT_TAGS } from '@features/admin/interfaces/default-tags.const';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, EMPTY } from 'rxjs';
+import { Region } from '@shared/interfaces/region';
+import { FormUtils } from '@shared/utils/form-utils';
 
 @Component({
   selector: 'tournament-crud-modal',
@@ -35,6 +50,17 @@ export class TournamentCrudModal {
   gameResource = input.required<Game[]>();
   tagResource = input.required<Tag[]>();
   userResource = input.required<User[]>();
+  regionResource = input.required<Region[]>();
+  tournamentTypes = signal([
+    {
+      value: 'single_elimination',
+      name: 'Single Elimination',
+    },
+    {
+      value: 'double_elimination',
+      name: 'Double Elimination',
+    },
+  ]);
 
   tournamentModal = viewChild.required<ElementRef<HTMLDialogElement>>('tournamentModal');
 
@@ -52,17 +78,33 @@ export class TournamentCrudModal {
     delete: 'Borrar un torneo',
   };
 
+  dateGreaterThanNowValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const inputDate = new Date(control.value);
+    const now = new Date();
+
+    return inputDate > now ? null : { dateNotGreaterThanNow: true };
+  };
+
   tournamentForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    datetimeinit: [new Date(), Validators.required],
-    status: ['', Validators.required],
+    datetimeinit: [new Date()],
     maxParticipants: [0, [Validators.required, Validators.min(2)]],
     creator: [0, [Validators.required, Validators.min(1)]],
-    location: [0, [Validators.required, Validators.min(1)]],
+    location: [0],
+    region: [0],
     game: [0, [Validators.required, Validators.min(1)]],
+    type: ['single_elimination', [Validators.required]],
     tags: this.fb.array<FormControl<number>>([]),
   });
+
+  tagsValue = toSignal(
+    this.tournamentForm.get('tags')?.valueChanges.pipe(debounceTime(300)) ?? EMPTY,
+  );
 
   setTagValidatorEffect = effect(() => {
     if (this.tagResource()?.length) {
@@ -90,6 +132,49 @@ export class TournamentCrudModal {
       return hasConflict ? { tagsNotCoherent: true } : null;
     };
   }
+
+  dynamicValidatorsEffect = effect(() => {
+    const type = this.eventType();
+
+    const locationControl = this.tournamentForm.get('location');
+    const regionControl = this.tournamentForm.get('region');
+    // Location: si es virtual, limpiar el valor
+    if (locationControl) {
+      if (type === 'virtual' || type === null) {
+        locationControl.reset(); // Reset a null/initial
+      }
+      locationControl.setValidators(
+        type === 'presencial' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      locationControl.updateValueAndValidity();
+    }
+    // Region: si es presencial, limpiar el valor
+    if (regionControl) {
+      if (type === 'presencial' || type === null) {
+        regionControl.reset();
+      }
+      regionControl.setValidators(
+        type === 'virtual' || type === 'mixed' ? [Validators.required, Validators.min(1)] : null,
+      );
+      regionControl.updateValueAndValidity();
+    }
+  });
+
+  eventType = computed(() => {
+    const tagIds = this.tagsValue();
+    const allTags = this.tagResource();
+    if (!tagIds || !allTags) return null;
+    const hasVirtual = allTags.some(
+      (t) => t.name === EVENT_TAGS.VIRTUAL.name && tagIds.includes(t.id),
+    );
+    const hasPresencial = allTags.some(
+      (t) => t.name === EVENT_TAGS.IN_PERSON.name && tagIds.includes(t.id),
+    );
+    if (hasVirtual && hasPresencial) return 'mixed';
+    if (hasVirtual) return 'virtual';
+    if (hasPresencial) return 'presencial';
+    return null;
+  });
 
   get tournamentTags() {
     return this.tournamentForm.get('tags') as FormArray;
@@ -142,16 +227,24 @@ export class TournamentCrudModal {
 
       this.initTags(this.tournament().tags ?? []);
 
+      const isEdit = this.type() === 'edit';
+      const dateValidators = isEdit
+        ? [Validators.required]
+        : [Validators.required, this.dateGreaterThanNowValidator];
+
+      this.tournamentForm.get('datetimeinit')?.setValidators(dateValidators);
+      this.tournamentForm.get('datetimeinit')?.updateValueAndValidity();
+
       this.tournamentForm.patchValue({
         name: this.tournament().name ?? '',
         description: this.tournament().description ?? '',
-        datetimeinit: this.tournament().datetimeinit ?? new Date(),
-        status: this.tournament().status ?? 'Abierto',
+        datetimeinit: FormUtils.formatDateForInput(this.tournament().datetimeinit ?? new Date()),
         maxParticipants: this.tournament().maxParticipants ?? 10,
         creator: this.tournament().creator?.id ?? 0,
         location: this.tournament().location?.id ?? 0,
+        region: this.tournament().region?.id ?? 0,
         game: this.tournament().game?.id ?? 0,
-      });
+      } as any);
     } else {
       this.tournamentModal().nativeElement.close();
     }
@@ -160,59 +253,51 @@ export class TournamentCrudModal {
   onDialogClose() {
     this.closed.emit();
   }
-  emitTournament() {
-    if (this.tournamentForm.valid) {
-      const {
-        name,
-        description,
-        datetimeinit,
-        status,
-        maxParticipants,
-        creator,
-        location,
-        game,
-        tags,
-      } = this.tournamentForm.getRawValue();
-      const id = this.tournament()?.id;
 
-      switch (this.type()) {
-        case 'add':
-          this.confirmAction.emit({
-            actionType: 'create',
-            data: {
-              name,
-              description,
-              datetimeinit,
-              status,
-              maxParticipants,
-              creator,
-              location,
-              game,
-              tags,
-            },
-          });
-          break;
-        case 'edit':
-          this.confirmAction.emit({
-            actionType: 'update',
-            data: {
-              id: id!,
-              name,
-              description,
-              datetimeinit,
-              status,
-              maxParticipants,
-              creator,
-              location,
-              game,
-              tags,
-            },
-          });
-          break;
-        case 'delete':
-          this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
-          break;
-      }
+  emitDeleteTournament() {
+    const id = this.tournament()?.id;
+
+    this.confirmAction.emit({ actionType: 'delete', data: { id: id! } });
+  }
+
+  emitTournament(event: Event) {
+    // event.preventDefault();
+
+    if (this.tournamentForm.invalid) {
+      this.tournamentForm.markAllAsTouched();
+      return;
+    }
+
+    const type = this.eventType();
+
+    const tournament = this.tournamentForm.value as Omit<TournamentFormDTO, 'id'>;
+
+    if (type === 'virtual' || type === null) {
+      tournament.region = this.tournamentForm.value.region;
+      tournament.location = undefined;
+    }
+    if (type === 'presencial' || type === null) {
+      tournament.location = this.tournamentForm.value.location;
+      tournament.region = undefined;
+    }
+    const id = this.tournament()?.id;
+
+    switch (this.type()) {
+      case 'add':
+        this.confirmAction.emit({
+          actionType: 'create',
+          data: tournament,
+        });
+        break;
+      case 'edit':
+        this.confirmAction.emit({
+          actionType: 'update',
+          data: {
+            id: id!,
+            ...tournament,
+          },
+        });
+        break;
     }
   }
 }

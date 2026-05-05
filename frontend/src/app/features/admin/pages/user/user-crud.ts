@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Toaster } from '@shared/utils/toaster';
 import { map, tap } from 'rxjs';
@@ -12,13 +12,35 @@ import { LocationService } from '@shared/services/location.service';
 import { RoleService } from '@features/admin/services/role.service';
 import { QueryFilter } from '@shared/interfaces/filters';
 import { CrudAction } from '@shared/interfaces/crudAction';
+import { PaginationMeta } from '@shared/interfaces/api-response';
+import { Limit } from '@shared/components/limit/limit';
+import { LimitService } from '@shared/components/limit/limit.service';
+import { PaginationService } from '@shared/components/pagination/pagination.service';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [Pagination, SearchBar, UserCrudModal],
+  imports: [Pagination, SearchBar, UserCrudModal, Limit],
   templateUrl: './user-crud.html',
 })
 export class UserCrud {
+  limitService = inject(LimitService);
+  paginationService = inject(PaginationService);
+  router = inject(Router);
   userService = inject(UserService);
+
+  pageRecalculation = effect(() => {
+    if (!this.userResource.value()) return;
+    if (!this.userMeta()) return;
+    const maxPage = Math.ceil(this.userMeta()!.total / this.limitService.currentLimit());
+    const currentPage = this.paginationService.currentPage();
+
+    if (currentPage > maxPage && maxPage > 0) {
+      this.router.navigate([], {
+        queryParams: { page: maxPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  });
 
   locationService = inject(LocationService);
   roleService = inject(RoleService);
@@ -26,11 +48,6 @@ export class UserCrud {
   // API Get parameters (for table)
   query = signal('');
   queryFilters = signal<QueryFilter>({});
-  page = linkedSignal({
-    source: this.query,
-    computation: () => 1,
-  });
-  pageSize = 10;
 
   // Modal parameters
   modalType = signal<'add' | 'edit' | 'delete'>('add');
@@ -48,21 +65,21 @@ export class UserCrud {
   });
 
   userResource = rxResource({
-    params: () => ({ query: this.query(), queryFilters: this.queryFilters(), page: this.page() }),
+    params: () => ({
+      query: this.query(),
+      queryFilters: this.queryFilters(),
+      page: this.paginationService.currentPage(),
+      limit: this.limitService.currentLimit(),
+    }),
     stream: ({ params }) => {
       return this.userService
-        .getUsersPaginated(params.query, params.queryFilters, params.page, this.pageSize)
+        .getUsersPaginated(params.query, params.queryFilters, params.page, params.limit)
         .pipe(
           tap((response) => this.userMeta.set(response.meta)),
           map((response) => response.data),
         );
     },
   });
-
-  // Visual actions (pagination)
-  pageChangedTo(newPage: number) {
-    this.page.set(newPage);
-  }
 
   // CRUD Actions
   addUser() {

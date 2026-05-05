@@ -1,0 +1,7 @@
+<div>
+  <select class="select select-primary" (change)="handleLimit(+selectPerPage.value)" #selectPerPage>
+    @for (limit of limits(); track $index) {
+      <option [value]="limit" [selected]="this.limit() === limit">{{ limit }}</option>
+    }
+  </select>
+</div>
