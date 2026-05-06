@@ -35,7 +35,7 @@ Esta carpeta contiene el frontend de una aplicación web que permite a los usuar
 | Lenguaje                 | TypeScript 5.9.2              |
 | Estilos                  | TailwindCSS 4.x + DaisyUI 5.x |
 | Iconos                   | Iconify                       |
-| Testing                  | Jasmine, Karma + Cypress            |
+| Testing                  | Jasmine, Karma + Cypress      |
 | Notificaciones (Toaster) | ngx-sonner                    |
 | Auth                     | JWT con cookies httpOnly      |
 
@@ -82,6 +82,7 @@ Esta carpeta contiene el frontend de una aplicación web que permite a los usuar
 ## Estructura del Proyecto
 
 ```
+src/app/
 ├── features/                        # Módulos por funcionalidad
 │   ├── admin/                       # Panel de administración
 │   │   ├── interfaces/              # Tipos e interfaces de admin
@@ -89,19 +90,19 @@ Esta carpeta contiene el frontend de una aplicación web que permite a los usuar
 │   │   └── services/                # Servicios específicos de admin
 │   ├── auth/                        # Autenticación
 │   │   ├── guards/                  # Guardias de autenticación
-│   │   ├── interceptors/            # Interceptor para token JWT         
+│   │   ├── interceptors/            # Interceptor para token JWT
 │   │   ├── interfaces/              # Tipos e interfaces de Auth
 │   │   ├── layout/                  # Layouts de auth
 │   │   ├── pages/                   # Login, registro, recuperación
 │   │   └── services/                # AuthService
-│   ├── tournament/                                          
+│   ├── tournament/
 │   │   ├── components/              # Componentes reutilizables de bracket y gestión de torneo
-│   │   ├── guards/                  # Guardias de bracket y gestión de torneo  
+│   │   ├── guards/                  # Guardias de bracket y gestión de torneo
 │   │   ├── layout/                  # Tournament Layout
 │   │   ├── pages/                   # Bracket, Configuración, Overview, Participants, Wizard
-│   │   ├── services/                # Servicios especificos de bracket y gestión de torneo  
+│   │   ├── services/                # Servicios especificos de bracket y gestión de torneo
 │   │   └── styles/                  # Estilos especificos de Bracket Viewer
-│   └── tournament-hub/              # Funcionalidad principal         
+│   └── tournament-hub/              # Funcionalidad principal
 │       ├── components/              # Componentes reutilizables del Hub
 │       ├── layout/                  # Main Layout
 │       ├── pages/                   # Explore, MyInscriptions, UserProfile, SetupPassword, MyTournaments
@@ -129,21 +130,30 @@ Archivos de entorno:
 - `src/environments/environment.development.ts` - Desarrollo
 
 ## Testing
+
 ### End to End (E2E)
+
 El testing E2E simula la experiencia de un usuario real atravesando alguna funcionalidad o caso de uso asegurando que la aplicación funciona correctamente.
 **Antes de realizar el test E2E** asegurarse de que el usuario a testear existe en la BD.
 
-Test E2E sin interfaz de usuario: 
-```bash 
+Test E2E sin interfaz de usuario:
+
+```bash
 npx cypress run --spec "cypress/e2e/login.cy.ts"
 ```
+
 Con interfaz de usuario:
-``` bash
+
+```bash
 npx cypress open
 ```
+
 E2E testing -> Elegir Electron -> login.cy.ts
+
 ### Test de componentes unitarios
+
 Componentes a testear:
+
 - Tournament Utils
 - Tournament Service
 - App (que funcione)

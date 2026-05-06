@@ -107,7 +107,7 @@ API REST construida con Express y TypeScript que gestiona toda la lógica de neg
 ## Estructura del Proyecto
 
 ```
-.
+src/
 ├── app.ts                                          # Entry point
 ├── auth                                            # Autenticación
 │   ├── auth.controller.ts                          # Definición de funciones de entidad y Orm (Login, registro, logout, etc)
