@@ -21,50 +21,50 @@ La mayor documentación de avances se encuentra en
 
 - [Lista de PR/MR](https://github.com/users/MarthQ/projects/1).
 - En algunos TODO informales como los siguientes:
-  > Lease: <br>
-  > Frontend developer: Jose Socolsky <br>
-  > Alfajor fulbito: Nicolas Urquiza <br>
-  > Galletitas Mana: Martin Quagliardi <br>
-  > Bizcocho Negrito Don Shionur: Mateo Regodesebes <br>
+    > Lease: <br>
+    > Frontend developer: Jose Socolsky <br>
+    > Alfajor fulbito: Nicolas Urquiza <br>
+    > Galletitas Mana: Martin Quagliardi <br>
+    > Bizcocho Negrito Don Shionur: Mateo Regodesebes <br>
 
-![Captura1](./assets/captura1.png) <br>
-
-<hr>
-
-![Captura2](./assets/captura2.png) <br>
+![TODO1](./assets/captura1.png) <br>
 
 <hr>
 
-![Captura3](./assets/captura7.png) <br>
+![TODO2](./assets/captura2.png) <br>
 
 <hr>
 
-![Captura4](./assets/captura4.png) <br>
+![Reunion1](./assets/captura7.png) <br>
 
 <hr>
 
-![Captura5](./assets/captura5.png) <br>
+![Explicacion1](./assets/captura4.png) <br>
 
 <hr>
 
-![Captura6](./assets/captura8.png) <br>
+![Explicacion2](./assets/captura5.png) <br>
+
+<hr>
+
+![Reunion2](./assets/captura8.png) <br>
 
 ### Tracking de features, bug e issues
 
 El tracking de features fue llevado a cabo a través de las [ramas](https://github.com/MarthQ/gestion-torneos-dsw/branches) del repositorio usando nombres claves para separar intrinsecamente features, developer branches y fixes.
-Además se creo en el chat utilizado para el proyecto un canal dedicado al tracking de Bugs y mejoras.
+Además se creó en el chat utilizado para el proyecto un canal dedicado al tracking de Bugs y mejoras.
 
 <hr>
 <center>
 
-![Captura8](./assets/captura11.png) ![Captura9](./assets/captura12.png) ![Captura10](./assets/captura13.png)
+![Branches1](./assets/captura11.png) ![Branches2](./assets/captura12.png) ![Branches3](./assets/captura13.png)
 
  </center>
 
 <hr>
 <center>
 
-![Captura7](./assets/captura10.png) <br>
+![Bug](./assets/captura10.png) <br>
 
  </center>
 
@@ -75,13 +75,13 @@ La misma se realizó a través de [Swagger](https://swagger.io/)
 
 <center>
 
-![Captura 11](./assets/captura14.png)
+![Swagger1](./assets/captura14.png)
 
  </center>
 
 <hr>
 
-![Captura 12](./assets/captura15.png)
+![Swagger2](./assets/captura15.png)
 
 ### Evidencia de ejecución de test automáticos
 
@@ -90,35 +90,35 @@ Los tests tanto de Backend como de Frontend y sus respectivos comandos de ejecuc
 #### Backend
 
 - Tests unitarios: <br>
-  ![Captura 13](./assets/captura16.png)
+  ![TestUnit](./assets/captura16.png)
 
 - Test de integración <br>
-  ![Captura 14](./assets/captura17.png)
+  ![TestInteg](./assets/captura17.png)
 
 #### Frontend
 
 - Tests de componentes unitarios
 
-  ![Captura 15](./assets/captura18.png)
+    ![TestCompon](./assets/captura18.png)
 
 - Test End to End - E2E Login con cypress
 
 <center>
 
-![Gif1](./assets//E2Etest.gif) <br>
-![Captura 16](./assets/captura19.png)
+![TestE2E](./assets//E2Etest.gif) <br>
+![TestE2ETerminal](./assets/captura19.png)
 
  </center>
 
 ### Demo de app en video
 
-La demo de la app en video se encuentra subida en la plataforma de [Youtube](https://youtu.be/V9LZAGmlxrw)
+La demo en video de la aplicación se encuentra publicada en la plataforma [YouTube](https://youtu.be/V9LZAGmlxrw)
 
 ### Deploy
 
-El proyecto esta deployado y corriendo en el servidor de un [amigo](https://github.com/maticatala) al que le agradecemos mucho:
+El proyecto se encuentra desplegado y en funcionamiento en un servidor que nos proporcionó un compañero [Matías Catalá](https://github.com/maticatala), a quien agradecemos por su apoyo:
 
 - [Frontend](https://okizeme.matiascatala.com/)
 - [Backend](https://api.matiascatala.com/)
 
-En caso de no ser valido como deploy contamos con un [host](https://railway.com/) de backup el cual no incluimos por un limite muy escaso de peticiones cuantificado por la pagina de 5 dolares.
+En caso de requerir un deploy alternativo, se dispone de otro deploy en [Railway](https://railway.com/), el cual no se utilizó para esta entrega debido a su límite de requests gratuitas, teniendo un máximo de 5 USD mensuales en formato de requests.

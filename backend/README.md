@@ -32,16 +32,16 @@ API REST construida con Express y TypeScript que gestiona toda la lógica de neg
 
 ## Tecnologías
 
-| Categoría  | Tecnología           |
-| ---------- | -------------------- |
-| Framework  | Express 4.x          |
-| Lenguaje   | TypeScript 5.4.5     |
-| ORM        | MikroORM 6.2 (MySQL) |
-| Validación | Zod                  |
-| Auth       | JWT                  |
-| Mails      | Nodemailer           |
-| Documentación | Swagger           |
-| Testing    | JEST, Vitest         |
+| Categoría     | Tecnología           |
+| ------------- | -------------------- |
+| Framework     | Express 4.x          |
+| Lenguaje      | TypeScript 5.4.5     |
+| ORM           | MikroORM 6.2 (MySQL) |
+| Validación    | Zod                  |
+| Auth          | JWT                  |
+| Mails         | Nodemailer           |
+| Documentación | Swagger              |
+| Testing       | JEST, Vitest         |
 
 ## Requisitos Previos
 
@@ -84,6 +84,8 @@ API REST construida con Express y TypeScript que gestiona toda la lógica de neg
     | `DB_PORT`             | Puerto de la base de datos               | Por default `3306`      |
     | `DB_USERNAME`         | Usuario de la base de datos              | `...`                   |
     | `JWT_SECRET`          | Clave para firmar tokens JWT             | `tu-secreto`            |
+    | `JWT_SAMESITE_COOKIE` | Parámetro SameSite de cookies            | `lax` o `none`          |
+    | `JWT_COOKIE_SECURE`   | Parámetro secure de cookies              | true o false            |
     | `DEFAULT_SALT_ROUNDS` | Rounds para bcrypt                       | `10`                    |
     | `FRONTEND_URL`        | URL del frontend (CORS)                  | `http://localhost:4200` |
     | `SMTP_HOST`           | Host del servidor SMTP                   | `smtp.gmail.com`        |
@@ -106,7 +108,7 @@ API REST construida con Express y TypeScript que gestiona toda la lógica de neg
 
 ```
 .
-├── app.ts                                          # Entry point 
+├── app.ts                                          # Entry point
 ├── auth                                            # Autenticación
 │   ├── auth.controller.ts                          # Definición de funciones de entidad y Orm (Login, registro, logout, etc)
 │   ├── auth.routes.ts                              # Rutas de auth y JSdocs de swagger
@@ -150,10 +152,12 @@ La documentación de la API esta funcionando en [Swagger](!https://swagger.io/).
 ## Testing
 
 ### **Requisitos previos**
+
 - **Node versión 22 o mayor**
+
 ### **Comandos para testear el backend**
 
-``` bash
+```bash
 Tests unitarios: pnpm test:unit
 Test de integración: pnpm test:integration
 ```
