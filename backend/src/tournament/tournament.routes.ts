@@ -311,7 +311,12 @@ tournamentRouter.get('/:id/next', wrapController(getNextReadyMatches))
  *       500:
  *         description: Error interno
  */
-tournamentRouter.post('/:tournamentId/match/:id', wrapController(updateMatchResult))
+tournamentRouter.post(
+    '/:tournamentId/match/:id',
+    authenticationMiddleware,
+    updateMatchMiddleware,
+    wrapController(updateMatchResult),
+)
 // Update match result (2-1)
 
 /**
