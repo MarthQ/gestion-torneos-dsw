@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql)](https://www.mysql.com/)
 
-> Backend de la aplicación web para crear y organizar torneos de videojuegos competitivos. Trabaja en conjunto con el [frontend de Okizeme](../frontend/README.md). De todas maneras puede interactuarse con la base de datos con aplicaciones como Postman.
+> Backend de la aplicación web para crear y organizar torneos de videojuegos competitivos. Trabaja en conjunto con el [frontend de Okizeme](../frontend/README.md). De todas maneras puede interactuarse con la base de datos con aplicaciones como Postman o a través de la [Documentación](#documentación-de-la-api).
 
 ## Tabla de Contenidos
 
@@ -14,6 +14,8 @@
 - [Instalación](#instalación)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Variables de Entorno](#variables-de-entorno)
+- [Documentación](#documentación-de-la-api)
+- [Testing](#testing)
 
 ## Descripción
 
@@ -30,14 +32,16 @@ API REST construida con Express y TypeScript que gestiona toda la lógica de neg
 
 ## Tecnologías
 
-| Categoría  | Tecnología           |
-| ---------- | -------------------- |
-| Framework  | Express 4.x          |
-| Lenguaje   | TypeScript 5.4.5     |
-| ORM        | MikroORM 6.2 (MySQL) |
-| Validación | Zod                  |
-| Auth       | JWT                  |
-| Mails      | Nodemailer           |
+| Categoría     | Tecnología           |
+| ------------- | -------------------- |
+| Framework     | Express 4.x          |
+| Lenguaje      | TypeScript 5.4.5     |
+| ORM           | MikroORM 6.2 (MySQL) |
+| Validación    | Zod                  |
+| Auth          | JWT                  |
+| Mails         | Nodemailer           |
+| Documentación | Swagger              |
+| Testing       | JEST, Vitest         |
 
 ## Requisitos Previos
 
@@ -80,6 +84,8 @@ API REST construida con Express y TypeScript que gestiona toda la lógica de neg
     | `DB_PORT`             | Puerto de la base de datos               | Por default `3306`      |
     | `DB_USERNAME`         | Usuario de la base de datos              | `...`                   |
     | `JWT_SECRET`          | Clave para firmar tokens JWT             | `tu-secreto`            |
+    | `JWT_SAMESITE_COOKIE` | Parámetro SameSite de cookies            | `lax` o `none`          |
+    | `JWT_COOKIE_SECURE`   | Parámetro secure de cookies              | true o false            |
     | `DEFAULT_SALT_ROUNDS` | Rounds para bcrypt                       | `10`                    |
     | `FRONTEND_URL`        | URL del frontend (CORS)                  | `http://localhost:4200` |
     | `SMTP_HOST`           | Host del servidor SMTP                   | `smtp.gmail.com`        |
@@ -102,31 +108,35 @@ API REST construida con Express y TypeScript que gestiona toda la lógica de neg
 
 ```
 src/
-├── auth/                          # Autenticación
-│   ├── auth.controller.ts         # Login, registro, logout, forgot/setup password
-│   ├── auth.routes.ts             # Rutas de auth
-│   ├── interfaces/                # Tipos (USER_ROLE, etc.)
-│   └── middlewares/               # authentication, isOwnerOrAdmin, authorize
-├── config/
-│   └── env.ts                     # Variables de entorno validadas
-├── db/
-│   └── seeds.ts                   # Seeds automáticos al iniciar
-├── game/                          # CRUD de juegos
-├── inscription/                   # Inscripciones a torneos
-├── location/                      # CRUD de localidades
-├── matchup/                       # Gestión de partidas/brackets
-├── region/                        # CRUD de regiones
-├── role/                          # CRUD de roles
-├── shared/                        # Código compartido
-│   ├── auth/                      # JWT utils
-│   ├── db/                        # ORM config, BaseEntity
-│   ├── interfaces/                # Interfaces compartidas
-│   ├── mailer/                    # Servicio de envío de mails
-│   └── mappers/                   # Mappers de entidades a response DTOs
-├── tag/                           # CRUD de tags
-├── tournament/                    # CRUD de torneos
-├── user/                          # CRUD de usuarios
-└── app.ts                         # Entry point
+├── app.ts                                          # Entry point
+├── auth                                            # Autenticación
+│   ├── auth.controller.ts                          # Definición de funciones de entidad y Orm (Login, registro, logout, etc)
+│   ├── auth.routes.ts                              # Rutas de auth y JSdocs de swagger
+│   ├── auth.schema.ts                              # Definición de Schemas de Zod
+│   ├── interfaces                                  # Tipos (USER_ROLE, etc)
+│   └── middlewares/                                # Middlewares, autenticación, manejo roles, etc
+├── bracket                                         # Gestión de partidas/brackets
+├── config                                          # Configuración de variables de entorno
+├── db
+│   └── seeds.ts                                    # Seeds automaticos al iniciar BD
+├── game/                                           # Definición entidad Juego
+├── inscription/                                    # Definición entidad Inscripcion
+├── location/                                       # Definición entidad Locación
+├── region/                                         # Definición entidad Región
+├── role/                                           # Definición entidad Rol
+├── tag/                                            # Definición entidad Tag
+├── tournament/                                     # Definición entidad Torneo
+├── user/                                           # Definición entidad Usuario
+├── shared                                          # Utilidades compartidas a través de la API
+│   ├── auth/
+│   ├── db/
+│   ├── interfaces/
+│   ├── mailer/
+│   ├── mappers/
+│   └── swagger/
+└── utils                                           # Wrapper de manejo de errores Http
+    └── http-errors.utils.ts
+
 ```
 
 ## Variables de Entorno
@@ -134,3 +144,20 @@ src/
 Todas las variables se validan al inicio en `src/config/env.ts`. Si falta alguna obligatoria, el servidor no arranca.
 
 Para crear tu propio `.env`, se propone el archivo `.env.template`. Es importante respetar los formatos string, number o boolean para evitar error.
+
+## Documentación de la API
+
+La documentación de la API esta funcionando en [Swagger](!https://swagger.io/). Se puede acceder a la misma desde la ruta `/api-docs`
+
+## Testing
+
+### **Requisitos previos**
+
+- **Node versión 22 o mayor**
+
+### **Comandos para testear el backend**
+
+```bash
+Tests unitarios: pnpm test:unit
+Test de integración: pnpm test:integration
+```
