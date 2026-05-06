@@ -35,6 +35,10 @@ La mayor documentación de avances se encuentra en
 
 <hr>
 
+![TODO2](./assets/captura3.png) <br>
+
+<hr>
+
 ![Reunion1](./assets/captura7.png) <br>
 
 <hr>
