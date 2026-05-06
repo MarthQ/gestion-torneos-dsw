@@ -10,6 +10,8 @@ export const env = {
     dbPort: process.env.DB_PORT || '3306',
     dbUsername: process.env.DB_USERNAME,
 
+    deployPort: process.env.PORT || '3000',
+
     smtpHost: process.env.SMTP_HOST,
     smtpPort: process.env.SMTP_PORT,
     smtpUser: process.env.SMTP_USER,
@@ -23,6 +25,7 @@ export const env = {
 
     // Set to 'true' in production (HTTPS), 'false' in development (HTTP)
     jwtCookieSecure: process.env.JWT_COOKIE_SECURE === 'true',
+    jwtSameSiteCookie: process.env.JWT_SAMESITE_COOKIE as 'strict' | 'lax' | 'none' | undefined,
 
     // Cookie config (4 horas en ms)
     jwtCookieMaxAge: 4 * 60 * 60 * 1000,
